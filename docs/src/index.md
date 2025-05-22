@@ -16,8 +16,6 @@ hero:
     - theme: alt
       text: vue3 快速入门
       link: /Vue3快速上手.md
-      text: java
-      link: /java.md
 
 features:
   - title: Electron vlc

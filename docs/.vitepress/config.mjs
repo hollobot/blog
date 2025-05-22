@@ -81,6 +81,7 @@ export default defineConfig({
           { text: "Markdown Examples", link: "/markdown-examples" },
           { text: "Runtime API Examples", link: "/api-examples" },
           { text: "vue快速入门", link: "/Vue3快速上手" },
+          { text: "java", link: "/java" },
         ],
       },
     ],

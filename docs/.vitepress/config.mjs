@@ -33,6 +33,19 @@ export default defineConfig({
       },
     ],
     ["link", { rel: "shortcut icon", href: "/favicon-16x16.ico" }],
+    /* 字体配置 */
+    // ["link", { rel: "preconnect", href: "https://fonts.googleapis.com" }],
+    // [
+    //   "link",
+    //   { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
+    // ],
+    // [
+    //   "link",
+    //   {
+    //     href: "https://fonts.googleapis.com/css2?family=Roboto&display=swap",
+    //     rel: "stylesheet",
+    //   },
+    // ],
   ],
   outDir: ".vitepress/dist",
   srcDir: "src",
@@ -80,8 +93,24 @@ export default defineConfig({
         items: [
           { text: "Markdown Examples", link: "/markdown-examples" },
           { text: "Runtime API Examples", link: "/api-examples" },
-          { text: "vue快速入门", link: "/Vue3快速上手" },
-          { text: "java", link: "/java" },
+          { text: "Vue", link: "/Vue3快速上手" },
+          { text: "Java", link: "/java/java" },
+          {
+            text: "VitePress",
+            collapsed: true,
+            items: [
+              { text: "快速开始", link: "/vitePress/vitePress快速开始" },
+              { text: "部署上线", link: "/vitePress/vitePress部署上线" },
+            ],
+          },
+          {
+            text: "MySQL",
+            collapsed: true,
+            items: [
+              { text: "MySQL 基础", link: "/MySQL/MySQL基本操作" },
+              { text: "MySQL 函数", link: "/MySQL/MySQL函数" },
+            ],
+          },
         ],
       },
     ],

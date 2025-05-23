@@ -9,7 +9,7 @@ VitePress 是一个[静态站点生成器](https://en.wikipedia.org/wiki/Static_
 官网：https://code.visualstudio.com/download
 
 
-![image.tkYb4UkC](.\image\image.tkYb4UkC.png)
+![image.tkYb4UkC](.\assets\image.tkYb4UkC.png)
 
 ### 2. NodeJS
 
@@ -17,7 +17,7 @@ VitePress 是一个[静态站点生成器](https://en.wikipedia.org/wiki/Static_
 
 点击这个下载地址进行下载：https://nodejs.org/dist/v20.16.0/node-v20.16.0-x64.msi
 
-![image-1.9cj5ZS7t](.\image\image-1.9cj5ZS7t.png)
+![image-1.9cj5ZS7t](.\assets\image-1.9cj5ZS7t.png)
 
 **查看是否安装**
 

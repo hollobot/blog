@@ -93,14 +93,46 @@ export default defineConfig({
         items: [
           { text: "Markdown Examples", link: "/markdown-examples" },
           { text: "Runtime API Examples", link: "/api-examples" },
-          { text: "Vue", link: "/Vue3快速上手" },
-          { text: "Java", link: "/java/java" },
+          { text: "Vue", link: "/vue/Vue3快速上手" },
+          {
+            text: "Java文档",
+            collapsed: false, // 设置为false则默认展开
+            items: [
+              { text: "Java基础", link: "/java/basics" },
+              {
+                text: "Java进阶",
+                collapsed: true, // 第二级可折叠
+                items: [
+                  { text: "多线程", link: "/java/advanced/multithreading" },
+                  {
+                    text: "设计模式",
+                    collapsed: true, // 第三级可折叠
+                    items: [
+                      {
+                        text: "创建型模式",
+                        link: "/java/advanced/design-patterns/creational",
+                      },
+                      {
+                        text: "结构型模式",
+                        link: "/java/advanced/design-patterns/structural",
+                      },
+                      {
+                        text: "行为型模式",
+                        link: "/java/advanced/design-patterns/behavioral",
+                      },
+                    ],
+                  },
+                ],
+              },
+              { text: "Spring框架", link: "/java/spring" },
+            ],
+          },
           {
             text: "VitePress",
             collapsed: true,
             items: [
-              { text: "快速开始", link: "/vitePress/vitePress快速开始" },
-              { text: "部署上线", link: "/vitePress/vitePress部署上线" },
+              { text: "快速开始", link: "/vitePress/VitePress快速开始" },
+              { text: "部署上线", link: "/vitePress/VitePress部署上线" },
             ],
           },
           {
@@ -133,6 +165,8 @@ export default defineConfig({
     outline: {
       level: [2, 3],
       label: "页面导航",
+      collapsed: true, // 添加此行，设置大纲默认收缩
+      position: "left", // 默认就是右侧，
     },
 
     lastUpdated: {

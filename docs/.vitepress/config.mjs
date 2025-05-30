@@ -147,7 +147,7 @@ export default defineConfig({
             text: "cursor",
             collapsed: true,
             items: [
-              { text: "Cursor 无限续杯 Claude 3.5", link: "/cursor/MySQL基本操作" },
+              { text: "Cursor 无限续杯 Claude 3.5", link: "/cursor/Cursor 无限续杯 Claude 3.5" },
             ],
           },
         ],

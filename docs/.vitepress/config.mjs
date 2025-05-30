@@ -93,9 +93,9 @@ export default defineConfig({
         items: [
           { text: "Markdown Examples", link: "/markdown-examples" },
           { text: "Runtime API Examples", link: "/api-examples" },
-          { text: "Vue", link: "/vue/Vue3快速上手" },
+          { text: "vue", link: "/vue/Vue3快速上手" },
           {
-            text: "Java文档",
+            text: "java",
             collapsed: false, // 设置为false则默认展开
             items: [
               { text: "Java基础", link: "/java/basics" },
@@ -128,7 +128,7 @@ export default defineConfig({
             ],
           },
           {
-            text: "VitePress",
+            text: "vitePress",
             collapsed: true,
             items: [
               { text: "快速开始", link: "/vitePress/VitePress快速开始" },
@@ -136,7 +136,7 @@ export default defineConfig({
             ],
           },
           {
-            text: "MySQL",
+            text: "mysql",
             collapsed: true,
             items: [
               { text: "MySQL 基础", link: "/MySQL/MySQL基本操作" },
@@ -148,6 +148,13 @@ export default defineConfig({
             collapsed: true,
             items: [
               { text: "Cursor 无限续杯 Claude 3.5", link: "/cursor/Cursor 无限续杯 Claude 3.5" },
+            ],
+          },
+          {
+            text: "git",
+            collapsed: true,
+            items: [
+              { text: "git 快速上手", link: "/git/Git 基本命令速查表" },
             ],
           },
         ],

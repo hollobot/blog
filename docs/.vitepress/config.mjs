@@ -143,6 +143,13 @@ export default defineConfig({
               { text: "MySQL 函数", link: "/MySQL/MySQL函数" },
             ],
           },
+          {
+            text: "cursor",
+            collapsed: true,
+            items: [
+              { text: "Cursor 无限续杯 Claude 3.5", link: "/cursor/MySQL基本操作" },
+            ],
+          },
         ],
       },
     ],

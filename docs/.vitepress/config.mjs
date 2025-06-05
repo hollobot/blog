@@ -33,19 +33,6 @@ export default defineConfig({
       },
     ],
     ["link", { rel: "shortcut icon", href: "/favicon-16x16.ico" }],
-    /* 字体配置 */
-    // ["link", { rel: "preconnect", href: "https://fonts.googleapis.com" }],
-    // [
-    //   "link",
-    //   { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
-    // ],
-    // [
-    //   "link",
-    //   {
-    //     href: "https://fonts.googleapis.com/css2?family=Roboto&display=swap",
-    //     rel: "stylesheet",
-    //   },
-    // ],
   ],
   outDir: ".vitepress/dist",
   srcDir: "src",
@@ -83,83 +70,140 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: "首页", link: "/" },
-      { text: "Examples", link: "/markdown-examples" },
-      { text: "java", link: "https://docs.ffffee.com" },
+      {
+        text: "编程",
+        link: "/programming/java/java",
+      },
+      { text: "软件", link: "/software/cursor/cursor" },
+      { text: "休闲", link: "leisureTime" },
     ],
 
-    sidebar: [
-      {
-        text: "Examples",
-        items: [
-          { text: "Markdown Examples", link: "/markdown-examples" },
-          { text: "Runtime API Examples", link: "/api-examples" },
-          { text: "vue", link: "/vue/Vue3快速上手" },
-          {
-            text: "java",
-            collapsed: false, // 设置为false则默认展开
-            items: [
-              { text: "Java基础", link: "/java/basics" },
-              {
-                text: "Java进阶",
-                collapsed: true, // 第二级可折叠
-                items: [
-                  { text: "多线程", link: "/java/advanced/multithreading" },
-                  {
-                    text: "设计模式",
-                    collapsed: true, // 第三级可折叠
-                    items: [
-                      {
-                        text: "创建型模式",
-                        link: "/java/advanced/design-patterns/creational",
-                      },
-                      {
-                        text: "结构型模式",
-                        link: "/java/advanced/design-patterns/structural",
-                      },
-                      {
-                        text: "行为型模式",
-                        link: "/java/advanced/design-patterns/behavioral",
-                      },
-                    ],
-                  },
-                ],
-              },
-              { text: "Spring框架", link: "/java/spring" },
-            ],
-          },
-          {
-            text: "vitePress",
-            collapsed: true,
-            items: [
-              { text: "快速开始", link: "/vitePress/VitePress快速开始" },
-              { text: "部署上线", link: "/vitePress/VitePress部署上线" },
-            ],
-          },
-          {
-            text: "mysql",
-            collapsed: true,
-            items: [
-              { text: "MySQL 基础", link: "/MySQL/MySQL基本操作" },
-              { text: "MySQL 函数", link: "/MySQL/MySQL函数" },
-            ],
-          },
-          {
-            text: "cursor",
-            collapsed: true,
-            items: [
-              { text: "Cursor 无限续杯 Claude 3.5", link: "/cursor/Cursor 无限续杯 Claude 3.5" },
-            ],
-          },
-          {
-            text: "git",
-            collapsed: true,
-            items: [
-              { text: "git 快速上手", link: "/git/Git 基本命令速查表" },
-            ],
-          },
-        ],
-      },
-    ],
+    sidebar: {
+      "/programming/": [
+        {
+          text: "编程",
+          items: [
+            {
+              text: "java",
+              collapsed: true, // 设置为false则默认展开
+              items: [{ text: "Java基础", link: "/programming/java/java" }],
+            },
+            {
+              text: "vue",
+              collapsed: true, // 设置为false则默认展开
+              items: [
+                { text: "快速开始", link: "/programming/vue/快速开始" },
+                { text: "router", link: "/programming/vue/router" },
+                { text: "组件通信", link: "/programming/vue/组件通信" },
+                { text: "pinia ", link: "/programming/vue/pinia " },
+                { text: "slot ", link: "/programming/vue/slot " },
+                { text: "其他 API", link: "/programming/vue/其他 API" },
+                { text: "vue3新组件", link: "/programming/vue/vue3新组件" },
+                { text: "vue 随笔", link: "/programming/vue/vue 随笔" },
+                {
+                  text: "JavaScript 随笔",
+                  link: "/programming/vue/JavaScript 随笔",
+                },
+              ],
+            },
+
+            {
+              text: "vitePress",
+              collapsed: true,
+              items: [
+                {
+                  text: "快速开始",
+                  link: "/programming/vitePress/VitePress快速开始",
+                },
+                {
+                  text: "部署上线",
+                  link: "/programming/vitePress/VitePress部署上线",
+                },
+              ],
+            },
+            {
+              text: "mysql",
+              collapsed: true,
+              items: [
+                {
+                  text: "MySQL 基础",
+                  link: "/programming/MySQL/MySQL基本操作",
+                },
+                { text: "MySQL 函数", link: "/programming/MySQL/MySQL函数" },
+              ],
+            },
+            {
+              text: "git",
+              collapsed: true,
+              items: [
+                {
+                  text: "git 快速上手",
+                  link: "/programming/git/Git 基本命令速查表",
+                },
+              ],
+            },
+            {
+              text: "electron",
+              collapsed: true,
+              items: [{ text: "ipc 通讯", link: "/programming/electron/ipc" }],
+            },
+            {
+              text: "mybatis",
+              collapsed: true,
+              items: [
+                {
+                  text: "springboot 整合mybatis分页",
+                  link: "/programming/mybatis/springboot 整合mybatis分页",
+                },
+              ],
+            },
+            {
+              text: "mybatis-plus",
+              collapsed: true,
+              items: [
+                {
+                  text: "快速开始",
+                  link: "/programming/mybatis-plus/快速开始",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      "/software/": [
+        {
+          text: "软件",
+          items: [
+            {
+              text: "cursor",
+              collapsed: true,
+              items: [
+                {
+                  text: "Cursor 无限续杯 Claude 3.5",
+                  link: "/software/cursor/cursor",
+                },
+              ],
+            },
+            {
+              text: "idea",
+              collapsed: true,
+              items: [
+                {
+                  text: "idea 无限重置试用30天",
+                  link: "/software/idea/idea",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      "/leisureTime/": [
+        {
+          text: "休闲",
+          items: [],
+        },
+      ],
+    },
 
     socialLinks: [
       { icon: "github", link: "https://github.com/vuejs/vitepress" },
@@ -177,7 +221,7 @@ export default defineConfig({
 
     // https://vitepress.dev/zh/reference/default-theme-config#outline
     outline: {
-      level: [2, 3],
+      level: [2, 5],
       label: "页面导航",
       collapsed: true, // 添加此行，设置大纲默认收缩
       position: "left", // 默认就是右侧，

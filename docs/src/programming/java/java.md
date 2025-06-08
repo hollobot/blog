@@ -34,6 +34,9 @@ public class User {
     @Min(value = 1, message = "Sex must be either 1 (male) or 2 (female)")  // 最小值为 1
     @Max(value = 2, message = "Sex must be either 1 (male) or 2 (female)")  // 最大值为 2
     private Integer sex;  // 性别
+    
+    @Size(min = 11, max = 11, message = "手机号必须是11位")
+    private String phone;
 
     // Getters and Setters
 }
@@ -274,5 +277,80 @@ public class TokenValidationAspect {
         }
     }
 }
+```
+
+##### 4. 跟新一个类里面的属性值
+
+<img src=".\assets\image-20250607202148112.png" alt="image-20250607202148112" />
+
+```java
+/**
+ * 修改类的属性值 自定义注解
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ModifyProperty {
+}
+```
+
+
+
+```java
+/**
+ * aop 属性修改器 自定义切面
+ */
+@Aspect
+@Component
+public class PropertyModifierAspect {
+
+    @Resource
+    private RedisUtils redisUtils;
+
+    /*这种写法可以将modifyProperty传递给下面的方法参数里*/
+    @Before("@annotation(com.example.annotation.ModifyProperty)")
+    public void modifyProperty(JoinPoint joinPoint) throws Exception {
+
+        Object target = joinPoint.getTarget();
+
+        /*注意这里必须做异常处理，一定会报错*/
+        try{
+            // 使用反射修改属性
+            // target.getClass() - 获取目标对象的 Class 对象
+            //getDeclaredField("setSettingDto") - 根据字段名获取该类声明的字段（包括私有字段）
+            Field field = target.getClass().getDeclaredField("sysSettingDto");
+            field.setAccessible(true); //设置字段可访问
+
+            // 获取redis跟新后的配置信息
+            SysSettingDto sysSetting = redisUtils.getSysSetting();
+            if (sysSetting != null) {
+                // 更新字段值
+                field.set(target, sysSetting);
+            }
+
+        }catch (Exception e){
+            throw new CustomException(ExceptionCodeEnum.CODE_500.setMessage("属性修改失败"));
+        }
+
+    }
+}
+```
+
+**server 层**
+
+```java
+@Slf4j
+@Service
+public class ChatMessageServiceImpl implements ChatMessageService {
+    
+    // 这个就是我需要更该的属性
+	private SysSettingDto sysSettingDto;
+
+	@ModifyProperty
+    @Override
+    public SysSettingDto fileConfig() {
+        return sysSettingDto;
+    }
+}
+
 ```
 

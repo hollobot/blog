@@ -74,7 +74,7 @@ export default defineConfig({
         text: "编程",
         link: "/programming/java/java",
       },
-      { text: "软件", link: "/software/cursor/cursor" },
+      { text: "工具", link: "/software/cursor/cursor" },
       { text: "休闲", link: "leisureTime" },
     ],
 
@@ -167,6 +167,16 @@ export default defineConfig({
                 },
               ],
             },
+            {
+              text: "项目",
+              collapsed: true,
+              items: [
+                {
+                  text: "即时通讯系统",
+                  link: "/programming/project/chat",
+                },
+              ],
+            }
           ],
         },
       ],

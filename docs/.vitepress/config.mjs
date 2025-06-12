@@ -176,6 +176,16 @@ export default defineConfig({
                   link: "/programming/project/chat",
                 },
               ],
+            },
+            {
+              text: "spring cloud",
+              collapsed: true,
+              items: [
+                {
+                  text: "快速入门",
+                  link: "/programming/Spring Cloud/Spring Cloud 快速入门",
+                },
+              ],
             }
           ],
         },

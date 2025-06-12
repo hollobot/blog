@@ -2,6 +2,7 @@
 
 #### 1.**直接关联（适用于空仓库或强制覆盖）**
 
+
 ```bash
 git remote add origin https://github.com/用户名/仓库名.git
 ```
@@ -16,8 +17,15 @@ git pull origin main --allow-unrelated-histories
 
 ```bash
 git remote add origin https://<TOKEN>@github.com/USERNAME/REPOSITORY.git
-例如：
-git remote add origin https://ghp_ABC1234567890yourtoken@github.com/yourname/yourrepo.git
+```
+
+```powershell
+git init //把这个目录变成Git可以管理的仓库
+git add README.md //文件添加到仓库
+git add . //不但可以跟单一文件，还可以跟通配符，更可以跟目录。一个点就把当前目录下所有未追踪的文件全部add了 
+git commit -m "first commit" //把文件提交到仓库
+git remote add origin git@github.com:wangjiax9/practice.git //关联远程仓库
+git push -u origin master //把本地库的所有内容推送到远程库上
 ```
 
 
@@ -63,7 +71,12 @@ git remote add origin https://ghp_ABC1234567890yourtoken@github.com/yourname/you
 | `git restore <file>` | 丢弃工作区修改           |
 | `git reset --hard`   | 重置到最近提交（危险！） |
 
+#### 6. 关联仓库
 
+| 命令                        | 解释             |
+| :-------------------------- | :--------------- |
+| `git remote add origin url` | 连接远程仓库     |
+| `git remote remove origin`  | 删除现有的origin |
 
 ### **完整 Git 开发流程示例**
 

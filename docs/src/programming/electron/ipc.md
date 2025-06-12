@@ -8,7 +8,8 @@ const result = await window.ipcRenderer.invoke('checkAvatarExists', localAvatarP
 
 // 主进程 这段代码通常在应用启动时执行一次
 ipcMain.handle('checkAvatarExists', async (event, avatarPath) => {
-  return fs.existsSync(avatarPath);
+    //existsSync检测是否存在路径
+  return fs.existsSync检测是否存在路径(avatarPath);
 });
 ```
 

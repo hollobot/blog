@@ -134,8 +134,6 @@ https://github.com/alibaba/spring-cloud-alibaba
 
 ### Nacos
 
-**官网：*https://nacos.io/download/nacos-server*
-
 #### 配置
 
 **什么是Nacos**
@@ -195,11 +193,7 @@ shutdown.cmd
 # 或者双击shutdown.cmd运行文件。  或者直接关掉命令面板
 ```
 
-跟多
-
-快速开始：https://nacos.io/docs/latest/quickstart/quick-start/
-
-#### 注册
+#### 发现服务
 
 **导入依赖**
 
@@ -216,10 +210,10 @@ shutdown.cmd
 ```yml
 spring:
   application:
+  # 注册服务名
     name: server-order
   cloud:
     nacos:
-      discovery:
         server-addr: 127.0.0.1:8848
 
 server:
@@ -227,7 +221,17 @@ server:
 
 ```
 
-#### 发现服务
+**使用 @EnableDiscoveryClient 注解开启服务注册与发现功能**：
+
+```java
+@EnableDiscoveryClient
+@SpringBootApplication
+public class OrderMainApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(OrderMainApplication.class,args);
+    }
+}
+```
 
 **启动服务**
 
@@ -452,5 +456,372 @@ public Product getLoadBalancerProductAnnotation(String productId) {
 
 **总结**
 
-负载均衡其实就是在restTemplate进行远程调用时，将获取的这个服务所有实例进行顺序调用进行负载均衡。
+​		负载均衡其实就是在restTemplate进行远程调用时，将获取的这个服务所有实例进行顺序调用进行负载均衡。
 自己也可以写个实现算法进行顺序调用该服务的实例
+
+#### 配置中心
+
+**导入依赖**
+
+```xml
+<!--nacos 配置中心-->
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+</dependency>
+```
+
+**添加数据集(data-id、配置文件名)**
+
+![image-20250613181030808](./assets/image-20250613181030808.png)
+
+**导入数据集**
+
+```yaml
+spring:
+  cloud:
+    nacos:
+      serverAddr: 127.0.0.1:8848 #如果用的云上托管版本，输入可访问的Nacos Server地址即可
+  config:
+    import:
+      - nacos:common.properties?group=order
+```
+
+**接受数据**
+
+![image-20250613182048556](./assets/image-20250613182048556.png)
+
+```java
+@Component
+@ConfigurationProperties(prefix = "order")
+@Data
+public class OrderProperties {
+    private String timeOut;
+    private String environment;
+}
+
+```
+
+**实现 数据隔离 环境切换**
+
+![image-20250613163620541](./assets/image-20250613163620541.png)
+
+**spring配置application.yml 导入数据集**
+
+```yaml
+server:
+  port: 8000
+
+spring:
+  profiles:
+    # 选择运行环境 
+    active: prod
+  application:
+    name: server-order
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+      config:
+        import-check:
+          # 导入nacos配置中心就会检测是否引入nacos配置文件，现在关闭检测
+          enabled: false
+        # nacos命名空间 根据spring active选择的环境命名，没有选择就默认nacos public默认命名空间
+        namespace: ${spring.profiles.active:public}
+
+# 开发环境
+---
+spring:
+  config:
+    import:
+      # nacos:data-id（配置文件名）?group=分组名（一般用于微服务名如订单服务、商品服务）
+      - nacos:common.yaml?group=order
+      - nacos:database.yaml?group=database
+      - nacos:db.yaml?group=database
+    activate:
+      on-profile: dev
+
+
+# 测试环境
+---
+spring:
+  config:
+    import:
+      - nacos:common.yaml?group=order
+      - nacos:database.yaml?group=database
+    activate:
+      on-profile: test
+
+# 生产环境
+---
+spring:
+  config:
+    import:
+      - nacos:common.yaml?group=order
+      - nacos:database.yaml?group=database
+    activate:
+      on-profile: prod
+```
+
+#### 总结
+
+![image-20250613170554715](./assets/image-20250613170554715.png)
+
+#### 跟多
+
+nacos 官方快速开始：https://nacos.io/docs/latest/quickstart/quick-start/
+
+alibaba-nacos 快速开始：https://sca.aliyun.com/docs/2023/user-guide/nacos/quick-start/
+
+#### 面试题
+
+**1、注册中心宕机（nacos 宕机），远程调用还可以成功吗？**
+
+​	如果之前调用过这个服务，那么这个服务的所有实例会到实例缓存里，就算注册中心宕机也时可以通过。
+
+​	如果从来没有调用过那么会去注册中心拿这个服务，因为注册中心已经宕机所有无法通过。
+
+**远程调用流程图**
+
+![image-20250613160351922](./assets/image-20250613160351922.png)
+
+### OpenFeign
+
+#### 快速开始
+
+**引入依赖**
+
+```xml
+<!--远程调用-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-openfeign</artifactId>
+</dependency>
+```
+
+**开启远程调用**
+
+```java
+@EnableFeignClients  //开启feign远程调用
+@EnableDiscoveryClient // 开启nacos发现服务
+@SpringBootApplication
+public class OrderMainApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(OrderMainApplication.class,args);
+    }
+}
+```
+
+**编写feign客户端**
+
+```java
+// feign客户端
+@FeignClient(value = "server-product") // feign 客户端
+public interface ProductFeignClient {
+
+    @GetMapping("/product/{id}")
+    Product getProduct(@PathVariable String id);
+
+}
+
+// 请求接口
+@RestController
+@RequestMapping("product")
+public class ProductController {
+
+    @Autowired
+    private ProductServer productServer;
+
+    @GetMapping("/{id}")
+    public Product getProduct(@PathVariable String id) {
+        System.out.println("hello");
+        return productServer.getProductById(id);
+    }
+}
+
+// 调用
+@Autowired
+private ProductFeignClient productFeignClient;
+/*feign 远程调用自带负载均衡*/
+Product product = productFeignClient.getProduct(productId);
+```
+
+#### **远程调用 第三方API**
+
+**编写第三方API调用feign客户端** 
+
+```java
+/*远程调用第三方API*/
+@FeignClient(value = "joke-client", url = "http://v.juhe.cn")
+public interface JokeFeignClient {
+
+    @GetMapping("/joke/randJoke")
+    Object getJoke(@RequestParam("key") String key);
+}
+```
+
+**调用**
+
+```java
+@Autowired
+private JokeFeignClient jokeFeignClient;
+
+@Override
+public Object getJoke() {
+    Object joke = jokeFeignClient.getJoke("${key}");
+    return joke;
+}
+```
+
+**返回数据**
+
+```json
+{
+    "reason": "success",
+    "result": [
+        {
+            "content": "小伙子带着现任女友走在路上,碰到了前女友于是给前女友介绍说:这是你嫂子。现任女友说问小伙子:这位是…小伙子还没想好怎么回答,前女友就抢着说;我以前是你嫂子",
+            "hashId": "9c0cbb884e5e2bebb8d533cdbc65e9f0",
+            "unixtime": 1473635632
+        },
+        {
+            "content": "昨天一对貌似20出头的小情侣来开房，男的上来就问有没有电脑房，本人摇头说没有，那男的一听就要走，女的不乐意了对那男的吼到你他妈的都换几个宾馆了，没电脑怎么了你是玩它还是玩我。",
+            "hashId": "1947ca3ba5850115f85f6dd09f5327b6",
+            "unixtime": 1473646430
+        }
+    ],
+    "error_code": 0
+}
+```
+
+#### **日志**
+
+  **开启日志级别**
+
+```yaml
+# 开启feign日志级别
+logging:
+  level:
+    com.example.feign: debug
+```
+
+**配置日志bean**
+
+```java
+/*配置日志bean*/
+@Bean
+Logger.Level feignLogLevel() {
+    return Logger.Level.FULL;
+}
+```
+
+#### 超时控制
+
+**超时配置**
+
+```yaml
+spring:
+  cloud:
+    openfeign:
+      client:
+        config:
+          # 默认设置
+          default:
+            logger-level: full
+            connect-timeout: 4000
+            read-timeout: 10000
+          # 指定配置那个feign客户端
+          server-product:
+            logger-level: full
+            connect-timeout: 3000
+            read-timeout: 5000
+```
+
+**重传机制**
+
+```java
+/*重传机制*/
+@Bean
+Retryer retryer(){
+    /*请求间隔（每次间隔是前面的1.5倍）、最大间隔时间、请求次数*/
+    return new Retryer.Default(100,SECONDS.toMillis(1),5);
+}
+```
+
+#### 拦截器
+
+**编写拦截器**
+
+```java
+public class TokenRequestInterceptor implements RequestInterceptor {
+    /**
+     * 请求拦截器
+     * @param requestTemplate 请求模板
+     */
+    @Override
+    public void apply(RequestTemplate requestTemplate) {
+        System.out.println("拦截器启动");
+        requestTemplate.header("token", UUID.randomUUID().toString());
+    }
+}
+```
+
+**yml配置**
+
+```yaml
+spring:
+  cloud:
+    openfeign:
+      client:
+        config:
+          # 默认设置
+          default:
+            logger-level: full
+            connect-timeout: 4000
+            read-timeout: 10000
+          # 指定配置那个feign客户端
+          server-product:
+            logger-level: full
+            # 连接超时
+            connect-timeout: 3000
+            # 读取超时
+            read-timeout: 5000
+            # 配置拦截的feign客户端参数为数组可以多个 可以直接配置在default里这样就默认拦截
+            request-interceptors:
+              - com.example.interceptor.TokenRequestInterceptor
+```
+
+**注解配置**
+
+```java
+/*把拦截器放入spring管理就直接对全部的请求进行拦截*/
+@Component
+public class TokenRequestInterceptor implements RequestInterceptor {
+    /**
+     * 请求拦截器
+     * @param requestTemplate 请求模板
+     */
+    @Override
+    public void apply(RequestTemplate requestTemplate) {
+        System.out.println("拦截器启动");
+        requestTemplate.header("token", UUID.randomUUID().toString());
+    }
+}
+```
+
+
+
+![image-20250616141948603](./assets/image-20250616141948603.png)
+
+
+
+
+
+#### **面试题**
+
+**1、客户端负载均衡和服务端负载均衡的区别**
+
+​		调用自己的内部的业务，首先feign回去nacos寻找这个服务所有的实例，然后进行负载均衡拿到一个实例进行调用业务接口，那么这个负载均衡就发生在feign客户端，这就是客户端负载均衡。
+
+​		而调用第三方api就是直接通过接口url方式发送请求，然后拿到数据，这个负载均衡实际是发生在这个第三方api的服务器里面，这就是服务端负载均衡。
+
+![image-20250614111118672](./assets/image-20250614111118672.png)

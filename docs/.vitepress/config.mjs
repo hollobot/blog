@@ -197,16 +197,6 @@ export default defineConfig({
                 },
               ],
             },
-            {
-              text: "项目",
-              collapsed: true,
-              items: [
-                {
-                  text: "即时通讯系统",
-                  link: "/programming/project/chat",
-                },
-              ],
-            }
           ],
         },
       ],

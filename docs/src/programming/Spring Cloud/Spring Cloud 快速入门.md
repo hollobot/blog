@@ -812,9 +812,9 @@ public class TokenRequestInterceptor implements RequestInterceptor {
 
 ![image-20250616141948603](./assets/image-20250616141948603.png)
 
+#### 跟多
 
-
-
+文档：https://springdoc.cn/spring-cloud-openfeign
 
 #### **面试题**
 
@@ -825,3 +825,175 @@ public class TokenRequestInterceptor implements RequestInterceptor {
 ​		而调用第三方api就是直接通过接口url方式发送请求，然后拿到数据，这个负载均衡实际是发生在这个第三方api的服务器里面，这就是服务端负载均衡。
 
 ![image-20250614111118672](./assets/image-20250614111118672.png)
+
+### Sentinel
+
+[quick-start | Sentinel](https://sentinelguard.io/zh-cn/docs/quick-start.html)
+
+#### **快速开始**
+
+**导入依赖**
+
+```xml
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+</dependency>
+```
+
+**下载Sentinel控制台**
+
+```http
+#下载sentinel-dashboard-1.8.8.jar 运行jar包
+https://github.com/alibaba/Sentinel/releases
+```
+
+**配置yml**
+
+```yaml
+# sentinel 配置
+spring:
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8080  # Sentinel 控制台地址
+      eager: true                  # 饥饿加载模式 默认false：只有在第一次请求时才会初始化 Sentinel
+```
+
+
+
+#### 异常处理
+
+**异常处理流程图**  sentinel 会对一下四种资源进行异常处理
+
+![image-20250619132226670](./assets/image-20250619132226670.png)
+
+**控制层接口资源**
+
+```java
+/**
+ * 实现 BlockExceptionHandler接口 重写 handle方法 自定义业务
+ */
+@Component
+public class MyBlockExceptionHandel implements BlockExceptionHandler {
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    public void handle(HttpServletRequest request, HttpServletResponse response, String resourceName, BlockException e)
+        throws Exception {
+
+        response.setStatus(429);
+        response.setContentType("application/json; charset=utf-8");
+        PrintWriter out = response.getWriter();
+        Result no = Result.no(500, "web接口："+resourceName + " -- 流量限制");
+        String jsonString = objectMapper.writeValueAsString(no);
+        out.print(jsonString);
+        out.flush();
+        out.close();
+    }
+}
+```
+
+**注解SentinelResource资源**
+
+```java
+// 原本的业务方法.
+@SentinelResource(blockHandler = "blockHandlerForGetUser")
+public User getUserById(String id) {
+    throw new RuntimeException("getUserById command failed");
+}
+
+// blockHandler 函数，原方法调用被限流/降级/系统保护的时候调用
+public User blockHandlerForGetUser(String id, BlockException ex) {
+    return new User("admin");
+}
+```
+
+**远程调用openfeign资源**
+
+```yaml
+# 需要开启才能支持 Sentinel
+feign:
+  sentinel:
+    enabled: true  # 开启 Feign 对 Sentinel 的支持
+```
+
+```java
+@FeignClient(value = "server-product",fallback = ProductFeignClientFallback.class) // feign 客户端
+public interface ProductFeignClient {
+
+    /*这个实际就是对应调用controller的接口*/
+    @GetMapping("/product/{id}")
+    Product getProduct(@PathVariable String id);
+
+}
+
+@Component
+public class ProductFeignClientFallback implements ProductFeignClient {
+
+    @Override
+    public Product getProduct(String id) {
+        System.out.println("fallback 商品兜底数据");
+        Product product = new Product();
+        product.setId("");
+        product.setPrice(new BigDecimal("0"));
+        product.setProductName("兜底数据");
+        product.setNum(0);
+        return product;
+    }
+}
+```
+
+**SphU硬编码资源**
+
+```java
+Entry entry = null;
+// 务必保证finally会被执行
+try {
+  // 资源名可使用任意有业务语义的字符串
+  entry = SphU.entry("自定义资源名");
+  // 被保护的业务逻辑
+  // do something...
+} catch (BlockException e1) {
+  // 资源访问阻止，被限流或被降级
+  // 进行相应的处理操作
+} finally {
+  if (entry != null) {
+    entry.exit();
+  }
+}
+```
+
+#### **流量控制**
+
+**流控规则默认直接模式**
+
+![image-20250619143452576](./assets/image-20250619143452576.png)
+
+**链路模式**
+
+A资源和C资源都调用B资源，现在设置A资源下的B资源，进行链路模式限制C资源。
+
+```java
+@GetMapping("/add/{userId}/{productId}")
+Order createOrder(@PathVariable("userId") String userId, @PathVariable("productId") String productId) {
+    return orderServer.insertOrder(productId, userId);
+}
+
+@GetMapping("/seckill/{userId}/{productId}")
+Order seckill(@PathVariable("userId") String userId, @PathVariable("productId") String productId) {
+    Order order = orderServer.insertOrder(productId, userId);
+    order.setNickName("链路模式");
+    return order;
+}
+```
+
+![image-20250619152952424](./assets/image-20250619152952424.png)
+
+**关联模式**
+
+A资源和B资源关联后就会资源共享，如果A资源把服务沾满那么B资源在访问就会报异常
+
+![image-20250619161317974](./assets/image-20250619161317974.png)
+

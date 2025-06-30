@@ -186,6 +186,26 @@ export default defineConfig({
                   link: "/programming/Spring Cloud/Spring Cloud 快速入门",
                 },
               ],
+            },
+            {
+              text: "npm",
+              collapsed: true,
+              items: [
+                {
+                  text: "基本指令",
+                  link: "/programming/npm/npm",
+                },
+              ],
+            },
+            {
+              text: "项目",
+              collapsed: true,
+              items: [
+                {
+                  text: "即时通讯系统",
+                  link: "/programming/project/chat",
+                },
+              ],
             }
           ],
         },

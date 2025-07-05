@@ -7,15 +7,15 @@ hero:
   image:
     src: /logo.png
     alt: hello
-  text: "Electron桌面开发"
-  tagline: Electron-vite即时通讯，校园外卖，spring boot，redis，nety
+  text: "Electron 桌面开发"
+  tagline: Electron-vite 即时通讯，校园外卖，spring boot，redis，nety
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: 开始学习
+      link: /programming/java/java
     - theme: alt
       text: vue3 快速入门
-      link: /Vue3快速上手.md
+      link: /programming/vue/快速开始
 
 features:
   - title: Electron vlc

@@ -75,7 +75,7 @@ export default defineConfig({
         link: "/programming/java/java",
       },
       { text: "工具", link: "/software/cursor/cursor" },
-      { text: "休闲", link: "leisureTime" },
+      { text: "休闲", link: "/leisureTime/minecraft/药水篇" },
     ],
 
     sidebar: {
@@ -168,16 +168,6 @@ export default defineConfig({
               ],
             },
             {
-              text: "项目",
-              collapsed: true,
-              items: [
-                {
-                  text: "即时通讯系统",
-                  link: "/programming/project/chat",
-                },
-              ],
-            },
-            {
               text: "spring cloud",
               collapsed: true,
               items: [
@@ -194,6 +184,54 @@ export default defineConfig({
                 {
                   text: "基本指令",
                   link: "/programming/npm/npm",
+                },
+              ],
+            },
+            {
+              text: "linux",
+              collapsed: true,
+              items: [
+                {
+                  text: "基本指令",
+                  link: "/programming/linux/linux",
+                },
+              ],
+            },
+            {
+              text: "Spring",
+              collapsed: true,
+              items: [
+                {
+                  text: "注解",
+                  link: "/programming/spring/Spring相关注解",
+                },
+              ],
+            },
+            {
+              text: "面试",
+              collapsed: true,
+              items: [
+                {
+                  text: "简历面试题",
+                  link: "/programming/面试/简历面试题",
+                },
+                {
+                  text: "mysql面试",
+                  link: "/programming/面试/mysql面试",
+                },
+                {
+                  text: "vue面试",
+                  link: "/programming/面试/vue面试",
+                },
+              ],
+            },
+            {
+              text: "项目",
+              collapsed: true,
+              items: [
+                {
+                  text: "即时通讯系统",
+                  link: "/programming/project/chat",
                 },
               ],
             },
@@ -230,13 +268,24 @@ export default defineConfig({
       "/leisureTime/": [
         {
           text: "休闲",
-          items: [],
+          items: [
+            {
+              text: "minecraft",
+              collapsed: true,
+              items: [
+                {
+                  text: "药水篇",
+                  link: "/leisureTime/minecraft/药水篇",
+                },
+              ],
+            },
+          ],
         },
       ],
     },
 
     socialLinks: [
-      { icon: "github", link: "https://github.com/vuejs/vitepress" },
+      { icon: "github", link: "https://github.com/hollobot" },
     ],
 
     footer: {

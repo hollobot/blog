@@ -152,6 +152,10 @@ export default defineConfig({
               collapsed: true,
               items: [
                 {
+                  text: "mybatis配置",
+                  link: "/programming/mybatis/mybatis配置",
+                },
+                {
                   text: "springboot 整合mybatis分页",
                   link: "/programming/mybatis/springboot 整合mybatis分页",
                 },
@@ -204,6 +208,16 @@ export default defineConfig({
                 {
                   text: "注解",
                   link: "/programming/spring/Spring相关注解",
+                },
+              ],
+            },
+            {
+              text: "redis",
+              collapsed: true,
+              items: [
+                {
+                  text: "redis 基本操作",
+                  link: "/programming/redis/redis基本操作",
                 },
               ],
             },

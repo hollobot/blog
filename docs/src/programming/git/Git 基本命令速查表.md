@@ -7,18 +7,6 @@
 git remote add origin https://github.com/用户名/仓库名.git
 ```
 
-**如果远程仓库已有内容**（如 README 文件），需先拉取并合并
-
-```bash
-git pull origin main --allow-unrelated-histories
-```
-
-使用token验证关联仓库
-
-```bash
-git remote add origin https://<TOKEN>@github.com/USERNAME/REPOSITORY.git
-```
-
 ```powershell
 git init //把这个目录变成Git可以管理的仓库
 git add README.md //文件添加到仓库
@@ -41,28 +29,38 @@ git push -u origin master //把本地库的所有内容推送到远程库上
 
 #### **2. 文件跟踪**
 
-| 命令                  | 解释                 |
-| :-------------------- | :------------------- |
-| `git add <file>`      | 添加文件到暂存区     |
-| `git add .`           | 添加所有修改到暂存区 |
-| `git commit -m "msg"` | 提交暂存区的更改     |
+| 命令                            | 解释                                 |
+| :------------------------------ | :----------------------------------- |
+| `git status`                    | 查看所有修改的文件状态               |
+| `git diff`                      | 查看具体修改内容（工作区 vs 暂存区） |
+| `git diff filename.txt`         | 查看指定文件的修改                   |
+| `git add <file>`                | 添加文件到暂存区                     |
+| `git add .`                     | 添加所有修改到暂存区                 |
+| `git add filename.txt demo.txt` | 添加多个指定文件到暂存区             |
+| `git commit -m "msg"`           | 提交暂存区的更改                     |
 
 #### **3. 分支管理**
 
-| 命令                    | 解释       |
-| :---------------------- | :--------- |
-| `git branch`            | 查看分支   |
-| `git branch <name>`     | 创建新分支 |
-| `git checkout <branch>` | 切换分支   |
-| `git merge <branch>`    | 合并分支   |
+| 命令                                   | 解释                                                   |
+| :------------------------------------- | :----------------------------------------------------- |
+| `git branch`                           | 查看分支                                               |
+| `git branch -a`                        | 查看本地和远程分支                                     |
+| `git branch <name>`                    | 创建新分支                                             |
+| `git checkout <branch>`                | 切换分支                                               |
+| `git merge <branch>`                   | 合并分支                                               |
+| `git branch -d/D branch_name`          | `d`安全删除（已合并的分支）`D`强制删除（未合并也删除） |
+| `git push origin --delete branch_name` | 删除远程分支                                           |
 
 #### **4. 远程同步**
 
-| 命令                       | 解释                   |
-| :------------------------- | :--------------------- |
-| `git push origin <branch>` | 推送分支到远程         |
-| `git pull origin <branch>` | 拉取远程更新           |
-| `git fetch`                | 下载远程更新（不合并） |
+| 命令                       | 解释                                                         |
+| :------------------------- | :----------------------------------------------------------- |
+| `git fetch origin main`    | 获取指定仓库的指定分支最新数据（不合并）                     |
+| `git pull --rebase`        | 拉取远程最新的提交，然后把自己的提交挂在最新提交的后面       |
+| `git pull origin <branch>` | 拉取指定远程分支并合并，会出现分叉和合并点                   |
+| `git push origin <branch>` | 推送指定分支到远程                                           |
+| `git push -u origin main`  | 设置上游分支,Git会记住这个分支应该推送到哪个远程分支,后续只需要在这个分支 `git push` |
+| `git push -f origin main`  | 强制推送（危险操作！）                                       |
 
 #### **5. 撤销操作**
 
@@ -73,10 +71,18 @@ git push -u origin master //把本地库的所有内容推送到远程库上
 
 #### 6. 关联仓库
 
-| 命令                        | 解释             |
-| :-------------------------- | :--------------- |
-| `git remote add origin url` | 连接远程仓库     |
-| `git remote remove origin`  | 删除现有的origin |
+| 命令                        | 解释                 |
+| :-------------------------- | :------------------- |
+| `git remote add origin url` | 连接远程仓库         |
+| `git remote remove origin`  | 删除现有的origin仓库 |
+
+#### 7.查看远程仓库
+
+| 命令                     | 解释                 |
+| :----------------------- | :------------------- |
+| `git remote`             | 查看所有远程仓库     |
+| `git remote -v`          | 查看远程仓库详细信息 |
+| `git remote show origin` | 查看指定远程仓库信息 |
 
 ### **完整 Git 开发流程示例**
 
@@ -92,6 +98,7 @@ git checkout main
 
 # 拉取远程最新代码（相当于 git fetch + git merge）
 git pull origin main
+git pull --rebase
 ```
 
 - `checkout main`：切换到主分支
@@ -99,9 +106,11 @@ git pull origin main
 
 ------
 
-#### **2. 创建功能分支（隔离开发环境）**
+#### **2. 创建功能分支进行开发（隔离开发环境）**
 
 ```
+# 如果之前也是用的这个分支可以先删除分支 
+git branch -d/-D feature/search   # -D 强制删除
 # 创建并切换到新分支 feature/search
 git checkout -b feature/search
 ```
@@ -113,7 +122,7 @@ git checkout -b feature/search
 
 ------
 
-#### **3. 开发功能并提交**
+#### **3. 开发功能完并提交**
 
 ```
 # 修改代码后，添加文件到暂存区
@@ -138,7 +147,8 @@ git commit -m "feat: 添加用户搜索组件"
 ```
 # 首次推送需建立追踪关系
 git push -u origin feature/search
-
+# 强制推送（谨慎使用） 覆盖存在的分支
+git push -f origin feature/search
 # 后续推送只需
 git push
 ```
@@ -173,7 +183,7 @@ git pull origin main
 git merge feature/search
 
 # 推送更新到远程
-git push origin main
+git push origin main  # 这里看你要推送给谁就给谁合并
 ```
 
 **解释**：
@@ -210,7 +220,7 @@ git push origin --delete feature/search
 
 #### **关键注意事项**
 
-1. **频繁拉取更新**：每天开始工作前先 `git pull`
+1. **频繁拉取更新**：每天开始工作前先 `git pull --rebase`
 2. **小步提交**：一个提交只做一件事（便于回滚）
 3. **分支策略**：
    - `main`：稳定版本
@@ -219,3 +229,24 @@ git push origin --delete feature/search
 
 通过这个标准化流程，可以高效协作且避免代码冲突。
 
+### 忽略某些修改文件
+
+#### 使用 git update-index --skip-worktree（推荐）
+
+**1. 先恢复文件到正常状态**
+
+```bash
+git restore --staged .gitignore
+git restore --staged pom.xml
+git restore --staged src/main/resources/application-dev.properties
+git restore --staged src/main/resources/application.properties
+```
+
+**2. 让 Git 忽略这些文件的本地修改**
+
+```bash
+git update-index --skip-worktree .gitignore
+git update-index --skip-worktree pom.xml
+git update-index --skip-worktree src/main/resources/application-dev.properties
+git update-index --skip-worktree src/main/resources/application.properties
+```

@@ -152,16 +152,16 @@ export default defineConfig({
               collapsed: true,
               items: [
                 {
-                  text: "mybatis 配置",
-                  link: "/programming/mybatis/mybatis 配置",
+                  text: "Mybatis 配置",
+                  link: "/programming/mybatis/MyBatis 配置",
                 },
                 {
                   text: "Mybatis 分页",
-                  link: "/programming/mybatis/Mybatis 分页",
+                  link: "/programming/mybatis/MyBatis 分页",
                 },
                 {
                   text: "Mybatis 组件",
-                  link: "/programming/mybatis/Mybatis 组件",
+                  link: "/programming/mybatis/MyBatis 组件",
                 },
               ],
             },

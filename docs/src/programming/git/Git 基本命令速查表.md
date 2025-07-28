@@ -1,6 +1,6 @@
 ### **Git 关联仓库**
 
-#### 1.**直接关联（适用于空仓库或强制覆盖）**
+#### **直接关联（适用于空仓库或强制覆盖）**
 
 
 ```bash
@@ -84,15 +84,27 @@ git push -u origin master //把本地库的所有内容推送到远程库上
 | `git remote -v`          | 查看远程仓库详细信息 |
 | `git remote show origin` | 查看指定远程仓库信息 |
 
+### **Git  配置**
+
+```powershell
+# 查看当前大小写设置
+git config core.ignorecase
+
+# 临时关闭大小写忽略（重要！）
+git config core.ignorecase false
+```
+
+
+
 ### **完整 Git 开发流程示例**
 
 假设我们要在项目中添加一个「用户搜索」功能。
 
 ------
 
-#### **1. 拉取最新代码（确保与团队同步）**
+**1. 拉取最新代码（确保与团队同步）**
 
-```
+```powershell
 # 切换到主分支
 git checkout main
 
@@ -106,9 +118,9 @@ git pull --rebase
 
 ------
 
-#### **2. 创建功能分支进行开发（隔离开发环境）**
+**2. 创建功能分支进行开发（隔离开发环境）**
 
-```
+```powershell
 # 如果之前也是用的这个分支可以先删除分支 
 git branch -d/-D feature/search   # -D 强制删除
 # 创建并切换到新分支 feature/search
@@ -122,9 +134,9 @@ git checkout -b feature/search
 
 ------
 
-#### **3. 开发功能完并提交**
+**3. 开发功能完并提交**
 
-```
+```powershell
 # 修改代码后，添加文件到暂存区
 git add src/components/Search.js
 
@@ -142,9 +154,9 @@ git commit -m "feat: 添加用户搜索组件"
 
 ------
 
-#### **4. 推送到远程仓库（备份和协作）**
+**4. 推送到远程仓库（备份和协作）**
 
-```
+```powershell
 # 首次推送需建立追踪关系
 git push -u origin feature/search
 # 强制推送（谨慎使用） 覆盖存在的分支
@@ -160,7 +172,7 @@ git push
 
 ------
 
-#### **5. 发起合并请求（Code Review）**
+**5. 发起合并请求（Code Review）**
 
 在 GitHub/GitLab 上：
 
@@ -170,9 +182,9 @@ git push
 
 ------
 
-#### **6. 合并到主分支（通过PR后）**
+**6. 合并到主分支（通过PR后）**
 
-```
+```powershell
 # 切换回主分支
 git checkout main
 
@@ -193,9 +205,9 @@ git push origin main  # 这里看你要推送给谁就给谁合并
 
 ------
 
-#### **7. 清理分支（可选）**
+**7. 清理分支（可选）**
 
-```
+```powershell
 # 删除本地分支
 git branch -d feature/search
 
@@ -209,16 +221,16 @@ git push origin --delete feature/search
 
 ------
 
-#### **完整流程图示**
+**完整流程图示**
 
-```
+```powershell
 [本地] git checkout -b feature/search  
        → 开发 → git commit → git push  
        → 创建PR → 审核通过  
 [远程] 合并到 main → [本地] git pull origin main
 ```
 
-#### **关键注意事项**
+**关键注意事项**
 
 1. **频繁拉取更新**：每天开始工作前先 `git pull --rebase`
 2. **小步提交**：一个提交只做一件事（便于回滚）
@@ -231,7 +243,7 @@ git push origin --delete feature/search
 
 ### 忽略某些修改文件
 
-#### 使用 git update-index --skip-worktree（推荐）
+**使用 git update-index --skip-worktree（推荐）**
 
 **1. 从暂存区移除**
 
@@ -266,7 +278,7 @@ git update-index --no-skip-worktree pom.xml
 代码冲突解决 我之前本地是有一个master 和 taoxiao分支，由于我在taoxiao分支开发，然后我开发完了提交的远程taoxiao分支，然后申请合并到master分支，组长发现冲突让我解决冲突，我直接把本地master分支删除掉了，现在这么解决。
 ```
 
-#### 第1步：重新获取远程 master 分支
+**第1步：重新获取远程 master 分支**
 
 ```bash
 # 1. 确保获取最新的远程信息
@@ -276,7 +288,7 @@ git fetch origin
 git checkout -b master origin/master
 ```
 
-#### 第2步：切换到 taoxiao 分支并合并 master
+**第2步：切换到 taoxiao 分支并合并 master**
 
 ```bash
 # 1. 切换到 taoxiao 分支
@@ -286,7 +298,7 @@ git checkout taoxiao
 git merge master
 ```
 
-#### 第3步：解决冲突
+**第3步：解决冲突**
 
 ```bash
 # 查看冲突文件
@@ -300,7 +312,7 @@ git add <冲突文件名>
 git commit
 ```
 
-#### 第4步：推送解决冲突后的 taoxiao 分支
+**第4步：推送解决冲突后的 taoxiao 分支**
 
 ```bash
 git push origin taoxiao

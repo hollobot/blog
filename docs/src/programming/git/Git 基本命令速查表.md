@@ -233,7 +233,7 @@ git push origin --delete feature/search
 
 #### 使用 git update-index --skip-worktree（推荐）
 
-**1. 先恢复文件到正常状态**
+**1. 从暂存区移除**
 
 ```bash
 git restore --staged .gitignore
@@ -242,7 +242,7 @@ git restore --staged src/main/resources/application-dev.properties
 git restore --staged src/main/resources/application.properties
 ```
 
-**2. 让 Git 忽略这些文件的本地修改**
+**2. 让 Git 忽略这些文件的本地修改，只能忽略不在暂存区的**
 
 ```bash
 git update-index --skip-worktree .gitignore
@@ -250,3 +250,78 @@ git update-index --skip-worktree pom.xml
 git update-index --skip-worktree src/main/resources/application-dev.properties
 git update-index --skip-worktree src/main/resources/application.properties
 ```
+
+**3. 让 Git 恢复这些文件的本地修改**
+
+```bash
+git update-index --no-skip-worktree pom.xml
+```
+
+------
+
+### 合并代码冲突场景
+
+```markdown
+# 背景
+代码冲突解决 我之前本地是有一个master 和 taoxiao分支，由于我在taoxiao分支开发，然后我开发完了提交的远程taoxiao分支，然后申请合并到master分支，组长发现冲突让我解决冲突，我直接把本地master分支删除掉了，现在这么解决。
+```
+
+#### 第1步：重新获取远程 master 分支
+
+```bash
+# 1. 确保获取最新的远程信息
+git fetch origin
+
+# 2. 基于远程 master 创建新的本地 master 分支
+git checkout -b master origin/master
+```
+
+#### 第2步：切换到 taoxiao 分支并合并 master
+
+```bash
+# 1. 切换到 taoxiao 分支
+git checkout taoxiao
+
+# 2. 将最新的 master 合并到 taoxiao（这里会出现冲突）
+git merge master
+```
+
+#### 第3步：解决冲突
+
+```bash
+# 查看冲突文件
+git status
+
+# 手动编辑冲突文件，解决冲突标记（<<<<<<< ======= >>>>>>>）
+# 解决完冲突后，添加解决的文件
+git add <冲突文件名>
+
+# 完成合并
+git commit
+```
+
+#### 第4步：推送解决冲突后的 taoxiao 分支
+
+```bash
+git push origin taoxiao
+```
+
+### 一些不需要同步的文件问题（pom.xml）
+
+```bash
+# 先取消skip-worktree
+git update-index --no-skip-worktree pom.xml
+
+# 重置pom.xml到远程版本
+git checkout HEAD -- pom.xml
+
+# 拉取远程代码
+git pull origin master
+
+# 重新修改pom.xml为你需要的配置
+# (手动编辑pom.xml)
+
+# 再次设置忽略
+git update-index --skip-worktree pom.xml
+```
+

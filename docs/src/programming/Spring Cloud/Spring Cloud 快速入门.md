@@ -965,7 +965,7 @@ try {
 }
 ```
 
-#### **流量控制**
+#### 流控规则
 
 **流控规则默认直接模式**
 
@@ -996,4 +996,416 @@ Order seckill(@PathVariable("userId") String userId, @PathVariable("productId") 
 A资源和B资源关联后就会资源共享，如果A资源把服务沾满那么B资源在访问就会报异常
 
 ![image-20250619161317974](./assets/image-20250619161317974.png)
+
+#### **熔断规则**
+
+**作用**：切断不稳定调用、快速返回不积压、避免雪崩效应
+
+![image-20250719121549707](./assets/image-20250719121549707.png)
+
+**断路器工作原理**
+
+默认熔断器是关闭的，如果不满足设置条件则就会熔断，这时处于熔断期间，这个时间是可以设置的，熔断时长期间再有请求访问直接就返回兜底不会再请求访问资源，熔断时长结束此时处于一个半开状态，这是有请求访问会去正常访问资源，如果访问出现问题又会进入熔断时长期间，访问没有问题就处于最开始的状态默认闭合。
+
+![image-20250719121649562](./assets/image-20250719121649562.png)
+
+**有熔断和无熔断的区别**
+
+有熔断规则访问出现问题，后续会开启一个熔断时长在这期间就不会去调用这个资源了，直接返回兜底数据
+
+没有熔断会出现每次请求都会去访问远程资源，然后发送错误防护兜底数据，这样就多此一举了，明知是错误资源，每次还是去请求。
+
+![image-20250719121248531](./assets/image-20250719121248531.png)
+
+**熔断规则设置**
+
+**慢调用比列**：5s期间请求数大于5，有80%的请求时长超过RT 3s 就会触发熔断机制，这是就会处于熔断30s时长。后续访问这个资源的请求直接就放回一个异常，不会造成阻塞，如果设置了兜底数据就会直接放回兜底数据。
+
+![](./assets/image-20250719131153483.png)
+
+`异常比例`   `异常数` 这个两就是根据异常来确定规则，前者是请总数的异常比例，后者就是异常数总和规则。
+
+#### 热点规则
+
+热点规则相当于在流控规则基础上填加参数限制规则
+
+**接口资源代码设计**
+
+```java
+    @GetMapping("/{id}")
+	// 设置sentinel资源名,还有兜底方式和兜底方法
+    @SentinelResource(value = "add-product",fallback = "addProductFallback")
+    public Product getProduct(@PathVariable String id) {
+        System.out.println("hello");
+//        TimeUnit.SECONDS.sleep(2);
+        return productServer.getProductById(id);
+    }
+
+    /**
+     * 兜底数据
+     * @param id 热点参数
+     * @param exception 匹配绑定的接口出现异常，直接用最大异常Throwable就可以匹配所以异常
+     * @return
+     */
+    public Product addProductFallback(String id, Throwable exception)   {
+        System.out.println("兜底数据 product");
+        Product product = new Product();
+        product.setId("兜底数据");
+        product.setPrice(new BigDecimal("0"));
+        product.setProductName("异常休息"+exception.getMessage());
+        product.setNum(0);
+        return product;
+    }
+```
+
+**需求案例：**
+
+![image-20250719133931116](./assets/image-20250719133931116.png)
+
+**需求一**：直接用sentinel 设置热点规则，通过参数索引为0的也就是第一个参数，只要第一个参数不是null那么就会收限制，1秒里相同的参数只可以访问一次。
+
+![image-20250719133708210](./assets/image-20250719133708210.png)
+
+**需求二**：添加一个参数额外设置，对一个参数为6的请求设置阈值为100000，这样只要是id为6的就不会限制成1s一个请求了。
+
+![image-20250719134659837](./assets/image-20250719134659837.png)
+
+**需求三**：需求三跟需求二是一样的。只需要对商品id为666的设置一个流量阈值为1的就可以了，其他阈值设置10000。
+
+### Gateway
+
+#### 配置依赖
+
+```xml
+<!--网关-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-gateway</artifactId>
+</dependency>
+
+<!--服务注册 服务发现-->
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+</dependency>
+
+<!--负载均衡-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+</dependency>
+```
+
+#### **开启服务**
+
+```java
+@EnableDiscoveryClient // 开启nacos发现服务
+@SpringBootApplication
+public class GatewayMainApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(GatewayMainApplication.class, args);
+    }
+}
+```
+
+#### 路由规则
+
+![image-20250724142510186](./assets/image-20250724142510186.png)
+
+#### **路由断言**
+
+![image-20250724142546246](./assets/image-20250724142546246.png)
+
+
+
+**断言配置**
+
+```yaml
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: order-service
+          uri: lb://server-order # 使用负载均衡的方式访问订单服务
+          predicates:
+            - Path=/order/** # 匹配/order/**路径
+          filters:
+            - StripPrefix=1 # 去掉前缀/order
+
+        - id: product-service
+          uri: lb://server-product # 使用负载均衡的方式访问商品服务
+          predicates:
+            - Path=/product/** # 匹配/product/**路径
+          filters:
+            - StripPrefix=1 # 去掉前缀/product
+```
+
+#### 自定义断言
+
+**编写断言工厂**
+
+```java
+/**
+ * VIP路由断言工厂
+ * 用于根据请求参数进行路由匹配  这个名称固定xxx RoutePredicateFactory
+ */
+@Component
+public class VipRoutePredicateFactory extends AbstractRoutePredicateFactory<VipRoutePredicateFactory.Config> {
+
+    public VipRoutePredicateFactory() {
+        super(VipRoutePredicateFactory.Config.class);
+    }
+
+    /**
+     * 获取断言工厂名称
+     * @return
+     */
+    @Override
+    public List<String> shortcutFieldOrder() {
+        return Arrays.asList("param", "value");
+    }
+
+    /**
+     * 应用断言逻辑
+     * @param config
+     * @return
+     */
+    @Override
+    public Predicate<ServerWebExchange> apply(Config config) {
+        return new GatewayPredicate() {
+            /**
+             * 断言方法逻辑
+             * @param serverWebExchange the input argument
+             * @return
+             */
+            @Override
+            public boolean test(ServerWebExchange serverWebExchange) {
+                // 获取请求对象
+                ServerHttpRequest request = serverWebExchange.getRequest();
+                String first = request.getQueryParams().getFirst(config.param);
+                // 不为空且与配置值相等
+                return StringUtils.hasText(first) && first.equals(config.value);
+            }
+        };
+    }
+
+    @Validated
+    public static class Config {
+
+        @NotEmpty
+        private String param;
+
+        private String value;
+
+        public String getParam() {
+            return param;
+        }
+
+        public VipRoutePredicateFactory.Config setParam(String param) {
+            this.param = param;
+            return this;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
+
+}
+
+```
+
+**配置自定义断言**
+
+```yaml
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: bong-service
+          uri: https://cn.bing.com # 直接访问Bing搜索引擎
+          predicates:
+            # 自定义断言
+            - name: Vip # 使用VIP断言
+              args:
+                param: user # 匹配VIP用户
+                value: taoxiao # VIP用户为taoxiao
+
+            - Vip=pwd,123456  # 使用VIP断言，匹配密码为123456的用户 简化写法
+```
+
+#### **过滤器**
+
+**常见的过滤配置、默认过滤器**
+
+```yaml
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: order-service
+          uri: lb://server-order # 使用负载均衡的方式访问订单服务
+          predicates:
+            - Path=/order/** # 匹配/order/**路径
+          # 过滤器配置  
+          filters:
+            # 1. 路径处理
+            - StripPrefix=1  # 去除前缀/api
+            - PrefixPath=/rest  # 添加前缀/rest
+            - RewritePath=/api/(?<segment>.*), /$\{segment}  # 重写路径
+            
+            # 2. 请求响应头处理
+            - AddRequestHeader=X-Request-Id, ${random.uuid}  # 添加请求头
+            - AddResponseHeader=X-Response-Time, ${now}  # 添加响应头
+            - RemoveRequestHeader=X-Forwarded-Host  # 移除请求头
+            
+            # 3. 请求参数处理
+            - AddRequestParameter=timestamp, ${now}  # 添加请求参数
+            - RemoveRequestParameter=version  # 移除请求参数
+            
+      # 默认过滤器 相当于 全局过滤器
+      default-filters:
+        - AddResponseHeader=Server,SpringCloudGateway # 添加响应头Server
+```
+
+**全局过滤器**
+
+```java
+/**
+ * 全局日志过滤器
+ * 用于记录请求的开始和结束时间
+ */
+@Slf4j
+@Component
+public class logGlobalFilter implements GlobalFilter, Ordered {
+
+    /**
+     * 全局过滤器的核心方法
+     *
+     * @param exchange the current server exchange
+     * @param chain    provides a way to delegate to the next filter
+     * @return
+     */
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        // 在这里可以添加日志记录、请求修改等逻辑
+        ServerHttpRequest request = exchange.getRequest();
+        ServerHttpResponse response = exchange.getResponse();
+
+        String uri = request.getURI().toString();
+        long startTime = System.currentTimeMillis();
+        log.info("请求开始: URI = {}, 开始时间 = {}", uri, startTime);
+
+        // 放行,  由于这个放行执行是异步的所有需要用流式处理编写业务逻辑
+        Mono<Void> filter = chain.filter(exchange).doFinally(s -> {
+            // 放行后逻辑
+            long endTime = System.currentTimeMillis();
+            log.info("请求结束: URI = {}, 耗时 = {} ms", uri, (endTime - startTime));
+        });
+
+        return filter;
+    }
+
+    /**
+     * 设置过滤器的执行顺序
+     *
+     * @return
+     */
+    @Override
+    public int getOrder() {
+        return 0;
+    }
+}
+```
+
+**自定义过滤器**
+
+```java
+/**
+ * 一次性令牌网关过滤器工厂
+ * 用于生成一次性令牌并添加到响应头中 命名限制 xxx GatewayFilterFactory
+ */
+@Component
+public class OnceTokenGatewayFilterFactory extends AbstractNameValueGatewayFilterFactory {
+
+    @Override
+    public GatewayFilter apply(NameValueConfig config) {
+        return new GatewayFilter() {
+            @Override
+            public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+
+                return chain.filter(exchange).then(Mono.fromRunnable(() -> {
+                    // 在这里可以添加逻辑来处理一次性令牌
+                    ServerHttpResponse response = exchange.getResponse();
+                    HttpHeaders headers = response.getHeaders();
+                    String name = config.getName();
+                    String type = config.getValue();
+                    String value = null;
+                    switch (type) {
+                        case "uuid":
+                            value = UUID.randomUUID().toString();
+                            break;
+                        case "JWT":
+                            value = "JWT_Token"; // 这里可以生成JWT令牌
+                            break;
+                        default:
+                            value = "default_value"; // 默认值或其他类型的令牌
+                    }
+                    // 设置响应头
+                    headers.add(name, value);
+                }));
+            }
+
+        };
+    }
+
+}
+```
+
+```yaml
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: order-service
+          uri: lb://server-order # 使用负载均衡的方式访问订单服务
+          predicates:
+            - Path=/order/** # 匹配/order/**路径
+          filters:
+            - StripPrefix=1 # 去掉前缀/order
+            # 自定义配置过滤器
+            - OnceToken=token,uuid # 使用OnceToken过滤器
+```
+
+#### 跨域
+
+```yaml
+spring:
+  cloud:
+    gateway:
+      # 全局跨域配置
+      global-cors:
+        cors-configurations:
+          '[/**]': # 匹配所有路径
+            allowed-origins: # 明确指定允许的源
+              - http://localhost:8080
+              - http://localhost:3000
+              - http://127.0.0.1:8080
+              - http://127.0.0.1:3000
+            allowed-methods: # 允许的HTTP方法
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            allowed-headers: '*' # 允许所有请求头
+            allow-credentials: true # 允许携带凭证
+            exposed-headers: # 允许前端访问的响应头
+              - Authorization
+            max-age: 3600 # 预检请求的有效期，单位为秒
+```
 

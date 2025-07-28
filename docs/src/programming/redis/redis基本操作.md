@@ -1,4 +1,4 @@
-### redis基本操作
+## Redis 基本操作
 
 #### **连接redis**
 
@@ -97,3 +97,14 @@ SCARD key
 SRANDMEMBER key [count]
 ```
 
+## Redis & Java
+
+#### redis 插入list类型数据
+
+| 操作方式                                   | Redis 实际存储                   | 获取结果                                                     |
+| :----------------------------------------- | :------------------------------- | :----------------------------------------------------------- |
+| `expire(redisKey, time, TimeUnit.SECONDS)` |                                  | 设置储存时间                                                 |
+| `rightPush(list)`                          | `["[id1,id2,id3]"]` (一个元素)   | 需要二次解析                                                 |
+| `rightPushAll(list)`                       | `["id1","id2","id3"]` (三个元素) | 直接可用                                                     |
+| `range(key,start,end)`                     | 查询所有数据start-end            | list.range(key,0,-1); 查询所有数据                           |
+| `remove(list,count,target)`                | `["id1","id2","id3"]`            | count>0,从头开始查<br />count<0,从尾开始查<br />count=0,删除所有匹配的 |

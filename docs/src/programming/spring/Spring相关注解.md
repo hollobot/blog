@@ -221,3 +221,48 @@ public class UserServiceImpl implements UserService {
     }
 }
 ```
+
+### 六、其他注解
+
+#### validation
+
+1. `@NotNull：对象不能为 null。`
+2. `@NotBlank：字符串不能为空（忽略空格）只能用于字符串类型(String)，不能用于 Integer 或其他数值类型。。`
+3. `@NotEmpty：集合、数组、字符串等不能为空。不支持 Integer`
+4. `@Size：字符串、集合、数组等的长度或大小必须在指定范围内。`
+5. `@Min：数值的最小值。`
+6. `@Max：数值的最大值。`
+7. `@Email：字符串必须是有效的电子邮件格式。`
+8. `@Pattern：字符串必须匹配指定的正则表达式。`
+
+```java
+import javax.validation.constraints.*;
+
+public class User {
+
+    @NotBlank(message = "Name cannot be blank")
+    private String name;
+
+    @Min(value = 18, message = "Age must be at least 18")
+    private int age;
+
+    @Email(message = "Email should be valid")
+    private String email;
+    
+    @NotNull(message = "Join Type cannot be null")  // 确保 joinType 不能为空
+    @Min(value = 1, message = "Join Type must be at least 1")  // 最小值为 1
+    @Max(value = 3, message = "Join Type must be less than or equal to 3")  // 最大值为 3
+    private Integer joinType;  // 加入类型
+
+    @NotNull(message = "Sex cannot be null")  // 确保 sex 不能为空
+    @Min(value = 1, message = "Sex must be either 1 (male) or 2 (female)")  // 最小值为 1
+    @Max(value = 2, message = "Sex must be either 1 (male) or 2 (female)")  // 最大值为 2
+    private Integer sex;  // 性别
+    
+    @Size(min = 11, max = 11, message = "手机号必须是11位")
+    private String phone;
+
+    // Getters and Setters
+}
+```
+

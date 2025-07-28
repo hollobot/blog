@@ -72,7 +72,7 @@ export default defineConfig({
       { text: "首页", link: "/" },
       {
         text: "编程",
-        link: "/programming/java/java",
+        link: "/programming/java/JavaSE",
       },
       { text: "工具", link: "/software/cursor/cursor" },
       { text: "休闲", link: "/leisureTime/minecraft/药水篇" },
@@ -84,9 +84,9 @@ export default defineConfig({
           text: "编程",
           items: [
             {
-              text: "java",
+              text: "Java",
               collapsed: true, // 设置为false则默认展开
-              items: [{ text: "Java基础", link: "/programming/java/java" }],
+              items: [{ text: "Java 基础", link: "/programming/java/JavaSE" }],
             },
             {
               text: "vue",
@@ -108,7 +108,7 @@ export default defineConfig({
             },
 
             {
-              text: "vitePress",
+              text: "VitePress",
               collapsed: true,
               items: [
                 {
@@ -122,7 +122,7 @@ export default defineConfig({
               ],
             },
             {
-              text: "mysql",
+              text: "MySQL",
               collapsed: true,
               items: [
                 {
@@ -133,7 +133,7 @@ export default defineConfig({
               ],
             },
             {
-              text: "git",
+              text: "Git",
               collapsed: true,
               items: [
                 {
@@ -143,26 +143,30 @@ export default defineConfig({
               ],
             },
             {
-              text: "electron",
+              text: "Electron",
               collapsed: true,
               items: [{ text: "ipc 通讯", link: "/programming/electron/ipc" }],
             },
             {
-              text: "mybatis",
+              text: "MyBatis",
               collapsed: true,
               items: [
                 {
-                  text: "mybatis配置",
-                  link: "/programming/mybatis/mybatis配置",
+                  text: "mybatis 配置",
+                  link: "/programming/mybatis/mybatis 配置",
                 },
                 {
-                  text: "springboot 整合mybatis分页",
-                  link: "/programming/mybatis/springboot 整合mybatis分页",
+                  text: "Mybatis 分页",
+                  link: "/programming/mybatis/Mybatis 分页",
+                },
+                {
+                  text: "Mybatis 组件",
+                  link: "/programming/mybatis/Mybatis 组件",
                 },
               ],
             },
             {
-              text: "mybatis-plus",
+              text: "Mybatis-Plus",
               collapsed: true,
               items: [
                 {
@@ -172,12 +176,12 @@ export default defineConfig({
               ],
             },
             {
-              text: "spring cloud",
+              text: "Spring Cloud",
               collapsed: true,
               items: [
                 {
-                  text: "快速入门",
-                  link: "/programming/Spring Cloud/Spring Cloud 快速入门",
+                  text: "快速开始",
+                  link: "/programming/Spring Cloud/快速开始",
                 },
               ],
             },
@@ -192,7 +196,7 @@ export default defineConfig({
               ],
             },
             {
-              text: "linux",
+              text: "Linux",
               collapsed: true,
               items: [
                 {
@@ -209,14 +213,18 @@ export default defineConfig({
                   text: "注解",
                   link: "/programming/spring/Spring相关注解",
                 },
+                {
+                  text: "AOP",
+                  link: "/programming/spring/AOP",
+                },
               ],
             },
             {
-              text: "redis",
+              text: "Redis",
               collapsed: true,
               items: [
                 {
-                  text: "redis 基本操作",
+                  text: "基本操作",
                   link: "/programming/redis/redis基本操作",
                 },
               ],

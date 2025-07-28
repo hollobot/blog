@@ -1,112 +1,6 @@
-# 一 、Spring API
+## AOP 自定义注解
 
-### 1、validation
-
-1. `@NotNull：对象不能为 null。`
-2. `@NotBlank：字符串不能为空（忽略空格）只能用于字符串类型(String)，不能用于 Integer 或其他数值类型。。`
-3. `@NotEmpty：集合、数组、字符串等不能为空。不支持 Integer`
-4. `@Size：字符串、集合、数组等的长度或大小必须在指定范围内。`
-5. `@Min：数值的最小值。`
-6. `@Max：数值的最大值。`
-7. `@Email：字符串必须是有效的电子邮件格式。`
-8. `@Pattern：字符串必须匹配指定的正则表达式。`
-
-```java
-import javax.validation.constraints.*;
-
-public class User {
-
-    @NotBlank(message = "Name cannot be blank")
-    private String name;
-
-    @Min(value = 18, message = "Age must be at least 18")
-    private int age;
-
-    @Email(message = "Email should be valid")
-    private String email;
-    
-    @NotNull(message = "Join Type cannot be null")  // 确保 joinType 不能为空
-    @Min(value = 1, message = "Join Type must be at least 1")  // 最小值为 1
-    @Max(value = 3, message = "Join Type must be less than or equal to 3")  // 最大值为 3
-    private Integer joinType;  // 加入类型
-
-    @NotNull(message = "Sex cannot be null")  // 确保 sex 不能为空
-    @Min(value = 1, message = "Sex must be either 1 (male) or 2 (female)")  // 最小值为 1
-    @Max(value = 2, message = "Sex must be either 1 (male) or 2 (female)")  // 最大值为 2
-    private Integer sex;  // 性别
-    
-    @Size(min = 11, max = 11, message = "手机号必须是11位")
-    private String phone;
-
-    // Getters and Setters
-}
-```
-
-# 二 、Redis
-
-### 1、redis插入list类型数据
-
-| 操作方式                                   | Redis 实际存储                   | 获取结果                                                     |
-| :----------------------------------------- | :------------------------------- | :----------------------------------------------------------- |
-| `expire(redisKey, time, TimeUnit.SECONDS)` |                                  | 设置储存时间                                                 |
-| `rightPush(list)`                          | `["[id1,id2,id3]"]` (一个元素)   | 需要二次解析                                                 |
-| `rightPushAll(list)`                       | `["id1","id2","id3"]` (三个元素) | 直接可用                                                     |
-| `range(key,start,end)`                     | 查询所有数据start-end            | list.range(key,0,-1); 查询所有数据                           |
-| `remove(list,count,target)`                | `["id1","id2","id3"]`            | count>0,从头开始查<br />count<0,从尾开始查<br />count=0,删除所有匹配的 |
-
-```java
-ListOperations<String, Object> list = redisTemplate.opsForList();
-list.rightPush(key, listObject);
-list.rightPushAll(key, listObject);
-list.range(key,0,-1); 查询所有数据
-list.opsForList().remove(key, 2, "A");从头开始删除字符A，删除两个退出，不够两个遍历完退出，返回删除的个数
-redisTemplate.expire(key, time, TimeUnit.SECONDS);
-```
-
-# 三、MyBatis
-
-### 1、foreach
-
-当使用 `foreach` 遍历集合时，MyBatis 默认使用以下参数名：
-
-单参数且是集合/数组：`collection` 或 `list`
-
-多参数：`arg0, arg1...` 或 `param1, param2...`
-
-方法1：使用 `@Param` 注解（推荐）	
-
-```java
-@Mapper
-void batchInsert(@Param("chatSessionUsers") List<ChatSessionUser> users);
-```
-
-```xml
-<insert id="batchInsert">
-  INSERT INTO chat_session_user 
-  VALUES
-  <foreach item="item" collection="chatSessionUsers" separator=",">
-    (#{item.userId}, #{item.sessionId}, #{item.contactId})
-  </foreach>
-</insert>
-```
-
-方法2：使用默认参数名
-
-```java
-void batchInsert(List<ChatSessionUser> chatSessionUsers); // 不添加@Param
-```
-
-```xml
-<foreach item="item" collection="list" separator=",">
-  (#{item.userId}, #{item.sessionId}, #{item.contactId})
-</foreach>
-```
-
-# 四、Spring
-
-### 1、aop自定义注解
-
-##### 1.基础自定义注解
+### 基础自定义注解
 
 ```java
 // 定义注解
@@ -129,7 +23,7 @@ public class MyController {
 }
 ```
 
-##### 2. 处理自定义注解的aop切面
+###  处理自定义注解的aop切面
 
 ```java
 @Aspect
@@ -166,7 +60,7 @@ public class MyCustomAnnotationAspect {
 }
 ```
 
-##### 3.自定义注解示例
+### 自定义注解示例
 
 ```java
 /* 日志记录注解 */
@@ -279,9 +173,9 @@ public class TokenValidationAspect {
 }
 ```
 
-##### 4. 跟新一个类里面的属性值
+### aop实现跟新类里面的属性值
 
-<img src=".\assets\image-20250607202148112.png" alt="image-20250607202148112" />
+<img src="./assets/image-20250607202148112.png" alt="image-20250607202148112" />
 
 ```java
 /**
@@ -354,3 +248,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
 ```
 
+## **AOP进阶**
+
+### 暂未跟新

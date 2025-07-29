@@ -15,7 +15,11 @@ create database 数据库名; -- 创建数据库
 #实例
 CREATE DATABASE mydatabase
   CHARACTER SET utf8mb4
-  COLLATE utf8mb4_general_ci;
+  COLLATE utf8mb4_unicode_ci;
+  
+# utf8mb4_unicode_ci：通用排序规则（推荐）。
+# utf8mb4_general_ci：较旧的排序规则（性能稍快，但准确性稍差）。
+# utf8mb4_bin：二进制排序（区分大小写）。
   
 drop database 数据库名;  -- 删除数据库 
 

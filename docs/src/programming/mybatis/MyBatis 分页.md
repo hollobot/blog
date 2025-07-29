@@ -240,3 +240,66 @@ PageInfo<OpUserGroupInfoDomain> pageInfo = new PageInfo<>(userInfoDTOList);
 // 设置 total
 pageInfo.setTotal(count);
 ```
+
+### PageHelper 分页的 `count` 原理
+
+核心原理：动态方法查找 + AOP 拦截
+
+```sql
+# count 计数 pageHelper会内部构造一个 查询方法名_COUNT的 mapper，然后在原始查询sql上面套上一层
+select count(*) from (`原始sql`) 
+# 这个如果开发者自己写了一个后缀为_COUNT 的 mappe接口 那么PageHelper插件会直接用个ampper进行计算count。
+```
+
+**1、PageHelper 的拦截机制**
+
+```java
+// PageHelper 是基于 MyBatis 的 Interceptor（拦截器） 实现的：
+@Intercepts({@Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class,ResultHandler.class})
+})
+public class PageInterceptor implements Interceptor {
+// 拦截所有查询操作
+}
+```
+
+**2、执行流程**
+
+```java
+// 1. PageHelper.startPage() 设置分页参数到 ThreadLocal 开启分页
+PageHelper.startPage(1, 10);
+
+// 2. 执行查询时被拦截器捕获
+List<User> list = mapper.getOpUserGroupinfo(params);
+```
+
+**3、拦截器内部处理**
+
+```java
+public Object intercept(Invocation invocation) {
+    // 获取原始的 MappedStatement
+    MappedStatement ms = (MappedStatement) invocation.getArgs()[0];
+    String originalId = ms.getId(); // 例如：com.demo.UserMapper.getOpUserGroupinfo
+    
+    // 1. 构造 count 方法 ID
+    String countId = originalId + "_COUNT"; // com.demo.UserMapper.getOpUserGroupinfo_COUNT
+    
+    // 2. 查找是否存在自定义 count 方法
+    Configuration configuration = ms.getConfiguration();
+    MappedStatement countMs = null;
+    
+    try {
+        countMs = configuration.getMappedStatement(countId);
+        // 找到了！使用自定义 count
+    } catch (Exception e) {
+        // 没找到，使用默认 count 生成逻辑
+        countMs = generateDefaultCount(ms);
+    }
+    
+    // 3. 执行 count 查询
+    long total = executeCount(countMs, invocation.getArgs()[1]);
+    
+    // 4. 执行原始分页查询
+    return executePageQuery(invocation, total);
+}
+```
+

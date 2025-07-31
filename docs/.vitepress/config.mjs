@@ -89,39 +89,6 @@ export default defineConfig({
               items: [{ text: "Java 基础", link: "/programming/java/JavaSE" }],
             },
             {
-              text: "vue",
-              collapsed: true, // 设置为false则默认展开
-              items: [
-                { text: "快速开始", link: "/programming/vue/快速开始" },
-                { text: "router", link: "/programming/vue/router" },
-                { text: "组件通信", link: "/programming/vue/组件通信" },
-                { text: "pinia ", link: "/programming/vue/pinia " },
-                { text: "slot ", link: "/programming/vue/slot " },
-                { text: "其他 API", link: "/programming/vue/其他 API" },
-                { text: "vue3新组件", link: "/programming/vue/vue3新组件" },
-                { text: "vue 随笔", link: "/programming/vue/vue 随笔" },
-                {
-                  text: "JavaScript 随笔",
-                  link: "/programming/vue/JavaScript 随笔",
-                },
-              ],
-            },
-
-            {
-              text: "VitePress",
-              collapsed: true,
-              items: [
-                {
-                  text: "快速开始",
-                  link: "/programming/vitePress/VitePress快速开始",
-                },
-                {
-                  text: "部署上线",
-                  link: "/programming/vitePress/VitePress部署上线",
-                },
-              ],
-            },
-            {
               text: "MySQL",
               collapsed: true,
               items: [
@@ -133,19 +100,14 @@ export default defineConfig({
               ],
             },
             {
-              text: "Git",
+              text: "Redis",
               collapsed: true,
               items: [
                 {
-                  text: "git 快速上手",
-                  link: "/programming/git/Git 基本命令速查表",
+                  text: "基本操作",
+                  link: "/programming/redis/redis基本操作",
                 },
               ],
-            },
-            {
-              text: "Electron",
-              collapsed: true,
-              items: [{ text: "ipc 通讯", link: "/programming/electron/ipc" }],
             },
             {
               text: "MyBatis",
@@ -176,12 +138,96 @@ export default defineConfig({
               ],
             },
             {
+              text: "Spring",
+              collapsed: true,
+              items: [
+                {
+                  text: "注解",
+                  link: "/programming/spring/Spring相关注解",
+                },
+                {
+                  text: "AOP",
+                  link: "/programming/spring/AOP",
+                },
+              ],
+            },
+            {
               text: "Spring Cloud",
               collapsed: true,
               items: [
                 {
                   text: "快速开始",
                   link: "/programming/Spring Cloud/快速开始",
+                },
+              ],
+            },
+            {
+              text: "Design Pattern",
+              collapsed: true,
+              items: [
+                {
+                  text: "单例模式",
+                  link: "/programming/设计模式/单例模式",
+                },
+                {
+                  text: "工厂模式",
+                  link: "/programming/设计模式/工厂模式",
+                },
+                {
+                  text: "策略模式",
+                  link: "/programming/设计模式/策略模式",
+                },
+                {
+                  text: "观察者模式",
+                  link: "/programming/设计模式/观察者模式",
+                },
+              ],
+            },
+            {
+              text: "vue",
+              collapsed: true, // 设置为false则默认展开
+              items: [
+                { text: "快速开始", link: "/programming/vue/快速开始" },
+                { text: "router", link: "/programming/vue/router" },
+                { text: "组件通信", link: "/programming/vue/组件通信" },
+                { text: "pinia ", link: "/programming/vue/pinia " },
+                { text: "slot ", link: "/programming/vue/slot " },
+                { text: "其他 API", link: "/programming/vue/其他 API" },
+                { text: "vue3新组件", link: "/programming/vue/vue3新组件" },
+                { text: "vue 随笔", link: "/programming/vue/vue 随笔" },
+                {
+                  text: "JavaScript 随笔",
+                  link: "/programming/vue/JavaScript 随笔",
+                },
+              ],
+            },
+            {
+              text: "Electron",
+              collapsed: true,
+              items: [{ text: "ipc 通讯", link: "/programming/electron/ipc" }],
+            },
+
+            {
+              text: "VitePress",
+              collapsed: true,
+              items: [
+                {
+                  text: "快速开始",
+                  link: "/programming/vitePress/VitePress快速开始",
+                },
+                {
+                  text: "部署上线",
+                  link: "/programming/vitePress/VitePress部署上线",
+                },
+              ],
+            },
+            {
+              text: "Git",
+              collapsed: true,
+              items: [
+                {
+                  text: "git 快速上手",
+                  link: "/programming/git/Git 基本命令速查表",
                 },
               ],
             },
@@ -202,30 +248,6 @@ export default defineConfig({
                 {
                   text: "基本指令",
                   link: "/programming/linux/linux",
-                },
-              ],
-            },
-            {
-              text: "Spring",
-              collapsed: true,
-              items: [
-                {
-                  text: "注解",
-                  link: "/programming/spring/Spring相关注解",
-                },
-                {
-                  text: "AOP",
-                  link: "/programming/spring/AOP",
-                },
-              ],
-            },
-            {
-              text: "Redis",
-              collapsed: true,
-              items: [
-                {
-                  text: "基本操作",
-                  link: "/programming/redis/redis基本操作",
                 },
               ],
             },
@@ -306,9 +328,7 @@ export default defineConfig({
       ],
     },
 
-    socialLinks: [
-      { icon: "github", link: "https://github.com/hollobot" },
-    ],
+    socialLinks: [{ icon: "github", link: "https://github.com/hollobot" }],
 
     footer: {
       message: `<a href="https://beian.miit.gov.cn/" target="_blank">京ICP备20016634号-2</a>`,

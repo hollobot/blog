@@ -38,18 +38,20 @@ git push -u origin master //把本地库的所有内容推送到远程库上
 | `git add .`                     | 添加所有修改到暂存区                 |
 | `git add filename.txt demo.txt` | 添加多个指定文件到暂存区             |
 | `git commit -m "msg"`           | 提交暂存区的更改                     |
+| `git checkout .`                | 回滚到未修改时                       |
 
 #### **3. 分支管理**
 
-| 命令                                   | 解释                                                   |
-| :------------------------------------- | :----------------------------------------------------- |
-| `git branch`                           | 查看分支                                               |
-| `git branch -a`                        | 查看本地和远程分支                                     |
-| `git branch <name>`                    | 创建新分支                                             |
-| `git checkout <branch>`                | 切换分支                                               |
-| `git merge <branch>`                   | 合并分支                                               |
-| `git branch -d/D branch_name`          | `d`安全删除（已合并的分支）`D`强制删除（未合并也删除） |
-| `git push origin --delete branch_name` | 删除远程分支                                           |
+| 命令                                      | 解释                                                   |
+| :---------------------------------------- | :----------------------------------------------------- |
+| `git branch`                              | 查看分支                                               |
+| `git branch -a`                           | 查看本地和远程分支                                     |
+| `git branch <name>`                       | 创建新分支                                             |
+| `git checkout <branch>`                   | 切换分支                                               |
+| `git merge <branch>`                      | 合并分支                                               |
+| `git branch -d/D branch_name`             | `d`安全删除（已合并的分支）`D`强制删除（未合并也删除） |
+| `git push origin --delete branch_name`    | 删除远程分支                                           |
+| `git log --oneline master..origin/master` | 查看本地与远程分支的差异                               |
 
 #### **4. 远程同步**
 

@@ -542,6 +542,12 @@ hashMap.isEmpty();                // 判断是否为空
 hashMap.putIfAbsent("grape", 8);  // 如果不存在则添加
 hashMap.merge("apple", 2, Integer::sum); // 合并值
 hashMap.compute("banana", (k, v) -> v * 2); // 计算新值
+hashMap.computeIfAbsent("orange", k -> 0); // 如果不存在则计算新值
+
+// 比较 put、putIfAbsent、computeIfAbsent
+Map<String,List<String>> map = new HashMap();
+List<String> list1 = map.putIfAbsent("234", new ArrayList<>()); // null 存在返回存在的value，不存在返回null，与 put()方法返回一致
+List<String> list2 = map.computeIfAbsent("234", v -> new ArrayList<>());  // [] 存在返回存在的value，不存在返回自己计算的属性
 ```
 
 **LinkedHashMap**

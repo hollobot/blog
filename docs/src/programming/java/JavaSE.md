@@ -450,7 +450,6 @@ vector.setElementAt("new", 0);    // 设置元素（Vector特有）
 
 ```java
 HashSet<String> set = new HashSet<>();
-
 // 添加单个元素
 boolean result1 = set.add("apple");     // 返回true，添加成功
 boolean result2 = set.add("banana");    // 返回true，添加成功
@@ -459,7 +458,6 @@ boolean result3 = set.add("apple");     // 返回false，元素已存在
 // 删除存在的元素
 boolean removed1 = set.remove("b");     // 返回true
 boolean removed2 = set.remove("x");     // 返回false，元素不存在
-
 set.contains("apple") // 检查是否包含元素
 
 // 集合操作
@@ -467,32 +465,12 @@ Set<String> set2 = new HashSet<>(Arrays.asList("java", "c++"));
 set.retainAll(set2);          // 交集
 set.removeAll(set2);          // 差集
 
-// removeAll() - 删除指定集合中的所有元素
+// removeAll() 删除指定集合中的所有元素
 HashSet<Integer> set = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6));
 List<Integer> toRemove = Arrays.asList(2, 4, 6, 8); // 8不存在
 boolean changed = set.removeAll(toRemove); // 返回true
 System.out.println("After removeAll: " + set); // [1, 3, 5]
 ```
-
-| 方法类型 | 方法名                                  | 功能                     | 返回值      |
-| -------- | --------------------------------------- | ------------------------ | ----------- |
-| **添加** | `add(E e)`                              | 添加元素                 | boolean     |
-|          | `addAll(Collection<? extends E> c)`     | 添加集合中所有元素       | boolean     |
-| **删除** | `remove(Object o)`                      | 删除指定元素             | boolean     |
-|          | `removeAll(Collection<?> c)`            | 删除指定集合中的所有元素 | boolean     |
-|          | `removeIf(Predicate<? super E> filter)` | 按条件删除               | boolean     |
-|          | `retainAll(Collection<?> c)`            | 只保留交集               | boolean     |
-|          | `clear()`                               | 清空集合                 | void        |
-| **查询** | `contains(Object o)`                    | 是否包含元素             | boolean     |
-|          | `containsAll(Collection<?> c)`          | 是否包含集合中所有元素   | boolean     |
-|          | `isEmpty()`                             | 是否为空                 | boolean     |
-|          | `size()`                                | 元素个数                 | int         |
-| **遍历** | `iterator()`                            | 获取迭代器               | Iterator<E> |
-|          | `forEach(Consumer<? super E> action)`   | Lambda遍历               | void        |
-| **转换** | `toArray()`                             | 转为数组                 | Object[]    |
-|          | `toArray(T[] a)`                        | 转为指定类型数组         | T[]         |
-|          | `stream()`                              | 获取流                   | Stream<E>   |
-| **复制** | `clone()`                               | 浅复制                   | Object      |
 
 **LinkedHashSet**
 

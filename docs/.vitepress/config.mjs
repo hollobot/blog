@@ -86,7 +86,10 @@ export default defineConfig({
             {
               text: "Java",
               collapsed: true, // 设置为false则默认展开
-              items: [{ text: "Java 基础", link: "/programming/java/JavaSE" }],
+              items: [
+                { text: "Java 基础", link: "/programming/java/JavaSE" },
+                { text: "并发编程", link: "/programming/java/并发编程" },
+              ],
             },
             {
               text: "MySQL",
@@ -183,7 +186,7 @@ export default defineConfig({
                 },
               ],
             },
-             {
+            {
               text: "Jvm",
               collapsed: true,
               items: [

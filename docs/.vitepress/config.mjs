@@ -183,6 +183,16 @@ export default defineConfig({
                 },
               ],
             },
+             {
+              text: "JVM",
+              collapsed: true,
+              items: [
+                {
+                  text: "jvm 基础",
+                  link: "/programming/jvm/jvm",
+                },
+              ],
+            },
             {
               text: "vue",
               collapsed: true, // 设置为false则默认展开

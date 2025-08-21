@@ -12,7 +12,7 @@ hero:
   actions:
     - theme: brand
       text: 开始学习
-      link: /programming/java/java
+      link: /programming/java/JavaSE
     - theme: alt
       text: vue3 快速入门
       link: /programming/vue/快速开始

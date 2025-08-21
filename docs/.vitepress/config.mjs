@@ -184,7 +184,7 @@ export default defineConfig({
               ],
             },
              {
-              text: "JVM",
+              text: "Jvm",
               collapsed: true,
               items: [
                 {
@@ -194,7 +194,7 @@ export default defineConfig({
               ],
             },
             {
-              text: "vue",
+              text: "Vue",
               collapsed: true, // 设置为false则默认展开
               items: [
                 { text: "快速开始", link: "/programming/vue/快速开始" },

@@ -515,6 +515,7 @@ Queue是一个接口，遵循FIFO(先进先出)原则。常用实现类有Linked
 
 - `peek()` - 返回队头元素但不移除，队列为空返回null
 - `element()` - 返回队头元素但不移除，队列为空抛异常
+- `isEmpty()` - 判断栈是否为空
 
 **LinkedList**
 

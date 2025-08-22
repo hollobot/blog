@@ -376,7 +376,7 @@ Collection
 ├── List (有序，可重复)
 │   ├── ArrayList
 │   ├── LinkedList
-│   └── Vector
+│   └── Vector(Stack类继承自Vector)
 ├── Set (无序，不可重复)
 │   ├── HashSet
 │   ├── LinkedHashSet
@@ -497,7 +497,37 @@ sortedSet.add("apple");
 // 降序排列
 ```
 
-### Queue接口
+### 队列 (Queue)
+
+Queue是一个接口，遵循FIFO(先进先出)原则。常用实现类有LinkedList、ArrayDeque、PriorityQueue等。
+
+**添加元素：**
+
+- `offer(E e)` - 添加元素到队尾，返回boolean
+- `add(E e)` - 添加元素到队尾，失败抛异常
+
+**删除元素：**
+
+- `poll()` - 移除并返回队头元素，队列为空返回null
+- `remove()` - 移除并返回队头元素，队列为空抛异常
+
+**查看元素：**
+
+- `peek()` - 返回队头元素但不移除，队列为空返回null
+- `element()` - 返回队头元素但不移除，队列为空抛异常
+
+**LinkedList**
+
+```java
+Queue<Integer> queue = new LinkedList<>();
+queue.offer(1);
+queue.offer(2);
+queue.offer(3);
+
+System.out.println(queue.peek()); // 输出: 1
+System.out.println(queue.poll()); // 输出: 1，并移除
+System.out.println(queue.size());  // 输出: 2
+```
 
 **PriorityQueue**
 
@@ -532,6 +562,51 @@ deque.pop();
 deque.offer("element");
 deque.poll();
 ```
+
+
+
+### **栈 (Stack)**
+
+Stack类继承自Vector，遵循LIFO(后进先出)原则。不过现在更推荐使用Deque接口的实现。
+
+**添加元素：**
+
+- `push(E item)` - 压栈，将元素添加到栈顶
+
+**删除元素：**
+
+- `pop()` - 出栈，移除并返回栈顶元素
+
+**查看元素：**
+
+- `peek()` - 返回栈顶元素但不移除
+- `empty()` - 判断栈是否为空
+- `search(Object o)` - 搜索元素位置（从栈顶开始计数）
+
+**Stack 实现**
+
+```java
+Stack<Integer> stack = new Stack<>();
+stack.push(1);
+stack.push(2);
+stack.push(3);
+
+System.out.println(stack.peek()); // 输出: 3
+System.out.println(stack.pop());  // 输出: 3，并移除
+System.out.println(stack.size()); // 输出: 2
+```
+
+**使用Deque实现栈（推荐）**
+
+```java
+Deque<Integer> stack = new ArrayDeque<>();
+stack.push(1);    // 压栈
+stack.push(2);
+int top = stack.pop();    // 出栈
+int peek = stack.peek();  // 查看栈顶
+```
+
+
 
 ### Map接口
 

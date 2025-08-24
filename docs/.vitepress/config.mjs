@@ -84,6 +84,36 @@ export default defineConfig({
           text: "编程",
           items: [
             {
+              text: "数据结构",
+              collapsed: true,
+              items: [
+                {
+                  text: "数组与链表",
+                  link: "/programming/数据结构/数组与链表",
+                },
+                {
+                  text: "栈与队列",
+                  link: "/programming/数据结构/栈与队列",
+                },
+                {
+                  text: "哈希表",
+                  link: "/programming/数据结构/哈希表",
+                },
+                {
+                  text: "树",
+                  link: "/programming/数据结构/树",
+                },
+                {
+                  text: "堆",
+                  link: "/programming/数据结构/堆",
+                },
+                {
+                  text: "图",
+                  link: "/programming/数据结构/图",
+                },
+              ],
+            },
+            {
               text: "Java",
               collapsed: true, // 设置为false则默认展开
               items: [
@@ -100,6 +130,9 @@ export default defineConfig({
                   link: "/programming/MySQL/MySQL基本操作",
                 },
                 { text: "MySQL 函数", link: "/programming/MySQL/MySQL函数" },
+                { text: "索引", link: "/programming/MySQL/索引" },
+                { text: "事务", link: "/programming/MySQL/事务" },
+                { text: "锁", link: "/programming/MySQL/锁" },
               ],
             },
             {

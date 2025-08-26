@@ -140,6 +140,10 @@ export default defineConfig({
               collapsed: true,
               items: [
                 {
+                  text: "Redis 安装",
+                  link: "/programming/redis/Redis安装",
+                },
+                {
                   text: "基本操作",
                   link: "/programming/redis/redis基本操作",
                 },
@@ -294,6 +298,14 @@ export default defineConfig({
                 {
                   text: "基本指令",
                   link: "/programming/linux/linux",
+                },
+                {
+                  text: "配置虚拟机",
+                  link: "/programming/linux/配置虚拟机",
+                },
+                 {
+                  text: "docker",
+                  link: "/programming/linux/docker",
                 },
               ],
             },

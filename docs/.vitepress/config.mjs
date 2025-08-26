@@ -12,7 +12,7 @@ export default defineConfig({
       {
         rel: "apple-touch-icon",
         sizes: "180x180",
-        href: "./favicon-180x180.png",
+        href: "/blog/favicon-180x180.png",
       },
     ],
     [
@@ -21,7 +21,7 @@ export default defineConfig({
         rel: "icon",
         type: "image/png",
         sizes: "32x32",
-        href: "./favicon-32x32.png",
+        href: "/blog/favicon-32x32.png",
       },
     ],
     [
@@ -30,10 +30,10 @@ export default defineConfig({
         rel: "icon",
         type: "image/png",
         sizes: "16x16",
-        href: "./favicon-16x16.png",
+        href: "/blog/favicon-16x16.png",
       },
     ],
-    ["link", { rel: "shortcut icon", href: "./favicon.ico" }],
+    ["link", { rel: "shortcut icon", href: "/blog/favicon.ico" }],
   ],
   outDir: ".vitepress/dist",
   srcDir: "src",

@@ -1,5 +1,6 @@
 import { defineConfig } from "vitepress";
 
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   base: "/blog/",
@@ -389,8 +390,7 @@ export default defineConfig({
     socialLinks: [{ icon: "github", link: "https://github.com/hollobot" }],
 
     footer: {
-      message: `<a href="https://beian.miit.gov.cn/" target="_blank">京ICP备20016634号-2</a>`,
-      copyright: `版权所有 © 2019-${new Date().getFullYear()} hello`,
+      copyright: `版权所有 © 2025-${new Date().getFullYear()} hello`,
     },
 
     docFooter: {

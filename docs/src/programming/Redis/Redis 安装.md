@@ -1,4 +1,4 @@
-# Redis安装说明
+# Redis 安装说明
 
 大多数企业都是基于Linux服务器来部署项目，而且Redis官方也没有提供Windows版本的安装包。因此课程中我们会基于Linux系统来安装Redis.
 

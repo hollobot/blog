@@ -141,11 +141,11 @@ export default defineConfig({
               items: [
                 {
                   text: "Redis 安装",
-                  link: "/programming/redis/Redis安装",
+                  link: "/programming/Redis/Redis 安装",
                 },
                 {
-                  text: "基本操作",
-                  link: "/programming/redis/redis基本操作",
+                  text: "Redis 入门",
+                  link: "/programming/Redis/Redis 入门",
                 },
               ],
             },

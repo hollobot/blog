@@ -393,7 +393,7 @@ Jedis的官网地址： https://github.com/redis/jedis
 
 ### 快速入门
 
-1）引入依赖：
+**1. 引入依赖：**
 
 ```xml
 <!--jedis-->
@@ -413,7 +413,7 @@ Jedis的官网地址： https://github.com/redis/jedis
 
 
 
-2）建立连接
+**2. 建立连接**
 
 新建一个单元测试类，内容如下：
 
@@ -434,7 +434,7 @@ void setUp() {
 
 
 
-3）测试：
+**3. 测试：**
 
 ```java
 @Test
@@ -461,7 +461,7 @@ void testHash() {
 
 
 
-4）释放资源
+**4. 释放资源**
 
 ```java
 @AfterEach

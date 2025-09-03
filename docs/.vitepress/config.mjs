@@ -148,6 +148,10 @@ export default defineConfig({
                   text: "Redis 入门",
                   link: "/programming/Redis/Redis 入门",
                 },
+                {
+                  text: "Redis 使用场景",
+                  link: "/programming/Redis/Redis 使用场景",
+                },
               ],
             },
             {

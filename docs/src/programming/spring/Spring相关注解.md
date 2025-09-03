@@ -1,6 +1,10 @@
-### 一、组件相关注解
+# Spring 注解
 
-#### **@Component**
+
+
+## 一、组件相关注解
+
+### **@Component**
 
 @Component 是一个基础且通用的组件注解，用于标识一个普通的 Spring Bean 组件。当 Spring 容器在扫描组件时，会将被 @Component 标注的类实例化为一个 Bean，并纳入 Spring 的管理范围。
 
@@ -13,7 +17,7 @@ public class CommonComponent {
 }
 ```
 
-#### **@`Service`**
+### **@`Service`**
 
 `@Service` 注解通常用于标注业务逻辑层的组件，其本质上也是 `@Component` 的一种特殊形式，用于更明确地强调该类是一个提供业务服务的类。
 
@@ -27,7 +31,7 @@ public class UserService {
 }
 ```
 
-#### **@`Repository`**
+### **@`Repository`**
 
 `@Repository` 注解主要用于标注数据访问层（DAO）的组件，例如与数据库进行交互的类。它的使用有助于区分数据访问相关的逻辑
 
@@ -50,7 +54,7 @@ public class UserRepository {
 
 ```
 
-#### **@`Controller`**
+### **@`Controller`**
 
 `@Controller` 注解用于标注控制层的组件，主要处理用户的请求并返回相应的响应。
 
@@ -71,9 +75,9 @@ public class UserController {
 
 ```
 
-### 二、依赖注入相关注解
+## 二、依赖注入相关注解
 
-#### `@Autowired`
+### `@Autowired`
 
 `@Autowired` 注解用于按照类型自动装配依赖的对象。Spring 容器会根据类型在容器中查找匹配的 Bean 并进行注入。
 
@@ -90,7 +94,7 @@ public class OrderService {
 
 ```
 
-#### **@`Resource`**
+### **@`Resource`**
 
 `@Resource` 注解也用于依赖注入，它既可以通过名称也可以通过类型来查找要注入的 Bean。
 
@@ -107,9 +111,9 @@ public class UserService {
 
 ```
 
-### 三、配置相关注解
+## 三、配置相关注解
 
-#### `@Configuration`
+### `@Configuration`
 
 `@Configuration` 注解用于标识一个类是配置类，Spring 会将该类中的配置信息进行处理和应用。
 
@@ -124,7 +128,7 @@ public class AppConfig {
 }
 ```
 
-#### `@Bean`
+### `@Bean`
 
 `@Bean` 注解在配置类中用于定义一个 Bean，通过方法的返回值来创建和配置 Bean。
 
@@ -140,24 +144,9 @@ public class AppConfig {
 
 ```
 
-#### `@Bean`
+## 四、切面编程（AOP）相关注解
 
-`@Configuration` 注解用于标识一个类是配置类，Spring 会将该类中的配置信息进行处理和应用。
-
-```java
-@Configuration
-public class AppConfig {
-    @Bean
-    public DataSource dataSource() {
-        // 配置数据源
-        return new DriverManagerDataSource();
-    }
-}
-```
-
-### 四、切面编程（AOP）相关注解
-
-#### `@Aspect`
+### `@Aspect`
 
 `@Aspect` 注解用于标识一个类是切面类，该类中可以定义各种切面逻辑。
 
@@ -168,7 +157,7 @@ public class LoggingAspect {
 }
 ```
 
-#### `@Before`
+### `@Before`
 
 `@Before` 注解用于定义在目标方法执行前执行的切面逻辑。
 
@@ -179,7 +168,7 @@ public void beforeMethod(JoinPoint joinPoint) {
 }
 ```
 
-#### `@After`
+### `@After`
 
 `@After` 注解用于定义在目标方法执行后执行的切面逻辑。
 
@@ -190,7 +179,7 @@ public void afterMethod(JoinPoint joinPoint) {
 }
 ```
 
-#### `@Around`
+### `@Around`
 
 `@Around` 注解用于定义环绕目标方法执行的切面逻辑，可以灵活地控制目标方法的执行过程。
 
@@ -204,9 +193,9 @@ public Object aroundMethod(ProceedingJoinPoint joinPoint) throws Throwable {
 }
 ```
 
-### 五、事务管理相关注解
+## 五、事务管理相关注解
 
-#### `@Transactional`
+### `@Transactional`
 
 `@Transactional` 注解用于标识一个方法是事务性的，确保方法内的数据库操作要么全部成功提交，要么全部回滚。
 
@@ -222,9 +211,9 @@ public class UserServiceImpl implements UserService {
 }
 ```
 
-### 六、其他注解
+## 六、其他注解
 
-#### validation
+### validation
 
 1. `@NotNull：对象不能为 null。`
 2. `@NotBlank：字符串不能为空（忽略空格）只能用于字符串类型(String)，不能用于 Integer 或其他数值类型。。`
@@ -266,3 +255,67 @@ public class User {
 }
 ```
 
+
+
+### Scheduled
+
+```java
+@Scheduled(cron = "0 0 3 * * ?") 规则
+```
+
+这是一个Spring框架的定时任务注解，使用Cron表达式来定义执行时间。让我详细解释这个Cron规则：
+
+**Cron表达式结构**
+
+```java
+0 0 3 * * ?
+```
+
+Cron表达式由6个字段组成（从左到右）：
+
+```
+位置字段允许值允许特殊字符
+1秒0-59, - * /
+2分0-59, - * /
+3时0-23, - * /
+4日1-31, - * ? / L W
+5月1-12或JAN-DEC, - * /
+6周1-7或SUN-SAT, - * ? / L #
+```
+
+**具体解析**
+
+`0 0 3 * * ?` 表示：
+
+- **0** (秒) - 第0秒
+- **0** (分) - 第0分钟
+- **3** (时) - 凌晨3点
+- ***** (日) - 每一天
+- ***** (月) - 每个月
+- **?** (周) - 忽略星期几
+
+**执行时间：每天凌晨3点整执行**
+
+**特殊字符说明**
+
+- `*` - 匹配所有值
+- `?` - 用于日和周字段，表示不指定值
+- `-` - 表示范围，如 1-5
+- `,` - 表示列表，如 1,3,5
+- `/` - 表示步长，如 0/15（每15分钟）
+- `L` - 表示最后，如月的最后一天
+- `W` - 表示工作日
+- `#` - 表示第几个，如 1#2（第二个周一）
+
+**其他常用示例**
+
+java
+
+```java
+@Scheduled(cron = "0 */10 * * * ?")  // 每10分钟执行
+@Scheduled(cron = "0 0 */2 * * ?")   // 每2小时执行  
+@Scheduled(cron = "0 0 9-17 * * MON-FRI") // 工作日9-17点每小时执行
+@Scheduled(cron = "0 0 0 1 * ?")     // 每月1号执行
+```
+
+这种方式让你可以精确控制任务的执行时间，非常适合需要定期执行的后台任务。

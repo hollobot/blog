@@ -2,7 +2,7 @@
 
 
 
-## 1、短信登录
+## 1. 短信登录
 
 **1. 发送验证码**
 
@@ -120,7 +120,7 @@ private StringRedisTemplate stringRedisTemplate;
 
 
 
-## 2、查询缓存
+## 2. 查询缓存
 
 缓存数据存储于代码中,而代码运行在内存中,内存的读写性能远高于磁盘,缓存可以大大降低**用户访问并发量带来的**服务器读写压力
 
@@ -849,7 +849,7 @@ public class CacheClient {
 
 
 
-## 3、秒杀场景
+## 3. 秒杀场景
 
 ### 全局唯一ID
 
@@ -1047,7 +1047,7 @@ public class HmDianPingApplication {
 
 
 
-## 4、分布式锁
+## 4. 分布式锁
 
 ### 基本原理和实现方式对比
 
@@ -1277,7 +1277,7 @@ public void unlock(String name) {
 
 
 
-## 5、分布式锁-redission
+## 5. 分布式锁-redission
 
 基于setnx实现的分布式锁存在下面的问题：
 
@@ -1380,7 +1380,7 @@ void testRedisson() throws Exception{
 
 
 
-## 6、Redis 消息队列
+## 6. Redis 消息队列
 
 什么是消息队列：字面意思就是存放消息的队列。最简单的消息队列模型包括3个角色：
 

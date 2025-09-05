@@ -1,6 +1,6 @@
 # Java SE 学习笔记
 
-## Java基础概念
+## 1. Java基础概念
 
 **Java特点**
 
@@ -16,7 +16,7 @@
 .java源文件 → javac编译 → .class字节码文件 → JVM执行
 ```
 
-## 基本语法
+## 2. 基本语法
 
 ### 数据类型
 
@@ -107,7 +107,7 @@ static final String COMPANY_NAME = "ABC公司";
 
 
 
-## 流程控制
+## 3. 流程控制
 
 ### 条件语句
 
@@ -163,7 +163,7 @@ for (int num : array) {
 }
 ```
 
-## 面向对象编程
+## 4. 面向对象编程
 
 ### 类和对象
 
@@ -238,7 +238,7 @@ person.introduce();  // 调用Student的introduce方法
 - **default**：默认的，同包可访问
 - **private**：私有的，仅本类可访问
 
-## 常用类库
+## 5. 常用类库
 
 ### String类
 
@@ -291,7 +291,7 @@ Integer.toString(123)     // 整数转字符串
 Integer.valueOf(123)      // 创建Integer对象
 ```
 
-## 数组
+## 6. 数组
 
 ### 一维数组
 
@@ -326,7 +326,7 @@ for (int i = 0; i < matrix.length; i++) {
 }
 ```
 
-## 异常处理
+## 7. 异常处理
 
 ### 异常体系
 
@@ -367,7 +367,7 @@ public void divide(int a, int b) throws ArithmeticException {
 }
 ```
 
-## 集合框架
+## 8. 集合框架
 
 ### Collection接口体系
 
@@ -736,7 +736,7 @@ Set<String> syncSet = Collections.synchronizedSet(new HashSet<>());
 Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
 ```
 
-## IO流
+## 9. IO流
 
 ### IO流概述
 
@@ -1210,7 +1210,7 @@ public static void copyFileWithChannel(String source, String target) {
 }
 ```
 
-## 多线程
+## 10. 多线程
 
 ### 创建线程
 
@@ -1624,7 +1624,7 @@ for (int i = 0; i < 5; i++) {
 }
 ```
 
-## 重要概念总结
+## 11. 重要概念总结
 
 ### 关键字详解
 
@@ -1775,7 +1775,7 @@ public class ExceptionBestPractice {
 }
 ```
 
-## 学习建议
+## 12. 学习建议
 
 ### 学习路径
 

@@ -1398,7 +1398,9 @@ void testRedisson() throws Exception{
 
 
 
-### List 实现消息队列
+### 三种消息队列实现
+
+**List 实现消息队列**
 
 消息队列（Message Queue），字面意思就是存放消息的队列。而Redis的list数据结构是一个双向链表，很容易模拟出队列效果。
 
@@ -1407,4 +1409,271 @@ void testRedisson() throws Exception{
 
 ![image-20250905165056994](./assets/image-20250905165056994.png)
 
-### 基于PubSub的消息队列
+
+
+**基于PubSub的消息队列**
+
+PubSub（发布订阅）是Redis2.0版本引入的消息传递模型。顾名思义，消费者可以订阅一个或多个channel，生产者向对应channel发送消息后，所有订阅者都能收到相关消息。
+
+```
+ SUBSCRIBE channel [channel] ：订阅一个或多个频道
+ PUBLISH channel msg ：向一个频道发送消息
+ PSUBSCRIBE pattern[pattern] ：订阅与pattern格式匹配的所有频道
+```
+
+![image-20250907115715135](./assets/image-20250907115715135.png)
+
+基于PubSub的消息队列有哪些优缺点？
+优点：
+
+* 采用发布订阅模型，支持多生产、多消费
+
+缺点：
+
+* 不支持数据持久化
+* 无法避免消息丢失
+* 消息堆积有上限，超出时数据丢失
+
+
+
+**基于Stream的消息队列**
+
+![image-20250907115820307](./assets/image-20250907115820307.png)
+
+ **删除指定的消费者组**
+
+```java
+XGROUP DESTORY key groupName
+```
+
+ **给指定的消费者组添加消费者**
+
+```java
+XGROUP CREATECONSUMER key groupname consumername
+```
+
+ **删除消费者组中的指定消费者**
+
+```java
+XGROUP DELCONSUMER key groupname consumername
+```
+
+从消费者组读取消息：
+
+```java
+XREADGROUP GROUP group consumer [COUNT count] [BLOCK milliseconds] [NOACK] STREAMS key [key ...] ID [ID ...]
+```
+
+* group：消费组名称
+* consumer：消费者名称，如果消费者不存在，会自动创建一个消费者
+* count：本次查询的最大数量
+* BLOCK milliseconds：当没有消息时最长等待时间
+* NOACK：无需手动ACK，获取到消息后自动确认
+* STREAMS key：指定队列名称
+* ID：获取消息的起始ID：
+
+">"：从下一个未消费的消息开始
+其它：根据指定id从pending-list中获取已消费但未确认的消息，例如0，是从pending-list中的第一个消息开始
+
+![image-20250907120207995](./assets/image-20250907120207995.png)
+
+特点：
+
+* 消息可回溯
+* 可以多消费者争抢消息，加快消费速度
+* 可以阻塞读取
+* 没有消息漏读的风险
+* 有消息确认机制，保证消息至少被消费一次
+
+**最后我们来个小对比**
+
+![image-20250907120225256](./assets/image-20250907120225256.png)
+
+
+
+### Stream消息队列，实现异步秒杀
+
+项目启动时，开启一个线程任务，尝试获取stream.orders中的消息，完成下单
+
+```java
+// 创建线程池
+private static final ExecutorService SECKILL_ORDER_EXECUTOR = Executors.newSingleThreadExecutor();
+
+
+@PostConstruct
+private void init() {
+    // 启动一个线程
+    SECKILL_ORDER_EXECUTOR.submit(new VoucherOrderHandler());
+}
+
+// 创建订单处理器
+private class VoucherOrderHandler implements Runnable {
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                //1、获取队列中的订单信息
+                List<MapRecord<String, Object, Object>> list = stringRedisTemplate.opsForStream().read(
+                        Consumer.from("g1", "c1"), // 消费组 g1 消费者 c1
+                        StreamReadOptions.empty().count(1).block(Duration.ofSeconds(2)), // 读取一条 阻塞2秒等待
+                        StreamOffset.create("stream.orders", ReadOffset.lastConsumed()) // 消息队列名 stream.orders
+                );
+
+                //2、判断消息队列获取的是否为空
+                if (list == null || list.isEmpty()) {
+                    continue;
+                }
+                //3、获取成功下单
+                MapRecord<String, Object, Object> entries = list.get(0);
+                Map<Object, Object> mapValue = entries.getValue();
+                VoucherOrder voucherOrder = BeanUtil.fillBeanWithMap(mapValue, new VoucherOrder(), true);
+                handleVoucherOrder(voucherOrder);
+                //4、ACK确认消息 如果确认失败会抛出异常
+                stringRedisTemplate.opsForStream().acknowledge("stream.orders", "g1", entries.getId());
+            } catch (Exception e) {
+                log.error("处理订单异常", e);
+                // 处理pending-list中的订单信息(异常消息)
+                handlePendingList();
+            }
+        }
+    }
+}
+
+// 处理pending-list中的订单信息(异常消息)
+public void handlePendingList() {
+    while (true) {
+        try {
+            //1、获取队列中的订单信息
+            List<MapRecord<String, Object, Object>> list = stringRedisTemplate.opsForStream().read(
+                    Consumer.from("g1", "c1"), // 消费组 g1 消费者 c1
+                    StreamReadOptions.empty().count(1), // 读取一条
+                    StreamOffset.create("stream.orders", ReadOffset.from("0")) // 消息队列名 stream.orders 从pending-list中获取已消费但未确认的消息
+            );
+
+            //2、判断消息队列获取的是否为空
+            if (list == null || list.isEmpty()) {
+                // 如果没有读取队列异常，直接跳出。
+                break;
+            }
+            //3、获取成功下单
+            MapRecord<String, Object, Object> entries = list.get(0);
+            Map<Object, Object> mapValue = entries.getValue();
+            VoucherOrder voucherOrder = BeanUtil.fillBeanWithMap(mapValue, new VoucherOrder(), true);
+            handleVoucherOrder(voucherOrder);
+            //4、ACK确认消息 如果确认失败也会抛出异常
+            stringRedisTemplate.opsForStream().acknowledge("stream.orders", "g1", entries.getId());
+        } catch (Exception e) {
+            log.error("处理订单异常", e);
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+}
+```
+
+
+
+## 排行榜
+
+在探店笔记的详情页面，应该把给该笔记点赞的人显示出来，比如最早点赞的TOP5，形成点赞排行榜：
+
+之前的点赞是放到set集合，但是set集合是不能排序的，所以这个时候，咱们可以采用一个可以排序的set集合，就是咱们的sortedSet
+
+![image-20250907161920751](./assets/image-20250907161920751.png)
+
+**点赞逻辑**
+
+```java
+public Result likeBlog(Long id) {
+    // 1.获取登录用户
+    Long userId = UserHolder.getUser().getId();
+    // 2.判断当前登录用户是否已经点赞
+    String key = BLOG_LIKED_KEY + id;
+    Double score = stringRedisTemplate.opsForZSet().score(key, userId.toString());
+    if (score == null) {
+        // 3.如果未点赞，可以点赞
+        // 3.1.数据库点赞数 + 1
+        boolean isSuccess = update().setSql("liked = liked + 1").eq("id", id).update();
+        // 3.2.保存用户到Redis的set集合  zadd key value score
+        if (isSuccess) {
+            // 利用 sortedSet 结构通过 System.currentTimeMillis() 排序
+            stringRedisTemplate.opsForZSet().add(key, userId.toString(), System.currentTimeMillis());
+        }
+    } else {
+        // 4.如果已点赞，取消点赞
+        // 4.1.数据库点赞数 -1
+        boolean isSuccess = update().setSql("liked = liked - 1").eq("id", id).update();
+        // 4.2.把用户从Redis的set集合移除
+        if (isSuccess) {
+            stringRedisTemplate.opsForZSet().remove(key, userId.toString());
+        }
+    }
+    return Result.ok();
+}
+```
+
+
+
+**排行榜查询**
+
+```java
+/**
+ * 点赞排行榜查询
+ */
+@Override
+public Result queryBlogLikes(Long id) {
+    String key = BLOG_LIKED_KEY + id;
+    // 1.查询top5的点赞用户 zrange key 0 4
+    Set<String> top5 = stringRedisTemplate.opsForZSet().range(key, 0, 4);
+    if (top5 == null || top5.isEmpty()) {
+        return Result.ok(Collections.emptyList());
+    }
+    // 2.解析出其中的用户id
+    List<Long> ids = top5.stream().map(Long::valueOf).collect(Collectors.toList());
+    String idStr = StrUtil.join(",", ids);
+    // 3.根据用户id查询用户 WHERE id IN ( 5 , 1 ) ORDER BY FIELD(id, 5, 1)
+    List<UserDTO> userDTOS = userService.query()
+            .in("id", ids).last("ORDER BY FIELD(id," + idStr + ")").list()
+            .stream()
+            .map(user -> BeanUtil.copyProperties(user, UserDTO.class))
+            .collect(Collectors.toList());
+    // 4.返回
+    return Result.ok(userDTOS);
+}
+```
+
+
+
+## 好友共同关注
+
+在set集合中，有交集并集补集的api，我们可以把两人的关注的人分别放入到一个set集合中，然后再通过api去查看这两个set集合中的交集数据。
+
+**核心代码**
+
+```java
+@Override
+public Result followCommons(Long id) {
+    // 1.获取当前用户
+    Long userId = UserHolder.getUser().getId();
+    String key = "follows:" + userId;
+    // 2.求交集
+    String key2 = "follows:" + id;
+    Set<String> intersect = stringRedisTemplate.opsForSet().intersect(key, key2);
+    if (intersect == null || intersect.isEmpty()) {
+        // 无交集
+        return Result.ok(Collections.emptyList());
+    }
+    // 3.解析id集合
+    List<Long> ids = intersect.stream().map(Long::valueOf).collect(Collectors.toList());
+    // 4.查询用户
+    List<UserDTO> users = userService.listByIds(ids)
+            .stream()
+            .map(user -> BeanUtil.copyProperties(user, UserDTO.class))
+            .collect(Collectors.toList());
+    return Result.ok(users);
+}
+```
+

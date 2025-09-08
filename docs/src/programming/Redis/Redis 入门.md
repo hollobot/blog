@@ -110,6 +110,8 @@ String类型，也就是字符串类型，是Redis中最简单的存储类型。
   ```bash
   SET username "admin"
   SET age "25"
+  stringRedisTemplate.opsForValue().set("username", "admin");
+  stringRedisTemplate.opsForValue().set("age", "25");
   ```
 
 - **GET - 获取String值**
@@ -117,12 +119,18 @@ String类型，也就是字符串类型，是Redis中最简单的存储类型。
   ```bash
   GET username
   # 返回: "admin"
+  stringRedisTemplate.opsForValue().get("username");
   ```
 
 - **MSET - 批量设置多个键值对**
 
   ```bash
   MSET name "张三" age "30" city "北京"
+  Map<String, String> map = new HashMap<>();
+  map.put("name", "张三");
+  map.put("age", "30");
+  map.put("city", "北京");
+  stringRedisTemplate.opsForValue().multiSet(map)
   ```
 
 - **MGET - 批量获取多个值**
@@ -130,6 +138,7 @@ String类型，也就是字符串类型，是Redis中最简单的存储类型。
   ```bash
   MGET name age city
   # 返回: 1) "张三" 2) "30" 3) "北京"
+  stringRedisTemplate.opsForValue().multiGet(Arrays.asList("name", "age", "city"));
   ```
 
 - **INCR - 整型自增1**
@@ -138,6 +147,8 @@ String类型，也就是字符串类型，是Redis中最简单的存储类型。
   SET counter "10"
   INCR counter
   # 返回: (integer) 11
+  stringRedisTemplate.opsForValue().set("counter", "10");
+  stringRedisTemplate.opsForValue().increment("counter");
   ```
 
 - **INCRBY - 整型自增指定步长**
@@ -145,6 +156,7 @@ String类型，也就是字符串类型，是Redis中最简单的存储类型。
   ```bash
   INCRBY counter 5
   # 返回: (integer) 16
+  stringRedisTemplate.opsForValue().increment("counter", 5);
   ```
 
 - **INCRBYFLOAT - 浮点数自增指定步长**
@@ -153,6 +165,8 @@ String类型，也就是字符串类型，是Redis中最简单的存储类型。
   SET price "10.5"
   INCRBYFLOAT price 2.3
   # 返回: "12.8"
+  stringRedisTemplate.opsForValue().set("price", "10.5");
+  stringRedisTemplate.opsForValue().increment("price", 2.3);
   ```
 
 - **SETNX - 仅当key不存在时设置**
@@ -161,6 +175,7 @@ String类型，也就是字符串类型，是Redis中最简单的存储类型。
   SETNX lock "process1"
   # 如果lock不存在返回: (integer) 1
   # 如果lock已存在返回: (integer) 0
+  stringRedisTemplate.opsForValue().setIfAbsent("lock", "process1");
   ```
 
 - **SETEX - 设置键值对并指定过期时间(秒)**
@@ -168,6 +183,7 @@ String类型，也就是字符串类型，是Redis中最简单的存储类型。
   ```bash
   SETEX session:token 3600 "abc123xyz"
   # 设置token，3600秒后过期
+  stringRedisTemplate.opsForValue().set("session:token", "abc123xyz", Duration.ofSeconds(3600));
   ```
 
 
@@ -201,27 +217,38 @@ Hash结构可以将对象中的每个字段独立存储，可以针对单个字�
 ```sh
 # 1. HSET key field value：添加或修改 field 的值
 HSET user:1 name "Tom"
+stringRedisTemplate.opsForHash().put("user:1", "name", "Tom");
 
 # 2. HGET key field：获取某个 field 的值
 HGET user:1 name
+stringRedisTemplate.opsForHash().get("user:1", "name");
 
 # 3. HMSET：批量添加多个 field
 HMSET user:1 age 20 gender "male"
+Map<String, String> hash = new HashMap<>();
+hash.put("age", "20");
+hash.put("gender", "male");
+stringRedisTemplate.opsForHash().putAll("user:1", hash);
 
 # 4. HMGET：批量获取多个 field 的值
 HMGET user:1 name age gender
+stringRedisTemplate.opsForHash().multiGet("user:1", Arrays.asList("name", "age", "gender"));
 
 # 5. HGETALL：获取所有 field 和 value
 HGETALL user:1
+stringRedisTemplate.opsForHash().entries("user:1");
 
 # 6. HKEYS：获取所有 field
 HKEYS user:1
+stringRedisTemplate.opsForHash().keys("user:1");
 
 # 7. HINCRBY：让某个字段值自增（指定步长）
 HINCRBY user:1 age 2
+stringRedisTemplate.opsForHash().increment("user:1", "age", 2);
 
 # 8. HSETNX：仅当 field 不存在时设置值
 HSETNX user:1 email "tom@example.com"
+stringRedisTemplate.opsForHash().putIfAbsent("user:1", "email", "tom@example.com");
 ```
 
 
@@ -246,24 +273,31 @@ Redis中的List类型与Java中的LinkedList类似，可以看做是一个双向
 ```sh
 # 1. LPUSH key element ... ：向列表左侧插入一个或多个元素
 LPUSH mylist "a" "b" "c"       # 列表变成 c b a
+stringRedisTemplate.opsForList().leftPushAll("mylist", "a", "b", "c");
 
 # 2. LPOP key：移除并返回列表左侧第一个元素
 LPOP mylist                     # 返回 "c"，列表变成 b a
+stringRedisTemplate.opsForList().leftPop("mylist");
 
 # 3. RPUSH key element ... ：向列表右侧插入一个或多个元素
 RPUSH mylist "x" "y" "z"       # 列表变成 b a x y z
+stringRedisTemplate.opsForList().rightPushAll("mylist", "x", "y", "z");
 
 # 4. RPOP key：移除并返回列表右侧第一个元素
 RPOP mylist                     # 返回 "z"，列表变成 b a x y
+stringRedisTemplate.opsForList().rightPop("mylist");
 
 # 5. LRANGE key start end：返回指定范围内的元素
 LRANGE mylist 0 -1              # 返回整个列表 ["b", "a", "x", "y"]
+stringRedisTemplate.opsForList().range("mylist", 0, -1);
 
 # 6. BLPOP：阻塞式左弹出（等待 5 秒）
 BLPOP mylist 5                  # 如果 mylist 空，会等待 5 秒再返回
+stringRedisTemplate.opsForList().leftPop("mylist", Duration.ofSeconds(5));
 
 # 7. BRPOP：阻塞式右弹出（等待 5 秒）
 BRPOP mylist 5                  # 如果 mylist 空，会等待 5 秒再返回
+stringRedisTemplate.opsForList().rightPop("mylist", Duration.ofSeconds(5));
 ```
 
 
@@ -287,30 +321,42 @@ Redis的Set结构与Java中的HashSet类似，可以看做是一个value为null�
 ```sh
 # 1. SADD key member ... ：向 set 中添加一个或多个元素
 SADD myset "a" "b" "c"          # myset = {a, b, c}
+stringRedisTemplate.opsForSet().add("myset", "a", "b", "c");
 
 # 2. SREM key member ... ：移除 set 中的指定元素
-SREM myset "b"     	             # myset = {a, c}
+SREM myset "b"     	            # myset = {a, c}
+stringRedisTemplate.opsForSet().remove("myset", "b");
 
 # 3. SCARD key：返回 set 中元素的个数
 SCARD myset                     # 返回 2
+stringRedisTemplate.opsForSet().size("myset");
 
 # 4. SISMEMBER key member：判断一个元素是否存在于 set 中
 SISMEMBER myset "a"             # 返回 1 (存在)
 SISMEMBER myset "b"             # 返回 0 (不存在)
+stringRedisTemplate.opsForSet().isMember("myset", "a");
+stringRedisTemplate.opsForSet().isMember("myset", "b");
 
 # 5. SMEMBERS key：获取 set 中的所有元素
 SMEMBERS myset                  # 返回 {a, c}
+stringRedisTemplate.opsForSet().members("myset");
 
 SADD set1 "x" "y" "z"
 SADD set2 "y" "z" "w"
+stringRedisTemplate.opsForSet().add("set1", "x", "y", "z");
+stringRedisTemplate.opsForSet().add("set2", "y", "z", "w");
+
 # 6. SINTER key1 key2 ... ：求多个 set 的交集
 SINTER set1 set2                # 返回 {y, z}
+stringRedisTemplate.opsForSet().intersect("set1", "set2");
 
 # 7. SDIFF key1 key2 ... ：求第一个key1 的差值
 SDIFF  set1 set2                # 返回 {x}
+stringRedisTemplate.opsForSet().difference("set1", "set2");
 
-# 8. sunion key1 key2 ... ：求多个 set 的并集
-sunion set1 set2
+# 8. SUNION key1 key2 ... ：求多个 set 的并集
+SUNION set1 set2                # 返回 {x, y, z, w}
+stringRedisTemplate.opsForSet().union("set1", "set2");
 ```
 
 
@@ -332,44 +378,67 @@ SortedSet具备下列特性：
 **SortedSet的常见命令有：**
 
 ```sh
-# 1. zadd key score member：添加一个或多个元素
-zadd myzset 10 "a"
-zadd myzset 20 "b" 30 "c"     # myzset = {a:10, b:20, c:30}
+# 1. zadd key score member：添加一个或多个元素 
+zadd myzset 10 "a" 
+zadd myzset 20 "b" 30 "c"     # myzset = {a:10, b:20, c:30} 
+stringRedisTemplate.opsForZSet().add("myzset", "a", 10);
+stringRedisTemplate.opsForZSet().add("myzset", "b", 20);
+stringRedisTemplate.opsForZSet().add("myzset", "c", 30);
+ 
+# 2. zrem key member：删除一个元素 
+zrem myzset "b"               # myzset = {a:10, c:30} 
+stringRedisTemplate.opsForZSet().remove("myzset", "b");
+ 
+# 3. zscore key member：获取某个元素的 score 
+zscore myzset "a"             # 返回 10 
+stringRedisTemplate.opsForZSet().score("myzset", "a");
+ 
+# 4. zrank key member：获取元素的排名（从 0 开始，按 score 升序） 
+zrank myzset "c"              # 返回 1 
+stringRedisTemplate.opsForZSet().rank("myzset", "c");
+ 
+# 5. zcard key：获取元素个数 
+zcard myzset                  # 返回 2 
+stringRedisTemplate.opsForZSet().zCard("myzset");
+ 
+# 6. zcount key min max：统计 score 范围内的元素个数 
+zcount myzset 5 25            # 返回 1 (只有 a 的 score=10 在范围内) 
+stringRedisTemplate.opsForZSet().count("myzset", 5, 25);
+ 
+# 7. zincrby key increment member：让元素的 score 自增 
+zincrby myzset 5 "a"          # a 的 score = 15 
+stringRedisTemplate.opsForZSet().incrementScore("myzset", "a", 5);
+ 
+# 8. zrange key start stop：按照 score 升序，获取指定排名范围内的元素 
+zrange myzset 0 -1            # 返回 ["a", "c"] 
+stringRedisTemplate.opsForZSet().range("myzset", 0, -1);
+ 
+# 9. zrangebyscore key min max：获取指定 score 范围内的元素 
+zrangebyscore myzset 10 30    # 返回 ["a", "c"] 
+stringRedisTemplate.opsForZSet().rangeByScore("myzset", 10, 30);
+ 
+# 10. zdiff numkeys key [key ...]：差集 
+zadd z1 1 "a" 2 "b" 3 "c" 
+zadd z2 2 "b" 3 "c" 4 "d" 
+zdiff 2 z1 z2                 # 返回 {"a"} 
+stringRedisTemplate.opsForZSet().add("z1", "a", 1);
+stringRedisTemplate.opsForZSet().add("z1", "b", 2);
+stringRedisTemplate.opsForZSet().add("z1", "c", 3);
+stringRedisTemplate.opsForZSet().add("z2", "b", 2);
+stringRedisTemplate.opsForZSet().add("z2", "c", 3);
+stringRedisTemplate.opsForZSet().add("z2", "d", 4);
+stringRedisTemplate.opsForZSet().difference("z1", "z2");
+ 
+# 11. zinter numkeys key [key ...]：交集 
+zinter 2 z1 z2                # 返回 {"b","c"} (score 默认求和) 
+# 把 z1 和 z2 的交集存到 z3
+Long count = stringRedisTemplate.opsForZSet().intersectAndStore("z1", "z2", "z3");
+# 取交集结果
+Set<String> result = stringRedisTemplate.opsForZSet().range("z3", 0, -1);
 
-# 2. zrem key member：删除一个元素
-zrem myzset "b"               # myzset = {a:10, c:30}
-
-# 3. zscore key member：获取某个元素的 score
-zscore myzset "a"             # 返回 10
-
-# 4. zrank key member：获取元素的排名（从 0 开始，按 score 升序）
-zrank myzset "c"              # 返回 1
-
-# 5. zcard key：获取元素个数
-zcard myzset                  # 返回 2
-
-# 6. zcount key min max：统计 score 范围内的元素个数
-zcount myzset 5 25            # 返回 1 (只有 a 的 score=10 在范围内)
-
-# 7. zincrby key increment member：让元素的 score 自增
-zincrby myzset 5 "a"          # a 的 score = 15
-
-# 8. zrange key start stop：按照 score 升序，获取指定排名范围内的元素
-zrange myzset 0 -1            # 返回 ["a", "c"]
-
-# 9. zrangebyscore key min max：获取指定 score 范围内的元素
-zrangebyscore myzset 10 30    # 返回 ["a", "c"]
-
-# 10. zdiff numkeys key [key ...]：差集
-zadd z1 1 "a" 2 "b" 3 "c"
-zadd z2 2 "b" 3 "c" 4 "d"
-zdiff 2 z1 z2                 # 返回 {"a"}
-
-# 11. zinter numkeys key [key ...]：交集
-zinter 2 z1 z2                # 返回 {"b","c"} (score 默认求和)
-
-# 12. zunion numkeys key [key ...]：并集
+# 12. zunion numkeys key [key ...]：并集 
 zunion 2 z1 z2                # 返回 {"a","b","c","d"} (score 默认求和)
+stringRedisTemplate.opsForZSet().union("z1", "z2");
 ```
 
 

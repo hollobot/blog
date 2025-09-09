@@ -1677,3 +1677,291 @@ public Result followCommons(Long id) {
 }
 ```
 
+
+
+## 滚动查询
+
+具体操作如下：
+
+1、每次查询完成后，我们要分析出查询出数据的最小时间戳，这个值会作为下一次查询的条件
+
+2、我们需要找到与上一次查询相同的查询个数作为偏移量，下次查询时，跳过这些查询过的数据，拿到我们需要的数据
+
+综上：我们的请求参数中就需要携带 lastId：上一次查询的最小时间戳 和偏移量这两个参数。
+
+这两个参数第一次会由前端来指定，以后的查询就根据后台结果作为条件，再次传递到后台。
+
+```java
+/**
+ * 滚动分页查询
+ * @param lastId 最新时间戳
+ * @param offset 偏移量
+ * @return
+ */
+@Override
+public Result queryBlogOfFollow(Long lastId, Integer offset) {
+    // 1.获取当前用户
+    Long useId = UserContextHolder.getUser().getId();
+    String key = "feed:" + useId;
+    Set<ZSetOperations.TypedTuple<String>> typedTuples = stringRedisTemplate.opsForZSet()
+            .reverseRangeByScoreWithScores(key, 0, lastId, offset, 2);
+
+    if(typedTuples==null || typedTuples.isEmpty()){
+        return Result.ok();
+    }
+
+    // 2.解析数据：blogId、minTime(时间戳)、offset(偏移量)
+    List<Long> ids = new ArrayList<>();
+    long minTime = 0;
+    int os = 1;
+    for (ZSetOperations.TypedTuple<String> typedTuple : typedTuples) {
+        ids.add(Long.valueOf(typedTuple.getValue()));
+        long time = typedTuple.getScore().longValue();
+        if(time==minTime){
+            os++;
+        }else{
+            minTime=time;
+            os=1;
+        }
+    }
+    // 3.根据id查询blog
+    String idStr = ids.stream().map(String::valueOf).collect(Collectors.joining(","));
+    List<Blog> blogs = query().in("id", ids).last("ORDER BY field(id," + idStr + ")").list();
+    for (Blog blog : blogs) {
+        // 3.1.查询blog有关的用户
+        queryBlogUser(blog);
+        // 3.2.查询blog是否被点赞
+        isBlogLiked(blog);
+    }
+    ScrollResult scrollResult = new ScrollResult();
+    scrollResult.setList(blogs);
+    scrollResult.setOffset(os);
+    scrollResult.setMinTime(minTime);
+
+    return Result.ok(scrollResult);
+}
+```
+
+
+
+## GEO - 附近查询
+
+GEO就是Geolocation的简写形式，代表地理坐标。Redis在3.2版本中加入了对GEO的支持，允许存储地理坐标信息，帮助我们根据经纬度来检索数据。常见的命令有：
+
+* GEOADD：添加一个地理空间信息，包含：经度（longitude）、纬度（latitude）、值（member）
+* GEODIST：计算指定的两个点之间的距离并返回
+* GEOHASH：将指定member的坐标转为hash字符串形式并返回
+* GEOPOS：返回指定member的坐标
+* GEORADIUS：指定圆心、半径，找到该圆内包含的所有member，并按照与圆心之间的距离排序后返回。6.以后已废弃
+* GEOSEARCH：在指定范围内搜索member，并按照与指定点之间的距离排序后返回。范围可以是圆形或矩形。6.2.新功能
+* GEOSEARCHSTORE：与GEOSEARCH功能一致，不过可以把结果存储到一个指定的key。 6.2.新功能
+
+
+
+**插入数据**
+
+```java
+@Test
+public void test(){
+    List<Shop> list = shopService.list();
+    String key = "shop:geo:";
+    for(Shop shop : list){
+        stringRedisTemplate.opsForGeo().add(key+shop.getTypeId(),new Point(shop.getX(),shop.getY()),shop.getId().toString());
+    }
+}
+```
+
+**查询代码**
+
+```java
+String key = "shop:geo:" + typeId;
+GeoResults<RedisGeoCommands.GeoLocation<String>> search = stringRedisTemplate.opsForGeo().search(key,
+        // 设置中心点
+        GeoReference.fromCoordinate(x, y),
+        // 设置查询半径、单位
+        new Distance(5000),
+        // 设置分页参数
+        RedisGeoCommands.GeoSearchCommandArgs.newGeoSearchArgs().includeDistance().limit(end));
+```
+
+
+
+## BitMap-签到
+
+我们针对签到功能完全可以通过mysql来完成，比如说以下这张表
+
+![1653823145495](./assets/1653823145495.png)
+
+用户一次签到，就是一条记录，假如有1000万用户，平均每人每年签到次数为10次，则这张表一年的数据量为 1亿条
+
+每签到一次需要使用（8 + 8 + 1 + 1 + 3 + 1）共22 字节的内存，一个月则最多需要600多字节
+
+我们如何能够简化一点呢？其实可以考虑小时候一个挺常见的方案，就是小时候，咱们准备一张小小的卡片，你只要签到就打上一个勾，我最后判断你是否签到，其实只需要到小卡片上看一看就知道了
+
+我们可以采用类似这样的方案来实现我们的签到需求。
+
+我们按月来统计用户签到信息，签到记录为1，未签到则记录为0.
+
+把每一个bit位对应当月的每一天，形成了映射关系。用0和1标示业务状态，这种思路就称为位图（BitMap）。这样我们就用极小的空间，来实现了大量数据的表示
+
+Redis中是利用string类型数据结构实现BitMap，因此最大上限是512M，转换为bit则是 2^32个bit位。
+
+![image-20250909165421554](./assets/image-20250909165421554.png)
+
+BitMap的操作命令有：
+
+* SETBIT：向指定位置（offset）存入一个0或1
+* GETBIT ：获取指定位置（offset）的bit值
+* BITCOUNT ：统计BitMap中值为1的bit位的数量
+* BITFIELD ：操作（查询、修改、自增）BitMap中bit数组中的指定位置（offset）的值
+* BITFIELD_RO ：获取BitMap中bit数组，并以十进制形式返回
+* BITOP ：将多个BitMap的结果做位运算（与 、或、异或）
+* BITPOS ：查找bit数组中指定范围内第一个0或1出现的位置
+
+
+
+### 实现签到功能
+
+思路：我们可以把年和月作为bitMap的key，然后保存到一个bitMap中，每次签到就到对应的位上把数字从0变成1，只要对应是1，就表明说明这一天已经签到了，反之则没有签到。
+
+```java
+@Override
+public Result sign() {
+    // 1.获取当前登录用户
+    Long userId = UserHolder.getUser().getId();
+    // 2.获取日期
+    LocalDateTime now = LocalDateTime.now();
+    // 3.拼接key
+    String keySuffix = now.format(DateTimeFormatter.ofPattern(":yyyyMM"));
+    String key = USER_SIGN_KEY + userId + keySuffix;
+    // 4.获取今天是本月的第几天
+    int dayOfMonth = now.getDayOfMonth();
+    // 5.写入Redis SETBIT key offset 1
+    stringRedisTemplate.opsForValue().setBit(key, dayOfMonth - 1, true);
+    return Result.ok();
+}
+```
+
+
+
+### 连续签到统计
+
+从最后一次签到开始向前统计，直到遇到第一次未签到为止，计算总的签到次数，就是连续签到天数。
+
+![image-20250909165556918](./assets/image-20250909165556918.png)
+
+**如何得到本月到今天为止的所有签到数据？**
+
+```sh
+# u:无符号 dayOfMonth:多少位 0：起始位
+BITFIELD key GET u [dayOfMonth] 0
+```
+
+
+
+**如何从后向前遍历每个bit位？**
+
+- bitMap返回的数据是10进制数（num）
+- 用num与`1` 进行与运算（`num&1`）如果没有变那么就签到++
+- 直到变化那么就断签了
+
+
+
+**代码实现**
+
+```java
+@Override
+public Result signCount() {
+    // 1. 获取当前用户
+    UserDTO user = UserContextHolder.getUser();
+    // 2. 获取日期
+    LocalDateTime now = LocalDateTime.now();
+    String nowStr = now.format(DateTimeFormatter.ofPattern(":yyyyMMdd"));
+    // 3. 拼接key
+    String key ="sign:"+user.getId() + nowStr;
+    // 4. 获取今天是本月的第几天
+    int dayOfMonth = now.getDayOfMonth();
+    // 5. 获取本月截止今天为止的所有签到记录，返回的是一个十进制的数字 BITFIELD sign:1:202203 GET u14 0
+    List<Long> result = stringRedisTemplate.opsForValue().bitField(
+        key,
+        BitFieldSubCommands.create() // 创建命令 从第0位开始，获取dayOfMonth位无符号整数
+            .get(BitFieldSubCommands.BitFieldType.unsigned(dayOfMonth)).valueAt(0)
+    );
+
+    if (result==null || result.isEmpty()) {
+        return Result.ok(0);
+    }
+    Long num = result.get(0);
+    int count = 0;
+    while (true){
+        // 6.1.让这个数字与1做与运算，得到数字的最后一个bit位
+        if ((num & 1) == 0) {
+            // 6.2.如果这个bit位是0，说明未签到，结束
+            break;
+        }else {
+            // 6.3.如果这个bit位是1，说明已签到，计数器+1
+            count++;
+        }
+        // 6.4.数字右移一位
+        num = num >> 1;
+    }
+    return Result.ok(count);
+}
+```
+
+
+
+## UV 统计
+
+* UV：全称Unique Visitor，也叫独立访客量，是指通过互联网访问、浏览这个网页的自然人。1天内同一个用户多次访问该网站，只记录1次。
+* PV：全称Page View，也叫页面访问量或点击量，用户每访问网站的一个页面，记录1次PV，用户多次打开页面，则记录多次PV。往往用来衡量网站的流量。
+
+UV统计在服务端做会比较麻烦，因为要判断该用户是否已经统计过了，需要将统计过的用户信息保存。但是如果每个访问的用户都保存到Redis中，数据量会非常恐怖，那怎么处理呢？
+
+Hyperloglog(HLL)是从Loglog算法派生的概率算法，用于确定非常大的集合的基数，而不需要存储其所有值。相关算法原理大家可以参考：https://juejin.cn/post/6844903785744056333#heading-0
+Redis中的HLL是基于string结构实现的，单个HLL的内存**永远小于16kb**，**内存占用低**的令人发指！作为代价，其测量结果是概率性的，**有小于0.81％的误差**。不过对于UV统计来说，这完全可以忽略。
+
+
+
+**查看内存**
+
+```sh
+# Redis 命令
+INFO memory
+
+used_memory: 已使用内存
+used_memory_human: 人类可读的内存使用量
+used_memory_rss: 系统分配的内存
+used_memory_peak: 内存使用峰值
+maxmemory: 最大内存限制
+```
+
+![image-20250909172025193](./assets/image-20250909172025193.png)
+
+**UV统计测试**
+
+```java
+@Test
+public void testHyperLogLog(){
+    // 准备数据
+    String[] values = new String[1000];
+    int j = 0;
+    for (int i = 0; i < 1000000; i++) {
+        values[j++] = "user_" + i;
+        // 1000个一批插入数据，总共插入100w
+        if (j == 1000) {
+            stringRedisTemplate.opsForHyperLogLog().add("hll1", values);
+            j = 0;
+            values = new String[1000];
+        }
+    }
+    Long size = stringRedisTemplate.opsForHyperLogLog().size("hll1");
+    System.out.println("size = " + size); // size = 997593
+}
+```
+
+
+
+**永远小于16kb、小于0.81％的误差**
+
+![image-20250909173003053](./assets/image-20250909173003053.png)

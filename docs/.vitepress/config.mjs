@@ -1,6 +1,5 @@
 import { defineConfig } from "vitepress";
 
-
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   base: "/blog/",
@@ -308,7 +307,7 @@ export default defineConfig({
                   text: "配置虚拟机",
                   link: "/programming/linux/配置虚拟机",
                 },
-                 {
+                {
                   text: "docker",
                   link: "/programming/linux/docker",
                 },

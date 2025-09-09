@@ -1576,7 +1576,7 @@ public void handlePendingList() {
 
 
 
-## 排行榜
+## 7. 排行榜
 
 在探店笔记的详情页面，应该把给该笔记点赞的人显示出来，比如最早点赞的TOP5，形成点赞排行榜：
 
@@ -1647,7 +1647,7 @@ public Result queryBlogLikes(Long id) {
 
 
 
-## 好友共同关注
+## 8. 好友共同关注
 
 在set集合中，有交集并集补集的api，我们可以把两人的关注的人分别放入到一个set集合中，然后再通过api去查看这两个set集合中的交集数据。
 
@@ -1679,7 +1679,7 @@ public Result followCommons(Long id) {
 
 
 
-## 滚动查询
+## 9. 滚动查询
 
 具体操作如下：
 
@@ -1744,7 +1744,7 @@ public Result queryBlogOfFollow(Long lastId, Integer offset) {
 
 
 
-## GEO - 附近查询
+## 10. GEO - 附近查询
 
 GEO就是Geolocation的简写形式，代表地理坐标。Redis在3.2版本中加入了对GEO的支持，允许存储地理坐标信息，帮助我们根据经纬度来检索数据。常见的命令有：
 
@@ -1786,7 +1786,7 @@ GeoResults<RedisGeoCommands.GeoLocation<String>> search = stringRedisTemplate.op
 
 
 
-## BitMap-签到
+## 11. BitMap-签到
 
 我们针对签到功能完全可以通过mysql来完成，比如说以下这张表
 
@@ -1911,7 +1911,7 @@ public Result signCount() {
 
 
 
-## UV 统计
+## 12. UV 统计
 
 * UV：全称Unique Visitor，也叫独立访客量，是指通过互联网访问、浏览这个网页的自然人。1天内同一个用户多次访问该网站，只记录1次。
 * PV：全称Page View，也叫页面访问量或点击量，用户每访问网站的一个页面，记录1次PV，用户多次打开页面，则记录多次PV。往往用来衡量网站的流量。

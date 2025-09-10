@@ -1,11 +1,16 @@
-
 :root {
-  /* --vp-c-brand-1: #10b981;
+  --vp-c-brand-1: #10b981;
   --vp-c-brand-2: #34d399;
-  --vp-c-brand-3: #10b981; */
-  --vp-layout-max-width: 100%;
+  --vp-c-brand-3: #10b981;
 }
 
-/* .vp-doc a {
-  text-decoration: none;
-} */
+
+/* 修改内容宽度 */
+.Layout .VPDoc .content-container {
+  max-width: 85% !important;
+}
+
+/* 在你的自定义CSS中 */
+.layout-wide {
+  --vp-layout-max-width: 90%;  /* 调整最大宽度 */
+}

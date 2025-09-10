@@ -163,9 +163,13 @@ docker run -d --name redis-server \
 ```
 
 ✅ 启动容器，名字叫 `redis`
+
 ✅ 端口映射：宿主机 `6379` → 容器 `6379`
+
 ✅ 挂载宿主机 `/etc/redis.conf` → 容器的 `/usr/local/etc/redis/redis.conf`
+
 ✅ Docker 镜像的标签名称：`redis:latest`
+
 ✅ 启动命令：`redis-server /usr/local/etc/redis/redis.conf`
 
 **直接启动参数配置**

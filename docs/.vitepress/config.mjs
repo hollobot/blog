@@ -407,7 +407,7 @@ export default defineConfig({
 
     // https://vitepress.dev/zh/reference/default-theme-config#outline
     outline: {
-      level: [2, 5],
+      level: [2, 3], // 控制显示标题的级别，默认值是 [2, 3]
       label: "页面导航",
       collapsed: true, // 添加此行，设置大纲默认收缩
       position: "left", // 默认就是右侧，

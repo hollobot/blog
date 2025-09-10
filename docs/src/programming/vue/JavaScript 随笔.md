@@ -1,6 +1,6 @@
 # JavaScript
 
-### Promise 
+## Promise 
 
 **标准写法**
 

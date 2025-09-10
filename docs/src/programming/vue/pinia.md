@@ -1,10 +1,10 @@
 # pinia 
 
-### 1. 准备一个效果
+## 1. 准备一个效果
 
 <img src="./assets/pinia_example.gif" alt="pinia_example" style="zoom:30%;border:3px solid" /> 
 
-### 2. 搭建 pinia 环境
+## 2. 搭建 pinia 环境
 
 第一步：`npm install pinia`
 
@@ -30,7 +30,7 @@ app.mount('#app')
 
 <img src="./assets/pinia_info.png" style="zoom:80%;border:1px solid black;border-radius:10px" />
 
-### 3. 存储+读取数据
+## 3. 存储+读取数据
 
 1. `Store`是一个保存：**状态**、**业务逻辑** 的实体，每个组件都可以**读取**、**写入**它。
 
@@ -117,7 +117,7 @@ app.mount('#app')
 
    
 
-### 4. 修改数据】(三种方式
+## 4. 修改数据】(三种方式
 
 1. 第一种修改方式，直接修改
 
@@ -171,7 +171,7 @@ app.mount('#app')
    ```
 
 
-### 5. storeToRefs
+## 5. storeToRefs
 
 - 借助`storeToRefs`将`store`中的数据转为`ref`对象，方便在模板中使用。
 - 注意：`pinia`提供的`storeToRefs`只会将数据做转换，而`Vue`的`toRefs`会转换`store`中数据。
@@ -196,7 +196,7 @@ app.mount('#app')
 
 ```
 
-### 6. getters
+## 6. getters
 
   1. 概念：当`state`中的数据，需要经过处理后再使用时，可以使用`getters`配置。
 
@@ -238,7 +238,7 @@ app.mount('#app')
 
      
 
-### 7. $subscribe
+## 7. $subscribe
 
 通过 store 的 `$subscribe()` 方法侦听 `state` 及其变化
 
@@ -251,7 +251,7 @@ talkStore.$subscribe((mutate,state)=>{
 
 
 
-### 8. store组合式写法
+## 8. store组合式写法
 
 ```ts
 import {defineStore} from 'pinia'

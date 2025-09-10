@@ -4,7 +4,7 @@
 
 ## 一、组件相关注解
 
-### **@Component**
+### **`@Component`**
 
 @Component 是一个基础且通用的组件注解，用于标识一个普通的 Spring Bean 组件。当 Spring 容器在扫描组件时，会将被 @Component 标注的类实例化为一个 Bean，并纳入 Spring 的管理范围。
 
@@ -17,7 +17,7 @@ public class CommonComponent {
 }
 ```
 
-### **@`Service`**
+### **`@Service`**
 
 `@Service` 注解通常用于标注业务逻辑层的组件，其本质上也是 `@Component` 的一种特殊形式，用于更明确地强调该类是一个提供业务服务的类。
 
@@ -31,7 +31,7 @@ public class UserService {
 }
 ```
 
-### **@`Repository`**
+### **`@Repository`**
 
 `@Repository` 注解主要用于标注数据访问层（DAO）的组件，例如与数据库进行交互的类。它的使用有助于区分数据访问相关的逻辑
 
@@ -54,7 +54,7 @@ public class UserRepository {
 
 ```
 
-### **@`Controller`**
+### **`@Controller`**
 
 `@Controller` 注解用于标注控制层的组件，主要处理用户的请求并返回相应的响应。
 

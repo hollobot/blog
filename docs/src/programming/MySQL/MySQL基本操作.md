@@ -2,7 +2,7 @@
 
 # MySQL 基础
 
-### **1. 数据库、表** 
+## **1. 数据库、表** 
 
 ```sql
 #语法结构
@@ -45,7 +45,7 @@ show create table 表名; -- 查看表的创建语句
 select * from 表名; -- 查询表中所有数据
 ```
 
-### 2. **修改表操作** 
+## 2. **修改表操作** 
 
 ```sql
 alter table 表名 add 列名 数据类型 [约束];       -- 添加列
@@ -59,7 +59,7 @@ alter table 表名 change 旧列名 新列名 数据类型; -- 修改列名和�
 rename table 旧表名 to 新表名;                         -- 重命名表
 ```
 
-### 3. **创建表操作** 
+## 3. **创建表操作** 
 
 ```sql
 create table 表名 (
@@ -107,7 +107,7 @@ BOOLEAN：实际上是 TINYINT 的别名，0 表示 FALSE，1 表示 TRUE。
 JSON：用于存储 JSON 格式数据（MySQL 5.7 及以上版本支持）。
 ```
 
-### 4. 修改表结构 
+## 4. 修改表结构 
 
 ```sql
 alter table 表名 add 列名 数据类型 [约束];       -- 添加列
@@ -117,7 +117,7 @@ alter table 表名 change 旧列名 新列名 数据类型; -- 修改列名和�
 rename table 旧表名 to 新表名;                  -- 重命名表
 ```
 
-### 5. 插入数据
+## 5. 插入数据
 
 **语法结构**
 
@@ -143,7 +143,7 @@ VALUES
     ('test3', 'test3@runoob.com', '1993-05-03', true);
 ```
 
-### 6. 删除数据
+## 6. 删除数据
 
 **基本语法结构**
 
@@ -163,7 +163,7 @@ WHERE customer_id IN (
 );
 ```
 
-### 7. 修改数据
+## 7. 修改数据
 
 **基本语法结构**
 
@@ -193,7 +193,7 @@ SET total_purchases = (
 WHERE customer_type = 'Premium';
 ```
 
-### 9. 数据库查询 
+## 8. 数据库查询 
 
 **基本查询结构**
 

@@ -1,4 +1,6 @@
-### 1. Vue.js的生命周期函数及其执行顺序
+# vue 面经
+
+## 1. Vue.js的生命周期函数及其执行顺序
 
 Vue 3的组合式API生命周期钩子：
 
@@ -12,7 +14,7 @@ Vue 3的组合式API生命周期钩子：
 
 执行顺序：创建 → 挂载 → 更新（可多次） → 卸载
 
-### 2. v-bind指令和v-model指令的区别
+## 2. v-bind指令和v-model指令的区别
 
 - v-bind
 
@@ -32,7 +34,7 @@ Vue 3的组合式API生命周期钩子：
 
 v-model实际上是v-bind和事件监听的语法糖。
 
-### 3. Vue.js的组件通信方式及其优缺点
+## 3. Vue.js的组件通信方式及其优缺点
 
 - **Props/Emit**：父子组件通信，简单直接但层级深时繁琐
 - **Provide/Inject**：跨层级通信，灵活但难以追踪数据流
@@ -40,7 +42,7 @@ v-model实际上是v-bind和事件监听的语法糖。
 - **事件总线**：任意组件通信，但难以维护
 - **ref/expose**：直接访问子组件，简单但破坏封装性
 
-### 4. Vue.js如何实现父子组件之间的数据传递
+## 4. Vue.js如何实现父子组件之间的数据传递
 
 ```vue
 <!-- 父组件 -->
@@ -82,7 +84,7 @@ const sendToParent = () => {
 </script>
 ```
 
-### 5. Vue.js中的响应式原理
+## 5. Vue.js中的响应式原理
 
 Vue 3使用**Proxy**实现响应式：
 
@@ -92,7 +94,7 @@ Vue 3使用**Proxy**实现响应式：
 - 使用WeakMap存储依赖关系
 - 相比Vue 2的Object.defineProperty，支持数组索引和动态属性
 
-### 6. 如何在Vue.js中实现路由跳转
+## 6. 如何在Vue.js中实现路由跳转
 
 ```vue
 <script setup>
@@ -126,7 +128,7 @@ const goToPage = () => {
 </template>
 ```
 
-### 7. computed和watch的区别
+## 7. computed和watch的区别
 
 **computed（计算属性）**：
 
@@ -156,7 +158,7 @@ watch(count, (newVal, oldVal) => {
 </script>
 ```
 
-### 8. v-for指令和v-if指令的区别
+## 8. v-for指令和v-if指令的区别
 
 **执行优先级**：Vue 3中v-if比v-for优先级更高
 
@@ -179,7 +181,7 @@ watch(count, (newVal, oldVal) => {
 </template>
 ```
 
-### 9. mixins和extends的作用及其区别
+## 9. mixins和extends的作用及其区别
 
 **Vue 3推荐使用组合式函数（Composables）替代mixins**：
 
@@ -205,7 +207,7 @@ const { count, increment } = useCounter()
 - **extends**：继承单个组件
 - **Composables**：更清晰的逻辑复用，避免命名冲突
 
-### 10. keep-alive组件的作用及如何使用
+## 10. keep-alive组件的作用及如何使用
 
 **作用**：缓存组件实例，避免重复渲染
 

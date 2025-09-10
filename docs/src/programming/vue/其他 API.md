@@ -1,8 +1,8 @@
 # 其它 API
 
-### 1. shallowRef 与 shallowReactive 
+## 1. shallowRef 与 shallowReactive 
 
-#### `shallowRef`
+### `shallowRef`
 
 1. 作用：创建一个响应式数据，但只对顶层属性进行响应式处理。
 
@@ -14,7 +14,7 @@
 
 3. 特点：只跟踪引用值的变化，不关心值内部的属性变化。
 
-#### `shallowReactive`
+### `shallowReactive`
 
 1. 作用：创建一个浅层响应式对象，只会使对象的最顶层属性变成响应式的，对象内部的嵌套属性则不会变成响应式的
 
@@ -26,15 +26,15 @@
 
 3. 特点：对象的顶层属性是响应式的，但嵌套对象的属性不是。
 
-#### 总结
+### 总结
 
 > 通过使用 [`shallowRef()`](https://cn.vuejs.org/api/reactivity-advanced.html#shallowref) 和 [`shallowReactive()`](https://cn.vuejs.org/api/reactivity-advanced.html#shallowreactive) 来绕开深度响应。浅层式 `API` 创建的状态只在其顶层是响应式的，对所有深层的对象不会做任何处理，避免了对每一个内部属性做响应式所带来的性能成本，这使得属性的访问变得更快，可提升性能。
 
 
 
-### 2. readonly 与 shallowReadonly
+## 2. readonly 与 shallowReadonly
 
-#### **`readonly`**
+### **`readonly`**
 
 1. 作用：用于创建一个对象的深只读副本。
 
@@ -55,7 +55,7 @@
    * 创建不可变的状态快照。
    * 保护全局状态或配置不被修改。
 
-#### **`shallowReadonly`**
+### **`shallowReadonly`**
 
 1. 作用：与 `readonly` 类似，但只作用于对象的顶层属性。
 
@@ -74,9 +74,9 @@
 
      
 
-### 3. toRaw 与 markRaw
+## 3. toRaw 与 markRaw
 
-#### `toRaw`
+### `toRaw`
 
 1. 作用：用于获取一个响应式对象的原始对象， `toRaw` 返回的对象不再是响应式的，不会触发视图更新。
 
@@ -111,7 +111,7 @@
    console.log(isReactive(citys2))
    ```
 
-#### `markRaw`
+### `markRaw`
 
 1. 作用：标记一个对象，使其**永远不会**变成响应式的。
 
@@ -131,7 +131,7 @@
    let citys2 = reactive(citys)
    ```
 
-### 4. customRef
+## 4. customRef
 
 作用：创建一个自定义的`ref`，并对其依赖项跟踪和更新触发进行逻辑控制。
 

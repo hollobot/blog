@@ -1,6 +1,6 @@
 # vue3 新组件
 
-### 1. Teleport
+## 1. Teleport
 
 - 什么是Teleport？—— Teleport 是一种能够将我们的**组件html结构**移动到指定位置的技术。
 
@@ -14,7 +14,7 @@
 </teleport>
 ```
 
-### 2. Suspense
+## 2. Suspense
 
 -  等待异步组件时渲染一些额外内容，让应用有更好的用户体验 
 -  使用步骤： 
@@ -44,7 +44,7 @@ const Child = defineAsyncComponent(()=>import('./Child.vue'))
 
 
 
-### 3. 全局API转移到应用对象
+## 3. 全局API转移到应用对象
 
 - `app.component`
 - `app.config`
@@ -53,7 +53,7 @@ const Child = defineAsyncComponent(()=>import('./Child.vue'))
 - `app.unmount`
 - `app.use`
 
-### 4. 其他
+## 4. 其他
 
 - 过渡类名 `v-enter` 修改为 `v-enter-from`、过渡类名 `v-leave` 修改为 `v-leave-from`。
 

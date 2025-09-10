@@ -1,6 +1,8 @@
-### JOIN类型详解
+# MySQL 面经
 
-#### 1. INNER JOIN（内连接）
+## JOIN类型详解
+
+### 1. INNER JOIN（内连接）
 
 **定义**：只返回两个表中都有匹配记录的行 **特点**：交集，最严格的连接方式
 
@@ -20,7 +22,7 @@ INNER JOIN classes c ON s.ClassID = c.ClassID;
 
 **说明**：小李因为ClassID为NULL，没有匹配的班级，所以不会出现在结果中
 
-#### 2. LEFT JOIN（左连接）
+### 2. LEFT JOIN（左连接）
 
 **定义**：返回左表的所有记录，右表没有匹配的用NULL填充 **特点**：以左表为主，保留左表所有数据
 
@@ -41,7 +43,7 @@ LEFT JOIN classes c ON s.ClassID = c.ClassID;
 
 **说明**：所有学生都显示，小李的班级显示为NULL
 
-#### 3. RIGHT JOIN（右连接）
+### 3. RIGHT JOIN（右连接）
 
 **定义**：返回右表的所有记录，左表没有匹配的用NULL填充 **特点**：以右表为主，保留右表所有数据
 
@@ -61,7 +63,7 @@ RIGHT JOIN classes c ON s.ClassID = c.ClassID;
 
 **说明**：显示所有班级，如果某个班级没有学生，StudentName会显示为NULL
 
-#### 4. FULL OUTER JOIN（全外连接）
+### 4. FULL OUTER JOIN（全外连接）
 
 **定义**：返回两个表的所有记录，没有匹配的用NULL填充 **特点**：并集，最宽松的连接方式 **注意**：MySQL不直接支持FULL OUTER JOIN，需要用UNION实现
 
@@ -74,7 +76,7 @@ SELECT s.StudentName, c.ClassName
 FROM students s RIGHT JOIN classes c ON s.ClassID = c.ClassID;
 ```
 
-#### 🔑 核心区别总结
+### 🔑 核心区别总结
 
 | JOIN类型            | 返回数据            | 使用场景           |
 | ------------------- | ------------------- | ------------------ |
@@ -99,11 +101,13 @@ FROM students s RIGHT JOIN classes c ON s.ClassID = c.ClassID;
 
 希望这个解释能帮您理解不同JOIN的区别！
 
-###  UNION详解
+
+
+##  UNION详解
 
 **UNION** 是用来合并两个或多个SELECT语句结果集的操作符。
 
-#### 🔑 UNION的两种类型
+### 🔑 UNION的两种类型
 
 **1. UNION（去重）**
 

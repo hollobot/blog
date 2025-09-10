@@ -1,6 +1,6 @@
 # Mybatis 分页
 
-### 逻辑分页（内存操作）
+## 逻辑分页（内存操作）
 
 逻辑分页是查询全部数据，然后在内存中进行分页处理。
 
@@ -55,7 +55,7 @@ public PageResult<User> getUsersByLogicalPage(int pageNum, int pageSize) {
 
 
 
-### 物理分页（io/硬盘操作）
+## 物理分页（io/硬盘操作）
 
 物理分页直接在数据库层面进行分页，只查询需要的数据。
 
@@ -78,7 +78,9 @@ ORDER BY id
 LIMIT #{offset}, #{pageSize}
 ```
 
-#### **PageHelper分页插件**
+
+
+## **PageHelper分页插件**
 
 **1. 依赖pom.xml**
 
@@ -183,7 +185,9 @@ where user_id like CONCAT('%', #{userId}, '%')
   and nick_name like CONCAT('%', #{nickName}, '%')
 ```
 
-### 分页性能优化
+
+
+## 分页性能优化
 
 **1、索引优化**
 
@@ -241,7 +245,9 @@ PageInfo<OpUserGroupInfoDomain> pageInfo = new PageInfo<>(userInfoDTOList);
 pageInfo.setTotal(count);
 ```
 
-### PageHelper 分页的 `count` 原理
+
+
+## PageHelper 分页的 `count` 原理
 
 核心原理：动态方法查找 + AOP 拦截
 

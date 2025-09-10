@@ -1,6 +1,6 @@
 # MySQL 常见函数
 
-### 1. 聚合函数
+## 1. 聚合函数
 
 聚合函数用于对一组数据执行计算，常用于 GROUP BY 语句来进行数据分组后的计算。例如常见的有，平均数，最大值，最小值和总和。
 
@@ -22,7 +22,7 @@ select MAX(sal) from emp where sal>2000;
 select MIN(sal) from emp where sal>2000;
 ```
 
-### 2. **开窗函数**
+## 2. **开窗函数**
 
 开窗函数用于在查询结果的某一组数据上进行计算，但不会折叠行，即计算结果仍然返回到每一行。简单理解他是为了简化SQL开发的一种简单嵌套函数。
 
@@ -49,7 +49,7 @@ select MIN(sal) from emp where sal>2000;
 
 
 
-### 3. 数值函数 
+## 3. 数值函数 
 
 用于处理数值类型的数据，如四舍五入、取整、取绝对值等。
 
@@ -62,7 +62,7 @@ select MIN(sal) from emp where sal>2000;
 | RAND()      | 生成 0~1 之间的随机数 | SELECT RAND();           | 0.78452 |
 | MOD(x, y)   | 取模（余数）          | SELECT MOD(10,3);        | 1       |
 
-### 4. 字符串函数 
+## 4. 字符串函数 
 
 用于处理字符串，如拼接、替换、提取子串等。
 
@@ -76,7 +76,7 @@ select MIN(sal) from emp where sal>2000;
 | CONCAT(s1, s2, ...)         | 字符串拼接     | SELECT CONCAT('Hello',' ','World');            | Hello World |
 | REPLACE(s, from, to)        | 替换子串       | SELECT REPLACE('Hello World', 'World', 'SQL'); | Hello SQL   |
 
-### 5. 日期时间函数 
+## 5. 日期时间函数 
 
 用于处理日期和时间，如计算日期差、格式化日期等。
 
@@ -93,7 +93,7 @@ select MIN(sal) from emp where sal>2000;
 | DATE_ADD(d, INTERVAL n unit) | 日期加法           | SELECT DATE_ADD('2025-02-25', INTERVAL 10 DAY);  | 2025-03-07          |
 | DATE_SUB(d, INTERVAL n unit) | 日期减法           | SELECT DATE_SUB('2025-02-25', INTERVAL 1 MONTH); | 2025-01-25          |
 
-### 6. 条件判断函数 
+## 6. 条件判断函数 
 
 用于逻辑判断，比如 CASE、IFNULL 等。
 
@@ -120,7 +120,7 @@ FROM dim_user;
 
 
 
-### 7.案例和练习 
+## 7.案例和练习 
 
 下面给出一个简单的案例，包含两个表的创建、插入样例数据以及一个基本的 JOIN 查询，适合新手练习 SQL。最后还附带三个个简单的练习题。	
 

@@ -1,4 +1,6 @@
-### npm 代理
+# npm
+
+## npm 代理
 
 ```powershell
 // 查看代理
@@ -14,7 +16,7 @@ npm config delete proxy
 npm config delete https-proxy
 ```
 
-### npm 镜像
+## npm 镜像
 
 ```powershell
 #查询当前使用的镜像源
@@ -32,7 +34,7 @@ npm config set registry https://registry.npmjs.org/
 
 ```
 
-### 设置环境变量（临时）
+## 设置环境变量（临时）
 
 ```powershell
 # cmd
@@ -62,7 +64,7 @@ $env:http_proxy
 $env:https_proxy
 ```
 
-### npm install
+## npm install
 
 ```powershell
 # 使用详细输出参数
@@ -77,7 +79,7 @@ npm install --loglevel silly
 
 ```
 
-### 查看 npm 配置中是否有相关设置
+## 查看 npm 配置中是否有相关设置
 
 ```powershell
 npm config list

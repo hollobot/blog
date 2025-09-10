@@ -2,7 +2,7 @@
 
 
 
-### 代理
+## 代理
 
 ```sh
 # HTTP代理
@@ -29,7 +29,7 @@ echo "https_proxy: $https_proxy"
 
 
 
-### 管道查询
+## 管道查询
 
 ```sh
 ps -ef | grep nginx
@@ -39,7 +39,7 @@ kill PID
 
 
 
-### 启动jar包
+## 启动jar包
 
 ```sh
 nohup java -jar myapp.jar > logout.log 2> logerr.log &

@@ -1,6 +1,6 @@
 # electron ipc 通讯
 
-### **invoke/handle 模式**（推荐方式）
+## **invoke/handle 模式**（推荐方式）
 
 ```js
 // 渲染进程
@@ -19,7 +19,9 @@ ipcMain.handle('checkAvatarExists', async (event, avatarPath) => {
 - 有返回值
 - 更现代化的异步处理方式
 
-### **send/on 模式**（传统方式）
+
+
+## **send/on 模式**（传统方式）
 
 ```js
 // 渲染进程
@@ -41,7 +43,9 @@ ipcMain.on('checkAvatarExists', (event, avatarPath) => {
 - 需要额外的回调处理
 - 代码相对复杂
 
-### **sendSync**（同步方式）
+
+
+## **sendSync**（同步方式）
 
 ```js
 // 渲染进程
@@ -59,13 +63,17 @@ ipcMain.on('checkAvatarExists', (event, avatarPath) => {
 - 可能导致界面卡顿
 - 不推荐使用
 
-### 使用场景对比
+
+
+## 使用场景对比
 
 - **invoke/handle**：适合需要返回值的操作，如文件检查、数据查询等
 - **send/on**：适合单向通信或复杂的事件驱动场景
 - **sendSync**：仅在必须同步执行的极少数情况下使用
 
-### 场景
+
+
+## 场景
 
 **邮箱改变获取本地头像改变头像**
 

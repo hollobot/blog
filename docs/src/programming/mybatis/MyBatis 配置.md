@@ -1,6 +1,6 @@
 # mybatis配置
 
-### 配置日志
+## 配置日志
 
 ```yaml
 # application.yml 配置方式

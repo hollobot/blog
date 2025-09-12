@@ -433,4 +433,11 @@ export default defineConfig({
     // https://cn.vitejs.dev/config/shared-options.html#publicdir
     publicDir: "../src/public", // 指定 public 目录路径
   },
+
+  markdown: {
+    image: {
+      // 默认禁用；设置为 true 可为所有图片启用懒加载。
+      lazyLoading: true
+    }
+  }
 });

@@ -1,4 +1,4 @@
-# Java SE 学习笔记
+# Java SE
 
 ## 1. Java基础概念
 

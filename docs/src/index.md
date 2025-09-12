@@ -8,7 +8,7 @@ hero:
     src: /logo.png
     alt: hello
   text: "Electron 桌面开发"
-  tagline: Electron-vite、vue、网络编程、Spring Boot、Redis、Nety
+  tagline: Electron-vite、vue、网络编程、Spring Boot、Redis、Netty
   actions:
     - theme: brand
       text: 开始学习

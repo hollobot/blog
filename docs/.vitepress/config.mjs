@@ -350,7 +350,7 @@ export default defineConfig({
       ],
       "/software/": [
         {
-          text: "软件",
+          text: "工具",
           items: [
             {
               text: "cursor",
@@ -369,6 +369,16 @@ export default defineConfig({
                 {
                   text: "idea 无限重置试用30天",
                   link: "/software/idea/idea",
+                },
+              ],
+            },
+            {
+              text: "network",
+              collapsed: true,
+              items: [
+                {
+                  text: "内网穿透",
+                  link: "/software/netWork/内网穿透",
                 },
               ],
             },
@@ -437,7 +447,7 @@ export default defineConfig({
   markdown: {
     image: {
       // 默认禁用；设置为 true 可为所有图片启用懒加载。
-      lazyLoading: true
-    }
-  }
+      lazyLoading: true,
+    },
+  },
 });

@@ -378,7 +378,7 @@ export default defineConfig({
               items: [
                 {
                   text: "内网穿透",
-                  link: "/software/netWork/内网穿透",
+                  link: "/software/network/内网穿透",
                 },
               ],
             },

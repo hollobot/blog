@@ -196,8 +196,8 @@ Redis 4.0以后
 
 ①方式一：json字符串
 
-| user:1 | {"name": "Jack", "age": 21} |
-| :----: | :-------------------------: |
+| user:1 | "{"name":"jack","gae":"21"}" |
+| :----: | :--------------------------: |
 
 优点：实现简单粗暴
 
@@ -216,6 +216,7 @@ Redis 4.0以后
 ③方式三：hash（推荐）
 
 <table>
+    <tbody>
 	<tr>
 		<td rowspan="2">user:1</td>
         <td>name</td>
@@ -225,7 +226,9 @@ Redis 4.0以后
 		<td>age</td>
 		<td>21</td>
 	</tr>
+    </tbody>
 </table>
+
 
 
 优点：底层使用ziplist，空间占用小，可以灵活访问对象的任意字段
@@ -239,6 +242,7 @@ Redis 4.0以后
 #### **例2：假如有hash类型的key，其中有100万对field和value，field是自增id，这个key存在什么问题？如何优化？**
 
 <table>
+    <tbody>
 	<tr style="color:red">
 		<td>key</td>
         <td>field</td>
@@ -257,7 +261,9 @@ Redis 4.0以后
         <td>id:999999</td>
         <td>value999999</td>
     </tr>
+    </tbody>
 </table>
+
 
 
 存在的问题：
@@ -271,23 +277,26 @@ Redis 4.0以后
 拆分为string类型
 
 <table>
-	<tr style="color:red">
-		<td>key</td>
-        <td>value</td>
-	</tr>
-	<tr>
-		<td>id:0</td>
-        <td>value0</td>
-	</tr>
-    <tr>
-		<td>.....</td>
-        <td>.....</td>
-	</tr>
-    <tr>
-        <td>id:999999</td>
-        <td>value999999</td>
-    </tr>
+    <tbody>
+        <tr style="color:red">
+            <td>key</td>
+            <td>value</td>
+        </tr>
+        <tr>
+            <td>id:0</td>
+            <td>value0</td>
+        </tr>
+        <tr>
+            <td>.....</td>
+            <td>.....</td>
+        </tr>
+        <tr>
+            <td>id:999999</td>
+            <td>value999999</td>
+        </tr>
+    </tbody>
 </table>
+
 
 
 存在的问题：
@@ -303,54 +312,57 @@ Redis 4.0以后
 拆分为小的hash，将 id / 100 作为key， 将id % 100 作为field，这样每100个元素为一个Hash
 
 <table>
-	<tr style="color:red">
+	<tbody>
+    	<tr style="color:red">
 		<td>key</td>
         <td>field</td>
         <td>value</td>
-	</tr>
-	<tr>
-        <td rowspan="3">key:0</td>
-		<td>id:00</td>
-        <td>value0</td>
-	</tr>
-    <tr>
-		<td>.....</td>
-        <td>.....</td>
-	</tr>
-    <tr>
-        <td>id:99</td>
-        <td>value99</td>
-    </tr>
-    <tr>
-        <td rowspan="3">key:1</td>
-		<td>id:00</td>
-        <td>value100</td>
-	</tr>
-    <tr>
-		<td>.....</td>
-        <td>.....</td>
-	</tr>
-    <tr>
-        <td>id:99</td>
-        <td>value199</td>
-    </tr>
-    <tr>
-    	<td colspan="3">....</td>
-    </tr>
-    <tr>
-        <td rowspan="3">key:9999</td>
-		<td>id:00</td>
-        <td>value999900</td>
-	</tr>
-    <tr>
-		<td>.....</td>
-        <td>.....</td>
-	</tr>
-    <tr>
-        <td>id:99</td>
-        <td>value999999</td>
-    </tr>
+        </tr>
+        <tr>
+            <td rowspan="3">key:0</td>
+            <td>id:00</td>
+            <td>value0</td>
+        </tr>
+        <tr>
+            <td>.....</td>
+            <td>.....</td>
+        </tr>
+        <tr>
+            <td>id:99</td>
+            <td>value99</td>
+        </tr>
+        <tr>
+            <td rowspan="3">key:1</td>
+            <td>id:00</td>
+            <td>value100</td>
+        </tr>
+        <tr>
+            <td>.....</td>
+            <td>.....</td>
+        </tr>
+        <tr>
+            <td>id:99</td>
+            <td>value199</td>
+        </tr>
+        <tr>
+            <td colspan="3">....</td>
+        </tr>
+        <tr>
+            <td rowspan="3">key:9999</td>
+            <td>id:00</td>
+            <td>value999900</td>
+        </tr>
+        <tr>
+            <td>.....</td>
+            <td>.....</td>
+        </tr>
+        <tr>
+            <td>id:99</td>
+            <td>value999999</td>
+        </tr>
+    </tbody>
 </table>
+
 
 
 ![image-20250916125737496](./assets/image-20250916125737496.png)

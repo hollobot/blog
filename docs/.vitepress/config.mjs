@@ -155,6 +155,10 @@ export default defineConfig({
                   text: "分布式缓存",
                   link: "/programming/Redis/分布式缓存",
                 },
+                {
+                  text: "Redis 实践",
+                  link: "/programming/Redis/Redis 实践",
+                },
               ],
             },
             {

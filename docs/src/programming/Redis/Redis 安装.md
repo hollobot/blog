@@ -145,7 +145,8 @@ sudo tee /etc/redis-simple.conf > /dev/null <<EOF
 requirepass 123456
 bind 0.0.0.0
 port 6379
-dir /data  # 官方默认配置 dir /var/lib/redis
+# 官方默认配置 dir /var/lib/redis
+dir /data
 save 900 1
 save 300 10
 save 60 10000

@@ -117,6 +117,7 @@ export default defineConfig({
               text: "Java",
               collapsed: true, // 设置为false则默认展开
               items: [
+                { text: "安装 Java", link: "/programming/java/安装 Java" },
                 { text: "Java 基础", link: "/programming/java/JavaSE" },
                 { text: "并发编程", link: "/programming/java/并发编程" },
               ],
@@ -125,6 +126,10 @@ export default defineConfig({
               text: "MySQL",
               collapsed: true,
               items: [
+                {
+                  text: "MySQL 安装",
+                  link: "/programming/MySQL/MySQL 安装",
+                },
                 {
                   text: "MySQL 基础",
                   link: "/programming/MySQL/MySQL基本操作",

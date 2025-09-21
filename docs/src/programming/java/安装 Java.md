@@ -73,3 +73,18 @@ docker run -d \
 - `-w /app`：设置工作目录
 - `-e JAVA_OPTS`：JVM 参数
 - `-e TZ`：设置时区
+
+
+
+#### 前台运行（实时查看日志）
+
+```sh
+# 前台运行，直接在终端查看日志
+docker run --rm \
+  -p 7777:7777 \
+  -v $(pwd):/app \
+  -w /app \
+  openjdk:8 \
+  java -jar app.jar
+```
+

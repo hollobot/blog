@@ -34,26 +34,25 @@ docker pull eclipse-temurin:21
 
 ####  jar 包后台运行
 
-
-
 ```sh
 # 后台运行 jar 包（假设 jar 包在当前目录）
 docker run -d \
-  --name my-java-app \
+  --name java-app \
+  --restart unless-stopped \
   -p 7777:7777 \
-  -v $(pwd):/app \
-  -w /app \
+  -p 18023:18023 \
+  -v /root:/root \
+  -e TZ=Asia/Shanghai \
   openjdk:8 \
-  java -jar your-app.jar
+  java -Xmx1g -Xms512m -jar /root/chat-service-0.0.1-SNAPSHOT.jar
   
 
 docker run -d \
   --name java-app \
   --restart unless-stopped \
   -p 7777:7777 \
-  -v $(pwd):/app \
-  -v $(pwd)/logs:/app/logs \
-  -w /app \
+  -p 18023:18023 \
+  -v /root:/root \
   -e JAVA_OPTS="-Xmx1g -Xms512m" \
   -e TZ=Asia/Shanghai \
   openjdk:8 \
@@ -82,9 +81,9 @@ docker run -d \
 # 前台运行，直接在终端查看日志
 docker run --rm \
   -p 7777:7777 \
-  -v $(pwd):/app \
-  -w /app \
+  -p 18023:18023 \
+  -v /root:/root \
   openjdk:8 \
-  java -jar app.jar
+  java -jar /root/chat-service-0.0.1-SNAPSHOT.jar
 ```
 

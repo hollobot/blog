@@ -1,0 +1,1273 @@
+# Java基础常见面试题总结
+
+## Java是如何实现跨平台的？
+
+java是通过jvm虚拟机实现跨平台的。
+
+JVM可以理解成一个软件，不同的系统有对应的版本。java文件通过编译成 `.class` 文件（字节码文件）,字节码文件又被jvm翻译为对应平台的机器码。不同平台下的字节码文件是一样的，而机器码是不一样的。
+
+只要在不同的平台安装对应的jvm，就可以翻译编译后的字节码文件，从而运行我们写的Java代码。
+
+
+
+## Java 与 C++ 的区别
+
+- Java 是纯粹的面向对象语言，所有的对象都继承自 java.lang.Object，C++ 兼容 C ，不但支持面向对象也支持面向过程。
+- Java 通过虚拟机从而实现跨平台特性， C++ 依赖于特定的平台。
+- Java 没有指针，它的引用可以理解为安全指针，而 C++ 具有和 C 一样的指针。
+- Java 支持自动垃圾回收，而 C++ 需要手动回收。
+- Java 不支持多重继承，只能通过实现多个接口来达到相同目的，而 C++ 支持多重继承。
+
+
+
+##  JDK/JRE/JVM三者的关系
+
+#### **JVM**
+
+所有的java程序会首先被编译为.class的类文件，这种类文件可以在虚拟机上执行。也就是说class文件并不直接与机器的操作系统交互，而是经过虚拟机间接与操作系统交互，由虚拟机将程序解释给本地系统执行。
+
+![img](./assets/20220402230447.png)
+
+#### **JRE**（Java Runtime Environment）
+
+就是Java 运行时环境。我们编写的Java程序必须要在JRE才能运行。它主要包含两个部分，JVM 和 Java 核心类库。
+
+jre是Java的运行环境，如果你只需要运行Java程序，那么你只需要安装jre即可
+
+#### **JDK （Java Development Kit）**
+
+ Java 开发工具包，JDK目录下有个JRE，也就是JDK中已经集成了 JRE，不用单独安装JRE。另外，JDK中还有一些好用的工具，如jinfo，jps，jstack等。
+
+#### **最后，总结一下JDK/JRE/JVM，他们三者的关系**
+
+**JRE = JVM + Java 核心类库**
+
+**JDK = JRE + Java工具 + 编译器 + 调试器**
+
+
+
+## 面向对象和面向过程的区别？
+
+面向对象和面向过程是一种软件开发思想。
+
+- 面向过程就是分析出解决问题所需要的步骤，然后用函数按这些步骤实现，使用的时候依次调用就可以了。
+- 面向对象是把构成问题事务分解成各个对象，分别设计这些对象，然后将他们组装成有完整功能的系统。面向过程只用函数实现，面向对象是用类实现各个功能模块。
+
+以五子棋为例，面向过程的设计思路就是首先分析问题的步骤：
+
+1、开始游戏，2、黑子先走，3、绘制画面，4、判断输赢，5、轮到白子，6、绘制画面，7、判断输赢，8、返回步骤2，9、输出最后结果。 把上面每个步骤用分别的函数来实现，问题就解决了。
+
+而面向对象的设计则是从另外的思路来解决问题。整个五子棋可以分为：
+
+1. 黑白双方
+2. 棋盘系统，负责绘制画面
+3. 规则系统，负责判定诸如犯规、输赢等。
+
+黑白双方负责接受用户的输入，并告知棋盘系统棋子布局发生变化，棋盘系统接收到了棋子的变化的信息就负责在屏幕上面显示出这种变化，同时利用规则系统来对棋局进行判定。
+
+
+
+## 面向对象有哪些特性？
+
+面向对象四大特性：封装，继承，多态，抽象
+
+1、封装就是将类的信息隐藏在类内部，不允许外部程序直接访问，而是通过该类的方法实现对隐藏信息的操作和访问。 良好的封装能够减少耦合。
+
+2、继承是从已有的类中派生出新的类，新的类继承父类的属性和行为，并能扩展新的能力，大大增加程序的重用性和易维护性。在Java中是单继承的，也就是说一个子类只有一个父类。
+
+3、多态是同一个行为具有多个不同表现形式的能力。在不修改程序代码的情况下改变程序运行时绑定的代码。实现多态的三要素：继承、重写、父类引用指向子类对象。
+
+- 静态多态性：通过重载实现，相同的方法有不同的參数列表，可以根据参数的不同，做出不同的处理。
+- 动态多态性：在子类中重写父类的方法。运行期间判断所引用对象的实际类型，根据其实际类型调用相应的方法。
+
+4、抽象。把客观事物用代码抽象出来。
+
+
+
+## 数组到底是不是对象？
+
+先说说对象的概念。对象是根据某个类创建出来的一个实例，表示某类事物中一个具体的个体。
+
+对象具有各种属性，并且具有一些特定的行为。站在计算机的角度，对象就是内存中的一个内存块，在这个内存块封装了一些数据，也就是类中定义的各个属性。
+
+所以，对象是用来封装数据的。
+
+java中的数组具有java中其他对象的一些基本特点。比如封装了一些数据，可以访问属性，也可以调用方法。
+
+因此，可以说，数组是对象。
+
+也可以通过代码验证数组是对象的事实。比如以下的代码，输出结果为java.lang.Object。
+
+```java
+Class clz = int[].class;
+System.out.println(clz.getSuperclass().getName());
+```
+
+由此，可以看出，数组类的父类就是Object类，那么可以推断出数组就是对象。
+
+
+
+## Java的基本数据类型有哪些？
+
+- byte，8bit
+- char，16bit
+- short，16bit
+- int，32bit
+- float，32bit
+- long，64bit
+- double，64bit
+- boolean，只有两个值：true、false，可以使⽤用 1 bit 来存储
+
+在Java规范中，没有明确指出boolean的大小。在《Java虚拟机规范》给出了单个boolean占4个字节，和boolean数组1个字节的定义，具体 **还要看虚拟机实现是否按照规范来**，因此boolean占用1个字节或者4个字节都是有可能的。
+
+
+
+## 为什么不能用浮点型表示金额？
+
+由于计算机中保存的小数其实是十进制的小数的近似值，并不是准确值，所以，千万不要在代码中使用浮点数来表示金额等重要的指标。
+
+建议使用BigDecimal或者Long来表示金额。
+
+
+
+## 什么是值传递和引用传递？
+
+- 值传递是对基本型变量而言的，传递的是该变量的一个副本，改变副本不影响原变量。
+- 引用传递一般是对于对象型变量而言的，传递的是该对象地址的一个副本，并不是原对象本身，两者指向同一片内存空间。所以对引用对象进行操作会同时改变原对象。
+
+**java中不存在引用传递，只有值传递**。
+
+- 基本类型的 “值” 是具体数据；
+- 引用类型的 “值” 是对象的地址；
+
+
+
+## 了解Java的包装类型吗？为什么需要包装类？
+
+Java 是一种面向对象语言，很多地方都需要使用对象而不是基本数据类型。比如，在集合类中，我们是无法将 int 、double 等类型放进去的。因为集合的容器要求元素是 Object 类型。
+
+为了让基本类型也具有对象的特征，就出现了包装类型。相当于将基本类型包装起来，使得它具有了对象的性质，并且为其添加了属性和方法，丰富了基本类型的操作。
+
+
+
+## 自动装箱和拆箱
+
+装箱：将基础类型转化为包装类型。
+
+拆箱：将包装类型转化为基础类型。
+
+当基础类型与它们的包装类有如下几种情况时，编译器会**自动**帮我们进行装箱或拆箱：
+
+- 赋值操作（装箱或拆箱）
+- 进行加减乘除混合运算 （拆箱）
+- 进行>,<,==比较运算（拆箱）
+- 调用equals进行比较（装箱）
+- ArrayList、HashMap等集合类添加基础类型数据时（装箱）
+
+
+
+##  两个Integer 用== 比较不相等的原因
+
+下面看一道常见的面试题：
+
+```java
+Integer a = 100;
+Integer b = 100;
+System.out.println(a == b); // true
+
+Integer c = 200;
+Integer d = 200;
+System.out.println(c == d); // false
+```
+
+为什么第二个输出是false？看看 Integer 类的源码就知道啦。
+
+```java
+public static Integer valueOf(int i) {
+    if (i >= IntegerCache.low && i <= IntegerCache.high)
+        return IntegerCache.cache[i + (-IntegerCache.low)];
+    return new Integer(i);
+}
+```
+
+`Integer c = 200;` 会调用`Integer.valueOf(200)`。而从Integer的valueOf()源码可以看到，这里的实现并不是简单的new Integer，而是用IntegerCache做一个cache。
+
+```java
+private static class IntegerCache {
+    static final int low = -128;
+    static final int high;
+    static final Integer cache[];
+
+    static {
+        // high value may be configured by property
+        int h = 127;
+        String integerCacheHighPropValue =
+            sun.misc.VM.getSavedProperty("java.lang.Integer.IntegerCache.high");
+        if (integerCacheHighPropValue != null) {
+            try {
+                int i = parseInt(integerCacheHighPropValue);
+                i = Math.max(i, 127);
+                // Maximum array size is Integer.MAX_VALUE
+                h = Math.min(i, Integer.MAX_VALUE - (-low) -1);
+            } catch( NumberFormatException nfe) {
+                // If the property cannot be parsed into an int, ignore it.
+            }
+        }
+        high = h;
+    }
+    ...
+}
+```
+
+这是IntegerCache静态代码块中的一段，默认Integer cache 的下限是-128，上限默认127。当赋值100给Integer时，刚好在这个范围内，所以从cache中取对应的Integer并返回，所以a和b返回的是同一个对象，所以`==`比较是相等的，当赋值200给Integer时，不在cache 的范围内，所以会new Integer并返回，当然`==`比较的结果是不相等的。
+
+
+
+## String 为什么不可变？
+
+先看看什么是不可变的对象。
+
+如果一个对象，在它创建完成之后，不能再改变它的状态，那么这个对象就是不可变的。不能改变状态的意思是，不能改变对象内的成员变量，包括基本数据类型的值不能改变，引用类型的变量不能指向其他的对象，引用类型指向的对象的状态也不能改变。
+
+接着来看Java8 String类的源码：
+
+
+
+```java
+public final class String
+    implements java.io.Serializable, Comparable<String>, CharSequence {
+    /** The value is used for character storage. */
+    private final char value[];
+
+    /** Cache the hash code for the string */
+    private int hash; // Default to 0
+}
+```
+
+从源码可以看出，String对象其实在内部就是一个个字符，存储在这个value数组里面的。
+
+value数组用final修饰，final 修饰的变量，值不能被修改。因此value不可以指向其他对象。
+
+String类内部所有的字段都是私有的，也就是被private修饰。而且String没有对外提供修改内部状态的方法，因此value数组不能改变。
+
+所以，String是不可变的。
+
+那为什么String要设计成不可变的？
+
+主要有以下几点原因：
+
+1. **线程安全**。同一个字符串实例可以被多个线程共享，因为字符串不可变，本身就是线程安全的。
+2. **支持hash映射和缓存**。因为String的hash值经常会使用到，比如作为 Map 的键，不可变的特性使得 hash 值也不会变，不需要重新计算。
+3. **出于安全考虑**。网络地址URL、文件路径path、密码通常情况下都是以String类型保存，假若String不是固定不变的，将会引起各种安全隐患。比如将密码用String的类型保存，那么它将一直留在内存中，直到垃圾收集器把它清除。假如String类不是固定不变的，那么这个密码可能会被改变，导致出现安全隐患。
+4. **字符串常量池优化**。String对象创建之后，会缓存到字符串常量池中，下次需要创建同样的对象时，可以直接返回缓存的引用。
+
+既然我们的String是不可变的，它内部还有很多substring， replace， replaceAll这些操作的方法。这些方法好像会改变String对象？怎么解释呢？
+
+其实不是的，我们每次调用replace等方法，其实会在堆内存中创建了一个新的对象。然后其value数组引用指向不同的对象。
+
+
+
+## 为何JDK9要将String的底层实现由char[]改成byte[]?
+
+主要是为了**节约String占用的内存**。
+
+在大部分Java程序的堆内存中，String占用的空间最大，并且绝大多数String只有Latin-1字符，这些Latin-1字符只需要1个字节就够了。
+
+每个字符用 **1 个字节（8 位）** 表示，总共有 256 个可能的字符值（0-255），覆盖了大多数西欧语言的需求，但不支持中文、日文等东亚语言（这些需要多字节编码）。
+
+而在JDK9之前，JVM因为String使用char数组存储，每个char占2个字节，所以即使字符串只需要1字节，它也要按照2字节进行分配，浪费了一半的内存空间。
+
+到了JDK9之后，对于每个字符串，会先判断它是不是只有Latin-1字符，如果是，就按照1字节的规格进行分配内存，如果不是，就按照2字节的规格进行分配，这样便提高了内存使用率，同时GC次数也会减少，提升效率。
+
+不过Latin-1编码集支持的字符有限，比如不支持中文字符，因此对于中文字符串，用的是UTF16编码（两个字节），所以用byte[]和char[]实现没什么区别。
+
+
+
+##  String, StringBuffer 和 StringBuilder区别
+
+**1. 可变性**
+
+- String 不可变
+- StringBuffer 和 StringBuilder 可变
+
+**2. 线程安全**
+
+- String 不可变，因此是线程安全的
+- StringBuilder 不是线程安全的
+- StringBuffer 是线程安全的，内部使用 synchronized 进行同步
+
+
+
+## 什么是StringJoiner？
+
+StringJoiner是 Java 8 新增的一个 API，它基于 StringBuilder 实现，用于实现对字符串之间通过分隔符拼接的场景。
+
+StringJoiner 有两个构造方法，第一个构造要求依次传入分隔符、前缀和后缀。第二个构造则只要求传入分隔符即可（前缀和后缀默认为空字符串）。
+
+```java
+StringJoiner(CharSequence delimiter, CharSequence prefix, CharSequence suffix)
+StringJoiner(CharSequence delimiter)
+```
+
+有些字符串拼接场景，使用 StringBuffer 或 StringBuilder 则显得比较繁琐。
+
+比如下面的例子：
+
+```java
+List<Integer> values = Arrays.asList(1, 3, 5);
+StringBuilder sb = new StringBuilder("(");
+
+for (int i = 0; i < values.size(); i++) {
+	sb.append(values.get(i));
+	if (i != values.size() -1) {
+		sb.append(",");
+	}
+}
+
+sb.append(")");
+```
+
+而通过StringJoiner来实现拼接List的各个元素，代码看起来更加简洁。
+
+```java
+List<Integer> values = Arrays.asList(1, 3, 5);
+StringJoiner sj = new StringJoiner(",", "(", ")");
+
+for (Integer value : values) {
+	sj.add(value.toString());
+}
+```
+
+
+
+## String 类的常用方法有哪些？
+
+- indexOf()：返回指定字符的索引。
+- charAt()：返回指定索引处的字符。
+- replace()：字符串替换。
+- trim()：去除字符串两端空白。
+- split()：分割字符串，返回一个分割后的字符串数组。
+- getBytes()：返回字符串的 byte 类型数组。
+- length()：返回字符串长度。
+- toLowerCase()：将字符串转成小写字母。
+- toUpperCase()：将字符串转成大写字符。
+- substring()：截取字符串。
+- equals()：字符串比较。
+
+
+
+## new String("hello")会创建几个对象？
+
+- 在 Java 中，`new String("hello")` 可能创建 **1 个或 2 个对象**，取决于字符串常量池中是否已存在 `"hello"`：
+  - **情况 1**：常量池中不存在 `"hello"`会创建 **2 个对象**：
+    1. 字符串常量池中的 `"hello"` 对象（由字面量 `"hello"` 触发）。
+    2. 堆内存中通过 `new` 创建的 `String` 对象（该对象的值指向常量池中的 `"hello"`）。
+  - **情况 2**：常量池中已存在 `"hello"`只会创建 **1 个对象**：仅在堆内存中通过 `new` 创建一个 `String` 对象（复用常量池中的 `"hello"`）。
+
+
+
+## 什么是字符串常量池？
+
+字符串常量池（String Constant Pool）是 Java 堆内存中专门用于存储字符串字面量的**缓存区域**，其核心作用是**复用字符串对象，减少内存消耗**。
+
+- **工作原理**：当 Java 代码中出现字符串字面量（如 `"dabin"`）时，JVM 会先检查常量池：
+  - 若该字符串已存在，则直接返回其引用；
+  - 若不存在，则在常量池中创建该字符串并返回引用。
+- **设计目的**：字符串是程序中最常用的数据类型之一，通过常量池复用相同的字符串，可以避免重复创建相同内容的对象，提高内存利用率和运行效率。
+- **相关特性**：
+  - 常量池中的字符串对象是**不可变的**（`String` 类被 `final` 修饰），确保复用安全。
+  - 可以通过 `intern()` 方法手动将堆中的字符串对象加入常量池（若不存在则创建，返回常量池引用）。
+
+
+
+## String最大长度是多少？
+
+Java 中 `String` 的最大长度取决于两个限制：
+
+- **编译期**：字符串字面量的长度不能超过 `65535`（`2^16 - 1`），这是由类文件格式（`CONSTANT_Utf8_info` 结构）规定的，超过会导致编译失败。
+- **运行期**：`String` 内部用 `char[]` 存储字符（JDK 9 前），数组长度是 `int` 类型，因此最大长度为 `Integer.MAX_VALUE`（`2^31 - 1`）。但实际中受内存限制，几乎无法达到这个值。
+
+#### 达到最大长度需要多大内存？
+
+以 JDK 8 为例（`String` 基于 `char[]` 实现，每个 `char` 占 2 字节）：
+
+- 若字符串长度为 `Integer.MAX_VALUE`（约 21 亿字符），仅字符数组就需要 `21亿 × 2字节 ≈ 4GB` 内存。
+- 加上 `String` 对象本身的头部信息（约 16 字节）和数组的头部信息（约 24 字节），总内存约 **4GB+**。这远超普通应用的内存配置，因此实际中不可能创建这么长的字符串。
+
+#### String 存储在 JVM 的哪块区域？
+
+- **字符串常量池**：JDK 7 及以后，常量池移至 **堆内存** 中，存储字符串字面量和通过 `intern()` 方法加入的字符串引用。
+- **堆内存**：通过 `new String(...)` 创建的字符串对象，以及字符串对应的 `char[]` 数组（JDK 8 及以前），都存储在堆中。
+- **栈内存**：仅存储字符串变量的引用（指向堆或常量池中的对象），不存储字符串本身。
+
+#### 什么情况下字符串会存储在常量池？
+
+- **字符串字面量**：如 `String s = "abc";`，字面量 `"abc"` 会被加入常量池（首次出现时）。
+- **常量表达式拼接**：如 `String s = "a" + "b";`，编译期会优化为 `"ab"`，直接存储在常量池。
+- **调用 `intern()` 方法**：如 `new String("abc").intern()`，若常量池中没有 `"abc"`，会将其引用加入常量池（JDK 7 及以后）。
+
+#### 常量池中的字符串最大长度是 2^31-1 吗？
+
+**不是**。常量池中的字符串（字面量）受限于类文件格式，最大长度为 `65535`（`2^16 - 1`）。即使通过 `intern()` 方法将堆中更长的字符串加入常量池，其引用可以指向堆中长度为 `2^31 - 1` 的字符串，但常量池本身存储的只是引用，而非字符串数据本身。
+
+因此，常量池直接存储的字符串字面量最大为 65535，而通过 `intern()` 关联的字符串最大长度仍受限于运行期的 `Integer.MAX_VALUE`。
+
+
+
+## Object常用方法有哪些？
+
+Java 中的 `java.lang.Object` 类是所有类的根类，任何类都直接或间接继承自它。它定义了一些核心方法，以下是最常用的几个：
+
+#### 1. `equals(Object obj)`
+
+- **作用**：判断当前对象与参数对象是否 "相等"。
+- **默认实现**：比较两个对象的内存地址（即 `this == obj`）。
+- **注意**：通常需要重写该方法（如 String、Integer 等都重写了），以实现业务意义上的相等（例如比较对象的属性值）。
+
+```java
+// 示例：重写 equals 比较对象属性
+class Person {
+    String name;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass()!= obj.getClass()) return false;
+        Person person = (Person) obj;
+        return Objects.equals(name, person.name);
+    }
+}
+```
+
+#### 2. `hashCode()`
+
+- **作用**：返回对象的哈希码（一个 int 值），主要用于哈希表（如 HashMap、HashSet）中快速定位对象。
+- **默认实现**：根据对象的内存地址计算哈希码。
+- 重要约定
+  - 若 `a.equals(b) == true`，则 `a.hashCode()` 必须等于 `b.hashCode()`。
+  - 若重写 `equals()`，必须同时重写 `hashCode()`，否则会导致哈希表无法正常工作。
+
+#### 3. `toString()`
+
+- **作用**：返回对象的字符串表示形式，便于打印和调试。
+- **默认实现**：返回 `类名@哈希码的十六进制`（如 `Person@1b6d3586`）。
+- **常用场景**：重写该方法以返回对象的关键属性（如 `Person{name="张三"}`）。
+
+#### 4. `getClass()`
+
+- **作用**：返回对象的运行时类（`Class` 对象）。
+- **特点**：返回的 `Class` 对象是反射机制的核心，可用于获取类的信息（如方法、属性、注解等）。
+
+```java
+String s = "hello";
+Class<?> cls = s.getClass(); // 返回 String.class
+System.out.println(cls.getName()); // 输出 "java.lang.String"
+```
+
+#### 5. `clone()`
+
+- **作用**：创建并返回当前对象的 "副本"（浅拷贝）。
+- 注意
+  - 类必须实现 `Cloneable` 接口（标记接口，否则调用时会抛 `CloneNotSupportedException`）。
+  - 默认是浅拷贝：对于引用类型属性，只复制引用地址，不复制对象本身。
+
+#### 6. `wait()、notify()、notifyAll()`
+
+- **作用**：用于多线程间的协作，实现线程的等待 / 唤醒机制。
+- **使用场景**：结合 `synchronized` 锁，控制线程对共享资源的访问（如生产者 - 消费者模型）。
+- **注意**：必须在同步代码块（或同步方法）中调用，否则会抛 `IllegalMonitorStateException`
+
+
+
+## 讲讲深拷贝和浅拷贝？
+
+在 Java 中，拷贝（复制）对象时，根据对对象内部引用类型成员的处理方式不同，分为**浅拷贝（Shallow Copy）** 和**深拷贝（Deep Copy）**，核心区别在于是否复制对象内部的引用类型数据。
+
+#### 1. 浅拷贝（Shallow Copy）
+
+- **定义**：只复制对象本身（基本类型成员会被复制），但对于对象内部的**引用类型成员**（如其他对象、数组等），仅复制其引用地址，不复制引用指向的实际对象。
+- **结果**：原对象和拷贝对象共享同一个引用类型成员（修改其中一个的引用成员，会影响另一个）。
+
+##### **实现方式：**
+
+- 类实现 `Cloneable` 接口，并重写 `Object` 类的 `clone()` 方法（默认是浅拷贝）
+
+```java
+class Address {
+    String city;
+    public Address(String city) { this.city = city; }
+}
+
+class Person implements Cloneable {
+    String name; // 基本类型的包装类（String是不可变的，特殊）
+    Address address; // 引用类型
+
+    public Person(String name, Address address) {
+        this.name = name;
+        this.address = address;
+    }
+
+    // 重写clone()实现浅拷贝
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone(); // Object默认的clone()是浅拷贝
+    }
+}
+
+// 测试
+public class Test {
+    public static void main(String[] args) throws CloneNotSupportedException {
+        Address addr = new Address("北京");
+        Person p1 = new Person("张三", addr);
+        Person p2 = (Person) p1.clone(); // 浅拷贝
+
+        // 修改p2的引用成员
+        p2.address.city = "上海";
+
+        System.out.println(p1.address.city); // 输出"上海"（p1和p2共享同一个Address对象）
+    }
+}
+```
+
+#### 2. 深拷贝（Deep Copy）
+
+- **定义**：不仅复制对象本身和基本类型成员，还会递归复制对象内部的**所有引用类型成员**（即复制引用指向的实际对象）。
+- **结果**：原对象和拷贝对象完全独立，各自的引用类型成员指向不同的内存地址（修改其中一个的引用成员，不影响另一个）。
+
+**实现方式：**
+
+- 方式 1：让所有引用类型成员也实现 `Cloneable` 接口，在 `clone()` 方法中手动复制引用成员（递归浅拷贝）。
+- 方式 2：通过序列化（如 `ObjectInputStream`/`ObjectOutputStream`）将对象写入流再读出，实现深拷贝（需所有成员支持序列化）。
+
+
+
+## 两个对象的hashCode()相同，则 equals()是否也一定为 true？
+
+**不一定。**
+
+在 Java 中，`hashCode()` 和 `equals()` 的约定是：
+
+1. 如果两个对象的 `equals()` 返回 `true`，则它们的 `hashCode()` 必须相等；
+2. 但反过来，**两个对象的 `hashCode()` 相等时，`equals()` 不一定返回 `true`**。
+
+这种情况称为 “哈希冲突”（Hash Collision）—— 不同的对象可能计算出相同的哈希码。
+
+```java
+String str1 = "Aa";
+String str2 = "BB";
+
+System.out.println(str1.hashCode()); // 输出 2112
+System.out.println(str2.hashCode()); // 输出 2112（与str1相同）
+System.out.println(str1.equals(str2)); // 输出 false（显然不是同一个对象）
+```
+
+这里 `str1` 和 `str2` 的哈希码相同，但 `equals()` 返回 `false`，因为它们的实际内容不同。
+
+这也是为什么在哈希表（如 `HashMap`）中：
+
+- 首先通过 `hashCode()` 定位对象可能存在的桶位置；
+- 然后必须通过 `equals()` 进一步判断对象是否真正相等（避免哈希冲突导致的误判）。
+
+因此，**`hashCode()` 相同只是 `equals()` 为 `true` 的必要条件，而非充分条件**。
+
+
+
+## 为什么重写 equals 时一定要重写 hashCode？
+
+在 Java 中，重写 `equals()` 时必须同时重写 `hashCode()`，这是由两者的**约定规则**和**哈希表的工作原理**共同决定的，否则会导致程序逻辑错误（尤其是在使用哈希集合 / 映射时）。
+
+**核心原因：遵守约定，保证哈希表正确性**
+
+Java 规范对 `equals()` 和 `hashCode()` 有明确约定：
+
+1. **若 `a.equals(b) == true`，则 `a.hashCode()` 必须等于 `b.hashCode()`**；
+2. 若 `a.hashCode()` 不等于 `b.hashCode()`，则 `a.equals(b)` 必须为 `false`。
+
+如果只重写 `equals()` 而不重写 `hashCode()`，会**违反这个约定**，导致依赖哈希码的集合（如 `HashMap`、`HashSet`）出现逻辑错误。
+
+**具体问题场景**
+
+以 `HashSet` 为例（其核心是通过哈希码判断对象是否重复）：
+
+- `HashSet` 添加元素时，先通过 `hashCode()` 计算存储位置，再用 `equals()` 检查是否存在重复对象。
+
+假设存在两个对象 `a` 和 `b`：
+
+- `a.equals(b) == true`（逻辑上是同一个对象）；
+- 但未重写 `hashCode()`，导致 `a.hashCode()!= b.hashCode()`（默认按内存地址计算）。
+
+此时，`HashSet` 会认为 `a` 和 `b` 是不同对象，允许同时存入，违反了 `HashSet` 去重的特性。
+
+
+
+## equals和==有什么区别？
+
+在 Java 中，`equals` 和 `==` 都用于比较，但两者的比较逻辑和适用场景有本质区别：
+
+#### 1. `==`：比较 “值” 本身
+
+- **作用**：直接比较两个变量存储的 “值” 是否相同。
+
+- **具体表现**：
+
+  - 对于 **基本类型变量**（如 `int`、`char` 等）：比较的是变量存储的**实际数据值**（如 `10`、`'a'`）。
+  - 对于 **引用类型变量**（如对象、数组）：比较的是变量存储的**内存地址**（即两个变量是否指向堆内存中的同一个对象）。
+
+- 示例：
+
+  ```java
+  // 基本类型比较
+  int a = 10;
+  int b = 10;
+  System.out.println(a == b); // true（值相同）
+  
+  // 引用类型比较
+  String s1 = new String("abc");
+  String s2 = new String("abc");
+  System.out.println(s1 == s2); // false（内存地址不同，指向不同对象）
+  String s3 = s1;
+  System.out.println(s1 == s3); // true（指向同一个对象）
+  ```
+
+#### 2. `equals`：对象的 “逻辑相等” 比较
+
+- **作用**：是 `Object` 类定义的方法，用于判断两个对象**在业务逻辑上是否相等**（而非地址是否相同）。
+- **默认实现**：`Object` 类的 `equals` 方法本质上是 `return this == obj;`，即和 `==` 效果一致（比较地址）。
+- **实际用途**：大多数类会**重写 `equals` 方法**，定义自己的 “相等” 逻辑（通常基于对象的属性）。例如：
+  - `String` 类的 `equals` 比较字符串的**内容是否相同**；
+  - `Integer` 类的 `equals` 比较**数值是否相同**。
+
+
+
+## final, finally, finalize 的区别
+
+`final`、`finally`、`finalize` 是 Java 中名称相似但含义和用途完全不同的三个概念，主要区别如下：
+
+#### 1. `final`（关键字）
+
+- **功能**：用于修饰类、方法或变量，限制其可变性。
+
+- 具体用法
+
+  ```java
+  final class MyClass {} // 无法被其他类继承
+  
+  class Parent {
+      final void method() {} // 子类无法重写此方法
+  }
+  
+  final int num = 10; 
+  num = 20; // 编译错误：无法修改final变量
+  ```
+
+- **核心作用**：保证不可变性，提高安全性和稳定性（如线程安全场景）。
+
+#### 2. `finally`（关键字）
+
+- **功能**：用于异常处理机制，定义**必须执行的代码块**。
+
+- 使用场景
+
+  ```java
+  try {
+      // 可能发生异常的代码
+      int result = 10 / 0;
+  } catch (ArithmeticException e) {
+      System.out.println("捕获异常");
+  } finally {
+      System.out.println("无论是否异常，我都会执行"); // 一定会执行
+  }
+  ```
+
+- **核心作用**：释放资源（如关闭文件、网络连接等），确保清理操作不被遗漏。
+
+#### 3. `finalize`（方法）
+
+- **功能**：是 `Object` 类的一个实例方法，用于对象被垃圾回收前的 “清理工作”。
+
+- 特点
+
+  - 由 JVM 自动调用，程序员无法主动触发（只能通过 `System.gc()` 建议垃圾回收，但不确定执行时机）。
+
+  - 已被标记为过时（@Deprecated），因为其执行时机不可控，可能导致资源泄漏或程序性能问题。
+
+    ```java
+    class MyObject {
+        @Override
+        protected void finalize() throws Throwable {
+            // 资源清理逻辑（不推荐使用）
+            System.out.println("对象即将被回收");
+        }
+    }
+    ```
+
+- **替代方案**：推荐使用 `try-with-resources` 或手动调用关闭方法（如 `close()`）释放资源。
+
+#### 总结对比
+
+| 类型       | 本质              | 用途                         | 特点                        |
+| ---------- | ----------------- | ---------------------------- | --------------------------- |
+| `final`    | 关键字            | 限制类、方法、变量的可变性   | 编译期生效，主动控制不可变  |
+| `finally`  | 关键字            | 异常处理中定义必须执行的代码 | 运行期生效，确保资源释放    |
+| `finalize` | `Object` 类的方法 | 对象回收前的清理（已过时）   | 由 JVM 被动调用，时机不确定 |
+
+三者仅名称相似，实际功能和使用场景毫无关联，需注意区分。
+
+
+
+## Java中的finally一定会被执行吗？
+
+#### 一、`finally` 一定会执行的常规场景
+
+在标准的异常处理流程中，无论 `try` 块是否发生异常、`catch` 块是否捕获异常，甚至 `try`/`catch` 中是否有 `return` 语句，`finally` 块都会执行。
+
+```java
+public static int test() {
+    try {
+        System.out.println("try 块");
+        return 1; // 执行到此处后，会先执行 finally 再返回
+    } catch (Exception e) {
+        System.out.println("catch 块");
+        return 2;
+    } finally {
+        System.out.println("finally 块"); // 一定会执行
+    }
+}
+```
+
+#### 二、`finally` 不会执行的特殊情况
+
+- **JVM 提前终止：** 如果在 `try`/`catch` 块中调用了 `System.exit(0)`（强制终止 JVM），则 `finally` 块不会执行。
+- **线程被中断：** 如果当前线程在执行 `try`/`catch` 块时被强制中断（如其他线程调用 `Thread.stop()`，该方法已过时但理论上存在），`finally` 块可能无法执行。
+- **硬件 / 系统级异常：** 若发生硬件故障（如断电）、操作系统崩溃等极端情况，JVM 终止运行，`finally` 自然无法执行。
+
+
+
+## 方法重载和重写的区别？
+
+方法重载（Overload）和方法重写（Override）是 Java 中两个重要的多态相关概念，主要区别如下：
+
+#### 1. 方法重载（Overload）
+
+- **定义**：在**同一个类中**，多个方法具有**相同的方法名**，但**参数列表不同**（参数类型、个数、顺序不同），则称为重载。
+- 特点
+  - 必须在同一个类中。
+  - 方法名相同，参数列表不同（与返回值类型、修饰符无关）。
+  - 是编译期多态（编译器根据参数自动选择调用的方法）。
+
+```java
+class Calculator {
+    // 重载：参数个数不同
+    int add(int a, int b) { return a + b; }
+    int add(int a, int b, int c) { return a + b + c; }
+    
+    // 重载：参数类型不同
+    double add(double a, double b) { return a + b; }
+    
+    // 重载：参数顺序不同（不推荐，可读性差）
+    String connect(String a, int b) { return a + b; }
+    String connect(int a, String b) { return a + b; }
+}
+```
+
+#### 2. 方法重写（Override）
+
+- **定义**：在**继承关系中**，子类定义了与父类**方法名相同、参数列表相同、返回值类型兼容**的方法，则称为重写（覆盖）。
+- 特点
+  - 必须存在继承关系（子类重写父类方法）。
+  - 方法名、参数列表、返回值类型（或其子类）必须完全一致（协变返回类型）。
+  - 子类方法的访问权限不能严于父类（如父类是 `public`，子类不能是 `private`）。
+  - 父类的 `final` 方法不能被重写；`static` 方法属于类，不存在重写（只能隐藏）。
+  - 是运行期多态（运行时根据对象实际类型决定调用的方法）。
+
+```java
+class Animal {
+    void sound() {
+        System.out.println("动物发出声音");
+    }
+}
+
+class Dog extends Animal {
+    // 重写父类方法
+    @Override // 注解可校验重写是否正确
+    void sound() {
+        System.out.println("狗汪汪叫");
+    }
+}
+
+// 测试
+Animal animal = new Dog();
+animal.sound(); // 输出"狗汪汪叫"（运行时多态）
+```
+
+#### 核心区别总结
+
+| 维度       | 方法重载（Overload）       | 方法重写（Override）           |
+| ---------- | -------------------------- | ------------------------------ |
+| 存在范围   | 同一个类中                 | 父子类之间                     |
+| 方法名     | 相同                       | 相同                           |
+| 参数列表   | 必须不同                   | 必须相同                       |
+| 返回值类型 | 可不同（与重载无关）       | 必须相同或为其子类（协变返回） |
+| 访问修饰符 | 无限制                     | 子类不能严于父类               |
+| 多态类型   | 编译期多态（静态多态）     | 运行期多态（动态多态）         |
+| 目的       | 方便调用同一功能的不同实现 | 子类定制父类的行为             |
+
+简单说：重载是 “同名不同参”，解决同一类中功能相似的方法调用问题；重写是 “父子类同名同参”，实现子类对父类行为的个性化定制。
+
+
+
+## 接口与抽象类区别？
+
+接口（Interface）和抽象类（Abstract Class）是 Java 中实现抽象和多态的两种重要机制，它们的核心区别如下：
+
+#### 1. 定义与结构
+
+**抽象类**
+
+- 用 `abstract class` 定义，可包含**抽象方法**（无实现）和**具体方法**（有实现）。
+- 可声明**成员变量**（可被继承或访问）、**构造器**（用于子类初始化）。
+
+```java
+abstract class Animal {
+    // 成员变量
+    String name;
+    
+    // 构造器
+    public Animal(String name) {
+        this.name = name;
+    }
+    
+    // 抽象方法（无实现）
+    abstract void sound();
+    
+    // 具体方法（有实现）
+    void eat() {
+        System.out.println(name + "在吃东西");
+    }
+}
+```
+
+**接口**
+
+- 用 `interface` 定义，JDK 8 前只能包含**抽象方法**（默认 `public abstract`）；JDK 8 及以后可包含**默认方法**（`default`，有实现）和**静态方法**（`static`）。
+- 成员变量默认是 `public static final`（常量），不能有构造器。
+
+```java
+interface Flyable {
+    // 常量（默认public static final）
+    int MAX_HEIGHT = 1000;
+    
+    // 抽象方法（默认public abstract）
+    void fly();
+    
+    // 默认方法（JDK 8+）
+    default void land() {
+        System.out.println("降落");
+    }
+}
+```
+
+#### 2. 继承 / 实现规则
+
+- **抽象类**
+  - 子类通过 `extends` 继承抽象类，**只能单继承**（Java 不支持多继承）。
+  - 子类必须重写抽象类中**所有抽象方法**（除非子类也是抽象类）。
+- **接口**
+  - 类通过 `implements` 实现接口，**可同时实现多个接口**（弥补单继承限制）。
+  - 实现类必须重写接口中**所有抽象方法**（除非实现类是抽象类）。
+
+#### 3.核心区别总结
+
+| 维度            | 抽象类（Abstract Class）        | 接口（Interface）                              |
+| --------------- | ------------------------------- | ---------------------------------------------- |
+| 关键字          | `abstract class`                | `interface`                                    |
+| 方法类型        | 可包含抽象方法和具体方法        | JDK 8+ 可包含抽象方法、默认方法、静态方法      |
+| 成员变量        | 可定义任意变量（非 final）      | 只能是 `public static final` 常量              |
+| 构造器          | 有构造器（用于子类初始化）      | 无构造器                                       |
+| 继承 / 实现方式 | 子类 `extends` 继承，**单继承** | 类 `implements` 实现，**多实现**               |
+| 访问修饰符      | 可使用 `public`、`protected` 等 | 方法和变量默认 `public`（JDK 9+ 支持私有方法） |
+| 设计意义        | 体现继承关系，抽取共性代码      | 定义行为规范，实现多态扩展                     |
+
+
+
+## 常见的Exception有哪些？
+
+**常见的RuntimeException：**
+
+1. `ClassCastException` //类型转换异常
+2. `IndexOutOfBoundsException` //数组越界异常
+3. `NullPointerException` //空指针
+4. `ArrayStoreException` //数组存储异常
+5. `NumberFormatException` //数字格式化异常
+6. `ArithmeticException` //数学运算异常
+
+**checked Exception：**
+
+1. `NoSuchFieldException` //反射异常，没有对应的字段
+2. `ClassNotFoundException` //类没有找到异常
+3. `IllegalAccessException` //安全权限异常，可能是反射时调用了private方法
+
+
+
+## Error和Exception的区别？
+
+**Error**：JVM 无法解决的严重问题，如栈溢出`StackOverflowError`、内存溢出`OOM`等。程序无法处理的错误。
+
+**Exception**：其它因编程错误或偶然的外在因素导致的一般性问题。可以在代码中进行处理。如：空指针异常、数组下标越界等。
+
+
+
+## 运行时异常和非运行时异常（checked）的区别？
+
+`unchecked exception`包括`RuntimeException`和`Error`类，其他所有异常称为检查（checked）异常。
+
+1. `RuntimeException`由程序错误导致，应该修正程序避免这类异常发生。
+2. `checked Exception`由具体的环境（读取的文件不存在或文件为空或sql异常）导致的异常。必须进行处理，不然编译不通过，可以catch或者throws。
+
+
+
+## throw和throws的区别？
+
+在 Java 中，`throw` 和 `throws` 都用于异常处理，但用途和用法有明显区别：
+
+#### 1. `throw`：手动抛出异常对象
+
+- **作用**：在方法内部**主动抛出一个具体的异常对象**（触发异常）。
+- **使用场景**：当程序满足某种错误条件时，手动创建异常对象并抛出，中断当前流程。
+- **语法**：`throw new 异常类(异常信息);`（后面通常接 `;` 或控制语句）。
+
+#### 2. `throws`：声明方法可能抛出的异常
+
+- **作用**：在方法声明处**声明该方法可能抛出的异常类型**，告知调用者需要处理这些异常。
+- **使用场景**：当方法内部可能产生 checked 异常（受检异常），且不打算在当前方法中处理时，用 `throws` 声明，由调用者处理。
+
+- **语法**：`方法返回值 方法名(参数) throws 异常类型1, 异常类型2... { ... }`。
+
+
+
+## BIO/NIO/AIO区别的区别？
+
+BIO、NIO、AIO 是 Java 中三种不同的 I/O 模型，主要区别体现在处理 I/O 操作的方式和效率上，尤其在高并发场景下表现差异显著：
+
+#### 1. BIO（Blocking I/O，阻塞式 I/O）
+
+- **核心特点**：同步阻塞，即 I/O 操作（如读写）会阻塞线程，直到操作完成。
+- 工作方式
+  - 每个连接对应一个线程，线程在等待 I/O 操作（如网络读取、文件写入）时会被阻塞，无法处理其他任务。
+  - 例如：`Socket`、`ServerSocket` 就是典型的 BIO 实现。
+- 优缺点
+  - 优点：模型简单，编程容易理解。
+  - 缺点：高并发下线程数量激增，内存占用大，线程切换成本高，性能瓶颈明显。
+- **适用场景**：连接数少且固定的场景（如早期的简单服务）。
+
+#### 2. NIO（Non-blocking I/O，非阻塞式 I/O）
+
+- **核心特点**：同步非阻塞，通过**通道（Channel）**、**缓冲区（Buffer）** 和**选择器（Selector）** 实现多路复用。
+- 工作方式
+  - **通道（Channel）**：双向操作（可读可写），替代 BIO 中的流（单向）。
+  - **缓冲区（Buffer）**：数据读写的容器，所有 I/O 操作都通过缓冲区进行。
+  - **选择器（Selector）**：一个线程可管理多个通道，通过轮询监听通道的 I/O 事件（如连接就绪、数据可读），仅在事件发生时才处理，避免线程阻塞。
+- 优缺点
+  - 优点：单线程可处理多个连接，减少线程数量，降低资源消耗，适合高并发。
+  - 缺点：需要手动处理缓冲区和事件，编程复杂度高；仍需主动轮询事件（同步特性）。
+- **适用场景**：高并发、连接数多但数据量小的场景（如聊天服务器、RPC 框架），典型实现如 `Java NIO` 包。
+
+#### 3. AIO（Asynchronous I/O，异步 I/O）
+
+- **核心特点**：异步非阻塞，I/O 操作完全由操作系统完成后通知应用程序，程序无需主动等待。
+- 工作方式
+  - 发起 I/O 操作后，线程立即返回继续执行其他任务，无需阻塞。
+  - 当 I/O 操作完成（成功或失败），操作系统通过回调函数或事件通知应用程序处理结果。
+- 优缺点
+  - 优点：完全异步，资源利用率最高，编程模型更简洁（无需轮询）。
+  - 缺点：依赖操作系统底层支持（如 Windows 的 IOCP、Linux 的 epoll），Java 中的 AIO 实现不够成熟，实际应用较少。
+- **适用场景**：连接数多且数据量大的场景（如文件服务器），Java 中通过 `java.nio.channels.AsynchronousSocketChannel` 等类实现。
+
+#### 核心区别总结
+
+| 维度           | BIO（同步阻塞）    | NIO（同步非阻塞）              | AIO（异步非阻塞）              |
+| -------------- | ------------------ | ------------------------------ | ------------------------------ |
+| 阻塞性         | I/O 操作阻塞线程   | I/O 操作不阻塞线程，需轮询事件 | I/O 操作不阻塞线程，由系统通知 |
+| 线程模型       | 一个连接一个线程   | 单线程管理多个连接（多路复用） | 线程仅处理完成的 I/O 事件      |
+| 核心组件       | 流（Stream）       | 通道、缓冲区、选择器           | 异步通道、回调 / Future        |
+| 编程复杂度     | 简单               | 较高                           | 中（依赖回调）                 |
+| 性能（高并发） | 差（线程资源耗尽） | 好（减少线程开销）             | 更好（完全异步）               |
+| 典型应用       | 早期简单服务       | Netty 框架、高并发服务器       | 大型文件传输（应用较少）       |
+
+#### 一句话概括
+
+- **BIO**：我等你做完（阻塞），一个人陪一个客户。
+- **NIO**：我不等你，但会时不时看你好了没（轮询），一个人陪多个客户。
+- **AIO**：你做完了告诉我（回调），我先忙别的，客户好了再处理。
+
+
+
+## 守护线程是什么？
+
+守护线程（Daemon Thread）是 Java 中一种特殊线程，主要用于为其他线程（用户线程）提供服务，如垃圾回收线程（GC）就是典型的守护线程。
+
+- **特点**：当所有用户线程结束时，守护线程会自动终止（无论是否执行完毕），不会阻止 JVM 退出。
+- **设置方式**：通过 `thread.setDaemon(true)` 标记，且必须在 `start()` 前设置。
+- **用途**：适合执行后台任务（如日志记录、内存监控），不能用于处理核心业务逻辑（可能被强制终止）。
+
+
+
+##  Java 支持多继承吗？
+
+**不支持类的多继承**，但支持接口的多实现，以此间接实现类似多继承的功能：
+
+- **类的单继承**：Java 中一个类只能直接继承一个父类（`extends` 关键字），避免多继承带来的 “菱形问题”（方法冲突）
+- **接口的多实现**：一个类可以同时实现多个接口（`implements` 关键字），通过实现接口中的方法扩展功能。
+
+**Java不支持多继承的原因：**
+
+- 出于安全性的考虑，如果子类继承的多个父类里面有相同的方法或者属性，子类将不知道具体要继承哪个。
+- Java提供了接口和内部类以达到实现多继承功能，弥补单继承的缺陷。
+
+
+
+## 如何实现对象克隆？
+
+对象克隆（复制）分为浅拷贝和深拷贝，实现方式如下：
+
+1. **浅拷贝**：
+
+   1. 类实现 `Cloneable` 接口（标记接口，无方法）。
+   2. 重写 `Object` 类的 `clone()` 方法，调用 `super.clone()`。
+
+   ```java
+   class Person implements Cloneable {
+       String name;
+       @Override
+       protected Object clone() throws CloneNotSupportedException {
+           return super.clone(); // 浅拷贝
+       }
+   }
+   ```
+
+   
+
+- **深拷贝**：
+  1. 方式 1：对引用类型成员递归调用 `clone()`（需所有引用类型都实现 `Cloneable`）。
+  2. 方式 2：通过序列化（如 `ObjectInputStream`/`ObjectOutputStream`）将对象写入流再读出，实现完全独立的复制。
+
+
+
+## 同步和异步的区别？
+
+核心区别在于**调用方是否需要等待操作完成**：
+
+- **同步（Synchronous）**：调用方发起操作后，必须等待操作执行完毕才能继续执行后续代码（如同步方法调用、BIO 读写）。例：打电话时，需等待对方回应才能继续交流。
+- **异步（Asynchronous）**：调用方发起操作后，无需等待，可立即执行后续代码；操作完成后通过回调、事件等方式通知调用方（如 AIO、消息队列）。例：发邮件时，发送后无需等待对方查看，可直接做其他事。
+
+
+
+## 阻塞和非阻塞的区别？
+
+阻塞和非阻塞关注的是线程的状态。
+
+阻塞调用是指调用结果返回之前，当前线程会被挂起。调用线程只有在得到结果之后才会恢复运行。
+
+非阻塞调用指在不能立刻得到结果之前，该调用不会阻塞当前线程。
+
+> 举个例子，理解下同步、阻塞、异步、非阻塞的区别：
+>
+> 同步就是烧开水，要自己来看开没开；异步就是水开了，然后水壶响了通知你水开了（回调通知）。阻塞是烧开水的过程中，你不能干其他事情，必须在旁边等着；非阻塞是烧开水的过程里可以干其他事情。
+
+
+
+## Java8的新特性有哪些？
+
+Lambda 表达式：Lambda允许把函数作为一个方法的参数
+
+Stream API ：新添加的Stream API（java.util.stream） 把真正的函数式编程风格引入到Java中
+
+默认方法：默认方法就是一个在接口里面有了一个实现的方法。
+
+Optional 类 ：Optional 类已经成为 Java 8 类库的一部分，用来解决空指针异常。
+
+Date Time API ：加强对日期与时间的处理。
+
+
+
+## 序列化和反序列化
+
+序列化（Serialization）和反序列化（Deserialization）是 Java 中用于处理对象持久化和网络传输的重要机制，核心是将对象的状态转换为可存储或传输的形式，以及将其恢复为对象。
+
+#### 1. 基本概念
+
+- **序列化**：将内存中的**对象状态**（属性值）转换为**字节序列**（如二进制数据），以便存储到文件、数据库，或通过网络传输到其他系统。
+- **反序列化**：将序列化生成的**字节序列**恢复为内存中的**对象**，还原其状态。
+
+#### 2. 实现方式（Java 标准）
+
+Java 通过 `java.io.Serializable` 接口和相关流类实现序列化：
+
+**（1）让类支持序列化**
+
+- 类需实现 `Serializable` 接口（标记接口，无方法，仅用于标识该类可序列化）。
+- 若类有引用类型成员，该成员也需支持序列化（除非用 `transient` 修饰）。
+
+```java
+import java.io.Serializable;
+
+// 实现Serializable接口，支持序列化
+class User implements Serializable {
+    private String name;
+    private int age;
+    // transient修饰的成员不会被序列化
+    private transient String password; 
+
+    // 构造器、getter/setter省略
+}
+```
+
+**（2）序列化操作（ObjectOutputStream）**
+
+使用 `ObjectOutputStream` 的 `writeObject()` 方法将对象写入输出流（如文件、网络流）。
+
+```java
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+
+public class SerializeDemo {
+    public static void main(String[] args) throws Exception {
+        User user = new User("张三", 20, "123456");
+        
+        // 创建输出流，将对象序列化到文件
+        try (ObjectOutputStream oos = new ObjectOutputStream(
+             new FileOutputStream("user.ser"))) {
+            oos.writeObject(user); // 序列化对象
+            System.out.println("序列化完成");
+        }
+    }
+}
+```
+
+**（3）反序列化操作（ObjectInputStream）**
+
+```java
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+
+public class DeserializeDemo {
+    public static void main(String[] args) throws Exception {
+        // 从文件读取字节序列，反序列化为对象
+        try (ObjectInputStream ois = new ObjectInputStream(
+             new FileInputStream("user.ser"))) {
+            User user = (User) ois.readObject(); // 反序列化
+            System.out.println("反序列化结果：" + user.getName() + ", " + user.getAge());
+            System.out.println("password（transient）：" + user.getPassword()); // 输出null
+        }
+    }
+}
+```
+
+#### 3. 关键细节
+
+- **transient 关键字**：修饰的成员变量不会被序列化，反序列化后会恢复为默认值（如 `null`、`0`）。
+- ** serialVersionUID**：序列化时会生成一个版本号（`serialVersionUID`），反序列化时会校验该版本号是否与类当前版本一致，不一致则抛出 `InvalidClassException`。
+
+建议显式声明以避免类结构变化导致反序列化失败：
+
+```java
+class User implements Serializable {
+    private static final long serialVersionUID = 1L; // 显式声明版本号
+    //...
+}
+```
+
+
+
+## 实现序列化和反序列化为什么要实现 Serializable 接口?
+
+在 Java 中，实现 `Serializable` 接口是对象支持序列化和反序列化的**必要条件**，这与 Java 序列化机制的设计逻辑密切相关：
+
+#### 核心原因：`Serializable` 是 “可序列化” 的标记接口
+
+`Serializable` 接口是一个**标记接口（Marker Interface）**—— 它没有定义任何方法，仅作为一种 “标识”，告诉 JVM：“这个类的对象允许被序列化”。
+
+`Serializable` 接口是 Java 序列化机制的 “准入证”：
+
+- 它通过标记机制告诉 JVM “该类对象可被序列化”。
+- 未实现此接口的类，其对象无法被序列化 / 反序列化（会抛异常）。
+- 这一设计确保了序列化操作的可控性，避免意外处理不适合序列化的对象。
+
+
+
+## 实现 Serializable 接口之后，为什么还要显示指定 serialVersionUID 的值?
+
+在实现 `Serializable` 接口后，显式指定 `serialVersionUID` 的值主要是为了**保证序列化和反序列化的版本兼容性**，避免类结构发生微小变化时导致反序列化失败。
+
+#### 1. `serialVersionUID` 的作用
+
+`serialVersionUID` 是一个 `static final long` 类型的常量，用于标识类的**序列化版本**。其核心作用是：
+
+- 序列化时，JVM 会将当前类的 `serialVersionUID` 写入字节序列中；
+
+- 反序列化时，JVM 会将字节序列中存储的 `serialVersionUID` 与当前类的 `serialVersionUID` 进行比对：
+  - 若一致：认为版本兼容，反序列化正常进行；
+  - 若不一致：抛出 `InvalidClassException`，反序列化失败。
+
+#### 2. 为什么需要 “显式指定”？
+
+如果不显式声明 `serialVersionUID`，JVM 会**在编译时自动生成一个**，生成规则依赖于类的结构（如类名、属性、方法、修饰符等）。
+
+这种自动生成的方式存在严重问题：**类的结构发生微小变化（即使是无关紧要的修改），都会导致自动生成的 `serialVersionUID` 改变**。
+
+例如：
+
+- 给类新增一个无关的属性；
+- 给方法增加一个注释；
+- 调整属性的访问修饰符（如从 `private` 改为 `protected`）
+
+这些修改本应不影响反序列化（旧版本序列化的对象仍可被新版本类正确解析），但由于自动生成的 `serialVersionUID` 改变，会导致反序列化失败
+
+
+
+## static 属性为什么不会被序列化?
+
+因为序列化是针对对象而言的，而 static 属性优先于对象存在，随着类的加载而加载，所以不会被序列化.
+
+看到这个结论，是不是有人会问，serialVersionUID 也被 static 修饰，为什么 serialVersionUID 会被序列化? 其实 serialVersionUID 属性并没有被序列化，JVM 在序列化对象时会自动生成一个 serialVersionUID，然后将我们显示指定的 serialVersionUID 属性值赋给自动生成的 serialVersionUID.
+
+
+
+##  transient关键字的作用？
+
+在 Java 中，`transient` 关键字用于修饰类的成员变量，其核心作用是**阻止该变量被序列化**，即当对象进行序列化操作时，被 `transient` 修饰的变量会被忽略，不写入字节序列中。
+
+#### 具体特性：
+
+**1.序列化时被忽略**
+
+当对象通过 `ObjectOutputStream` 序列化时，`transient` 变量的值不会被保存到字节序列中。例如：
+
+```java
+class User implements Serializable {
+    private String name;
+    private transient String password; // 被transient修饰
+    
+    // 构造器、getter/setter省略
+}
+
+// 序列化
+User user = new User("张三", "123456");
+// 序列化后，字节序列中仅包含name的值，password被忽略
+```
+
+**2.反序列化时恢复默认值**
+
+反序列化时，被 `transient` 修饰的变量不会从字节序列中恢复，而是被赋予该类型的默认值（如 `null` for 对象、`0` for 数值类型）：
+
+```java
+// 反序列化
+User deserializedUser = (User) ois.readObject();
+System.out.println(deserializedUser.getName()); // "张三"（正常恢复）
+System.out.println(deserializedUser.getPassword()); // null（默认值）
+```
+
+#### 适用场景：
+
+- **敏感数据**：如密码、令牌等，避免序列化到文件或网络传输中导致泄露。
+- **临时数据**：仅在内存中临时使用、无需持久化的变量（如缓存的中间结果）。
+- **不可序列化的成员**：若对象的引用类型成员未实现 `Serializable`，可通过 `transient` 修饰避免序列化时抛出异常。

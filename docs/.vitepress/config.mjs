@@ -343,6 +343,10 @@ export default defineConfig({
                   text: "vue面试",
                   link: "/programming/面试/vue面试",
                 },
+                {
+                  text: "java",
+                  link: "/programming/面试/java",
+                },
               ],
             },
             {

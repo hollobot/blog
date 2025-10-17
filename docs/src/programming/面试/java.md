@@ -1271,3 +1271,382 @@ System.out.println(deserializedUser.getPassword()); // null（默认值）
 - **敏感数据**：如密码、令牌等，避免序列化到文件或网络传输中导致泄露。
 - **临时数据**：仅在内存中临时使用、无需持久化的变量（如缓存的中间结果）。
 - **不可序列化的成员**：若对象的引用类型成员未实现 `Serializable`，可通过 `transient` 修饰避免序列化时抛出异常。
+
+
+
+## 什么是反射？
+
+在 Java 中，反射（Reflection）是指程序在**运行时**可以访问、检测和修改自身结构及行为的能力。简单来说，就是 Java 程序可以在运行时 “看透” 自身的类、方法、字段等信息，并动态操作它们，而无需在编译期就确定这些信息。
+
+#### 反射的核心作用
+
+1. **动态获取类信息**：运行时获取类的名称、父类、接口、字段、方法、注解等元数据。
+2. **动态创建对象**：无需在编译期知道类名，运行时通过类的全限定名创建实例。
+3. **动态调用方法**：运行时调用任意类的任意方法（包括私有方法）。
+4. **动态操作字段**：运行时访问或修改任意类的字段（包括私有字段）。
+
+#### 反射的实现基础
+
+反射的功能主要依赖于 Java 的`java.lang.reflect`包，核心类包括：
+
+- `Class`：代表类的字节码对象，是反射的入口（所有类的实例都可以通过`getClass()`方法获取对应的`Class`对象）。
+- `Constructor`：代表类的构造方法，用于创建对象。
+- `Method`：代表类的方法，用于调用方法。
+- `Field`：代表类的字段，用于访问或修改字段值。
+
+#### 反射的简单示例
+
+```java
+import java.lang.reflect.Method;
+
+public class ReflectionDemo {
+    public static void main(String[] args) throws Exception {
+        // 1. 获取目标类的Class对象（三种方式）
+        Class<?> clazz = Class.forName("java.lang.String"); // 方式1：通过全类名
+        // Class<?> clazz = String.class; // 方式2：通过类名.class
+        // Class<?> clazz = "hello".getClass(); // 方式3：通过实例.getClassName()
+
+        // 2. 动态创建对象（调用无参构造）
+        Object strObj = clazz.newInstance();
+
+        // 3. 动态获取并调用方法（例如String的concat方法）
+        Method concatMethod = clazz.getMethod("concat", String.class); // 参数：方法名 + 参数类型
+        Object result = concatMethod.invoke(strObj, " world"); // 调用方法：实例 + 实际参数
+
+        System.out.println(result); // 输出：" world"（因为strObj是新创建的空字符串，拼接后为" world"）
+    }
+}
+```
+
+#### 反射的优缺点
+
+- **优点**
+
+  灵活性高，适合编写通用框架（如 Spring 的 IOC 容器、MyBatis 的 ORM 映射），这些框架需要在运行时根据配置动态处理类和对象。
+
+- **缺点**
+
+  1. 破坏封装性：可以访问私有成员，可能违反类的设计初衷。
+  2. 性能开销：反射操作需要解析字节码，比直接调用（编译期确定）慢。
+  3. 可读性差：动态代码不如直接调用直观，增加维护成本。
+
+#### 常见应用场景
+
+- 框架开发（如 Spring、Hibernate）：通过反射实现依赖注入、对象实例化等。
+- 注解处理：运行时解析注解并执行相应逻辑（如 JUnit 的`@Test`注解）。
+- 序列化 / 反序列化：动态读取和设置对象字段（如 JSON 工具 Jackson、Gson）。
+- JDBC连接数据库时使用`Class.forName()`通过反射加载数据库的驱动程序。
+- Eclispe、IDEA等开发工具利用反射动态解析对象的类型与结构，动态提示对象的属性和方法。
+
+
+
+## 讲讲什么是泛型？
+
+Java泛型是JDK 5中引⼊的⼀个新特性， 允许在定义类和接口的时候使⽤类型参数。声明的类型参数在使⽤时⽤具体的类型来替换。
+
+泛型最⼤的好处是可以提⾼代码的复⽤性。以List接口为例，我们可以将String、 Integer等类型放⼊List中， 如不⽤泛型， 存放String类型要写⼀个List接口， 存放Integer要写另外⼀个List接口， 泛型可以很好的解决这个问题。
+
+
+
+## 如何停止一个正在运行的线程？
+
+在 Java 中，停止一个正在运行的线程需要谨慎处理，因为直接强制终止线程可能导致资源未释放、数据不一致等问题。Java 提供了多种安全的线程终止方式，以下是常见的实现方式及原理：
+
+#### 一、不推荐的方式（已废弃或不安全）
+
+1. **`stop()` 方法（已废弃）**
+   - 原理：直接强制终止线程，释放所有锁。
+   - 问题：线程可能在执行关键操作（如文件写入、数据更新）时被强制中断，导致资源未释放（如文件句柄未关闭）、数据损坏（如只更新了部分数据），因此已被 Java 官方标记为`@Deprecated`，严禁使用。
+2. **`suspend()` 和 `resume()`（已废弃）**
+   - 原理：`suspend()` 挂起线程，`resume()` 恢复线程。
+   - 问题：挂起时线程会持有锁，可能导致死锁（其他线程等待该锁时无法继续），同样已被废弃。
+
+#### 二、推荐的安全方式
+
+核心思想：**让线程自行判断是否需要终止，通过 “协作式” 方式退出**，而非强制中断。
+
+**1. 使用 `volatile` 标记位（最常用）**
+
+- 原理：定义一个 `volatile` 修饰的布尔变量（如 `isInterrupted`），线程运行时不断检查该变量，当变量为 `true` 时主动退出。
+- 适用场景：线程执行循环任务（如定时任务、轮询），可在循环中检查标记位。
+
+```java
+public class StopThreadByFlag {
+    //  volatile保证多线程间的可见性
+    private static volatile boolean isStop = false;
+
+    public static void main(String[] args) throws InterruptedException {
+        Thread thread = new Thread(() -> {
+            int i = 0;
+            // 循环中检查标记位
+            while (!isStop) {
+                System.out.println("线程运行中：" + i++);
+                try {
+                    Thread.sleep(500); // 模拟业务操作
+                } catch (InterruptedException e) {
+                    // 若线程在sleep时被中断，会抛出异常，此处可处理（如退出或继续）
+                    System.out.println("线程被中断");
+                    // 可选择在此处手动设置isStop=true，确保线程退出
+                    // isStop = true;
+                }
+            }
+            System.out.println("线程已停止");
+        });
+
+        thread.start();
+        // 主线程休眠2秒后，设置标记位为true，通知子线程停止
+        Thread.sleep(2000);
+        isStop = true;
+    }
+}
+```
+
+
+
+## 什么是跨域？
+
+在 Web 开发中，**跨域（Cross-Origin）** 指的是浏览器从一个域名的网页去请求另一个域名的资源时，由于浏览器的**同源策略（Same-Origin Policy）** 限制而产生的限制行为。
+
+#### 1. 同源策略：跨域的根源
+
+同源策略是浏览器的一种安全机制，目的是防止恶意网站窃取其他网站的敏感数据。它要求 “同源” 的网页才能自由交互，否则会被限制。
+
+**“同源” 的定义**：两个 URL 必须满足以下三个条件：
+
+- **协议相同**（如都是 `http` 或 `https`）；
+- **域名相同**（如都是 `example.com`，`a.example.com` 和 `b.example.com` 不同源）；
+- **端口相同**（如都是 `80` 或 `443`，默认端口可省略）。
+
+#### 2. 跨域的常见表现
+
+当浏览器检测到跨域请求时，会根据请求类型（简单请求 / 复杂请求）进行限制，常见表现：
+
+- **AJAX 请求失败**：控制台报错（如 `Access to XMLHttpRequest at 'xxx' from origin 'xxx' has been blocked by CORS policy`）；
+- **Cookie、LocalStorage 无法读取**：跨域页面无法访问对方域名下的存储数据；
+- **DOM 无法操作**：跨域的 iframe 页面无法互相操作 DOM。
+
+#### 3. 跨域的解决方案
+
+**（1）后端设置 CORS（跨域资源共享，推荐）**
+
+CORS（Cross-Origin Resource Sharing）是 W3C 标准，通过后端在响应头中添加特定字段，允许指定域名的跨域请求。
+
+**实现方式**：后端在响应中添加 `Access-Control-Allow-*` 系列头：
+
+- `Access-Control-Allow-Origin: <允许的域名>`（如 `*` 表示允许所有域名，或具体域名 `http://www.example.com`）；
+- `Access-Control-Allow-Methods: GET, POST, PUT, DELETE`（允许的 HTTP 方法）；
+- `Access-Control-Allow-Headers: Content-Type`（允许的请求头）；
+- 若涉及 Cookie 传递，需额外设置 `Access-Control-Allow-Credentials: true`，且 `Access-Control-Allow-Origin` 不能为 `*`。
+
+```java
+@Configuration
+public class CorsConfig implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**") // 所有接口
+                .allowedOrigins("http://localhost:8080") // 允许的前端域名
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowCredentials(true) // 允许携带Cookie
+                .maxAge(3600); // 预检请求的缓存时间（秒）
+    }
+}
+```
+
+**（2）前端代理（开发环境常用）**
+
+在前端工程（如 Vue、React）的开发环境中，通过配置代理服务器，将跨域请求转发为同源请求（绕开浏览器限制）。
+
+```js
+// vue.config.js
+module.exports = {
+  devServer: {
+    proxy: {
+      '/api': { // 匹配所有以/api开头的请求
+        target: 'http://backend.example.com', // 后端真实接口域名
+        changeOrigin: true, // 开启代理，模拟同源请求
+        pathRewrite: { '^/api': '' } // 去掉请求路径中的/api前缀
+      }
+    }
+  }
+};
+```
+
+
+
+##  设计接口要注意什么?
+
+1. **接口参数校验**。接口必须校验参数，比如入参是否允许为空，入参长度是否符合预期。
+2. 设计接口时，充分考虑接口的**可扩展性**。思考接口是否可以复用，怎样保持接口的可扩展性。
+3. **串行调用考虑改并行调用**。比如设计一个商城首页接口，需要查商品信息、营销信息、用户信息等等。如果是串行一个一个查，那耗时就比较大了。这种场景是可以改为并行调用的，降低接口耗时。
+4. 接口是否需要**防重**处理。涉及到数据库修改的，要考虑防重处理，可以使用数据库防重表，以唯一流水号作为唯一索引。
+5. **日志打印全面**，入参出参，接口耗时，记录好日志，方便甩锅。
+6. 修改旧接口时，注意**兼容性设计**。
+7. **异常处理得当**。使用finally关闭流资源、使用log打印而不是e.printStackTrace()、不要吞异常等等
+8. 是否需要考虑**限流**。限流为了保护系统，防止流量洪峰超过系统的承载能力。
+
+
+
+## 过滤器和拦截器有什么区别？
+
+在 Java Web 开发中，过滤器（Filter）和拦截器（Interceptor）都是用于处理请求的组件，但它们的底层实现、作用范围和使用场景有显著区别。以下是两者的核心区别及对比：
+
+#### 一、底层实现与技术体系
+
+- **过滤器（Filter）**基于 **Servlet 规范** 实现，属于 **Java EE 标准**，由 Servlet 容器（如 Tomcat）管理。它依赖于 Servlet 容器的生命周期，只能在 Web 应用中使用。
+- **拦截器（Interceptor）**基于 **Spring 框架** 实现，属于 Spring 的 **AOP（面向切面编程）** 机制的一部分，由 Spring 容器管理。它不依赖 Servlet 容器，可在非 Web 环境（如 Spring 普通应用）中使用。
+
+#### 二、作用范围与执行时机
+
+**1. 作用范围**
+
+- **过滤器**：作用于 **所有请求**（包括 Servlet、JSP、静态资源如 CSS/JS 等），只要符合过滤规则（`url-pattern`），都会被拦截。
+- **拦截器**：仅作用于 **Spring MVC 的控制器（Controller）方法**，对静态资源、非 Spring 管理的 Servlet 等不生效。
+
+**2. 执行时机（请求处理流程）**
+
+- **过滤器**：在请求进入 **Servlet 容器后、DispatcherServlet 之前** 执行，且在响应返回客户端前执行后置处理。
+- **拦截器**：在请求进入 **DispatcherServlet 后、Controller 方法执行前后** 执行，更贴近业务逻辑层。
+
+#### 三、核心方法与执行顺序
+
+**1. 过滤器（Filter）**
+
+核心方法在 `javax.servlet.Filter` 接口中定义：
+
+```java
+public interface Filter {
+    // 初始化：容器启动时执行（仅一次）
+    void init(FilterConfig filterConfig) throws ServletException;
+
+    // 过滤逻辑：请求经过时执行（核心）
+    void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
+        throws IOException, ServletException;
+
+    // 销毁：容器关闭时执行（仅一次）
+    void destroy();
+}
+```
+
+- 多个过滤器的执行顺序由 `web.xml` 中 `<filter-mapping>` 的声明顺序或 `@WebFilter` 的 `order` 属性决定（值越小越先执行）。
+- 通过 `FilterChain.doFilter(request, response)` 调用下一个过滤器或目标资源，若不调用则请求被拦截。
+
+**2. 拦截器（Interceptor）**
+
+核心方法在 `org.springframework.web.servlet.HandlerInterceptor` 接口中定义：
+
+```java
+public interface HandlerInterceptor {
+    // 前置处理：Controller 方法执行前调用（返回 true 则继续，false 则拦截）
+    boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+        throws Exception;
+
+    // 后置处理：Controller 方法执行后、视图渲染前调用
+    void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+                   ModelAndView modelAndView) throws Exception;
+
+    // 完成处理：视图渲染后调用（常用于资源清理）
+    void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
+                       Exception ex) throws Exception;
+}
+```
+
+- 多个拦截器的执行顺序由 Spring 配置的 `order` 属性决定（值越小越先执行）。
+- `preHandle` 按顺序执行，`postHandle` 和 `afterCompletion` 按 **逆序** 执行（类似栈的先进后出）。
+
+
+
+## 对接第三方接口要考虑什么？
+
+1. 确认接口对接的**网络协议**，是https/http或者自定义的私有协议等。
+2. 约定好**数据传参、响应格式**（如application/json），弱类型对接强类型语言时要特别注意
+3. **接口安全**方面，要确定身份校验方式，使用token、证书校验等
+4. 确认是否需要接口调用失败后的**重试**机制，保证数据传输的最终一致性。
+5. **日志记录要全面**。接口出入参数，以及解析之后的参数值，都要用日志记录下来，方便定位问题（甩锅）。
+
+
+
+## 后端接口性能优化有哪些方法？
+
+1. **优化索引**。给where条件的关键字段，或者`order by`后面的排序字段，加索引。
+2. **优化sql语句**。比如避免使用select *、批量操作、避免深分页、提升group by的效率等
+3. **避免大事务**。使用@Transactional注解这种声明式事务的方式提供事务功能，容易造成大事务，引发其他的问题。应该避免在事务中一次性处理太多数据，将一些跟事务无关的逻辑放到事务外面执行。
+4. **异步处理**。剥离主逻辑和副逻辑，副逻辑可以异步执行，异步写库。比如用户购买的商品发货了，需要发短信通知，短信通知是副流程，可以异步执行，以免影响主流程的执行。
+5. **降低锁粒度**。在并发场景下，多个线程同时修改数据，造成数据不一致的情况。这种情况下，一般会加锁解决。但如果锁加得不好，导致锁的粒度太粗，也会非常影响接口性能。
+6. **加缓存**。如果表数据量非常大的话，直接从数据库查询数据，性能会非常差。可以使用Redis`和`memcached提升查询性能，从而提高接口性能。
+7. **分库分表**。当系统发展到一定的阶段，用户并发量大，会有大量的数据库请求，需要占用大量的数据库连接，同时会带来磁盘IO的性能瓶颈问题。或者数据库表数据非常大，SQL查询即使走了索引，也很耗时。这时，可以通过分库分表解决。分库用于解决数据库连接资源不足问题，和磁盘IO的性能瓶颈问题。分表用于解决单表数据量太大，sql语句查询数据时，即使走了索引也非常耗时问题。
+8. **避免在循环中查询数据库**。循环查询数据库，非常耗时，最好能在一次查询中获取所有需要的数据。
+
+
+
+## 为什么在阿里巴巴Java开发手册中强制要求使用包装类型定义属性呢？
+
+嗯，以布尔字段为例，当我们没有设置对象的字段的值的时候，Boolean类型的变量会设置默认值为`null`，而boolean类型的变量会设置默认值为`false`。
+
+也就是说，包装类型的默认值都是null，而基本数据类型的默认值是一个固定值，如boolean是false，byte、short、int、long是0，float是0.0f等。
+
+举一个例子，比如有一个扣费系统，扣费时需要从外部的定价系统中读取一个费率的值，我们预期该接口的返回值中会包含一个浮点型的费率字段。当我们取到这个值得时候就使用公式：金额*费率=费用 进行计算，计算结果进行划扣。
+
+如果由于计费系统异常，他可能会返回个默认值，如果这个字段是Double类型的话，该默认值为null，如果该字段是double类型的话，该默认值为0.0。
+
+如果扣费系统对于该费率返回值没做特殊处理的话，拿到null值进行计算会直接报错，阻断程序。拿到0.0可能就直接进行计算，得出接口为0后进行扣费了。这种异常情况就无法被感知。
+
+**那我可以对0.0做特殊判断，如果是0就阻断报错，这样是否可以呢？**
+
+不对，这时候就会产生一个问题，如果允许费率是0的场景又怎么处理呢？
+
+使用基本数据类型只会让方案越来越复杂，坑越来越多。
+
+这种使用包装类型定义变量的方式，通过异常来阻断程序，进而可以被识别到这种线上问题。如果使用基本数据类型的话，系统可能不会报错，进而认为无异常。
+
+因此，建议在POJO和RPC的返回值中使用包装类型。
+
+
+
+## 接口性能提升
+
+**池化思想**
+
+如果你每次需要用到线程，都去创建，就会有增加一定的耗时，而线程池可以重复利用线程，避免不必要的耗时。
+
+比如`TCP`三次握手，它为了减少性能损耗，引入了`Keep-Alive长连接`，避免频繁的创建和销毁连接。
+
+**拒绝阻塞等待**
+
+如果你调用一个系统`B`的接口，但是它处理业务逻辑，耗时需要`10s`甚至更多。然后你是一直**阻塞等待，直到系统B的下游接口返回**，再继续你的下一步操作吗？这样**显然不合理**。
+
+参考**IO多路复用模型**。即我们不用阻塞等待系统`B`的接口，而是先去做别的操作。等系统`B`的接口处理完，通过**事件回调**通知，我们接口收到通知再进行对应的业务操作即可。
+
+**远程调用由串行改为并行**
+
+比如设计一个商城首页接口，需要查商品信息、营销信息、用户信息等等。如果是串行一个一个查，那耗时就比较大了。这种场景是可以改为并行调用的，降低接口耗时。
+
+**锁粒度避免过粗**
+
+在高并发场景，为了防止**超卖等情况**，我们经常需要**加锁来保护共享资源**。但是，如果加锁的粒度过粗，是很影响接口性能的。
+
+不管你是`synchronized`加锁还是`redis`分布式锁，只需要在共享临界资源加锁即可，不涉及共享资源的，就不必要加锁。
+
+**耗时操作，考虑放到异步执行**
+
+耗时操作，考虑用**异步处理**，这样可以降低接口耗时。比如用户注册成功后，短信邮件通知，是可以异步处理的。
+
+**使用缓存**
+
+把要查的数据，提前放好到缓存里面，需要时，**直接查缓存，而避免去查数据库或者计算的过程**。
+
+**提前初始化到缓存**
+
+预取思想很容易理解，就是**提前把要计算查询的数据，初始化到缓存**。如果你在未来某个时间需要用到某个经过复杂计算的数据，**才实时去计算的话，可能耗时比较大**。这时候，我们可以采取预取思想，**提前把将来可能需要的数据计算好，放到缓存中**，等需要的时候，去缓存取就行。这将大幅度提高接口性能。
+
+**压缩传输内容**
+
+压缩传输内容，传输报文变得更小，因此传输会更快。
+
+
+
+本文 Java 基础面试题内容参考自网络资料，具体参考来源：《Java 基础常见面试题总结》（作者：大彬）
+
+原文链接：https://topjavaer.cn/java/java-basic.html。
+
+若涉及版权问题，请联系 邮箱[2380983020@qq.com]，将立即处理。
+

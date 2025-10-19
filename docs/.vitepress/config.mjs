@@ -347,6 +347,10 @@ export default defineConfig({
                   text: "java",
                   link: "/programming/面试/java",
                 },
+                {
+                  text: "项目难点",
+                  link: "/programming/面试/项目难点",
+                }
               ],
             },
             {

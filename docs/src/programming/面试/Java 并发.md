@@ -1103,7 +1103,7 @@ class SharedData {
 
 
 
-### 28. ThreadLocal是什么
+## 28. ThreadLocal是什么
 
 `ThreadLocal` 是 Java 中的一个线程本地存储工具类，它的核心作用是**为每个线程提供独立的变量副本**，从而避免多线程对共享变量的竞争，实现线程间的数据隔离。
 

@@ -332,24 +332,32 @@ export default defineConfig({
               collapsed: true,
               items: [
                 {
+                  text: "Java 基础",
+                  link: "/programming/面试/Java 基础",
+                },
+                {
+                  text: "Java 集合",
+                  link: "/programming/面试/Java 集合",
+                },
+                {
+                  text: "Java 并发",
+                  link: "/programming/面试/Java 并发",
+                },
+                {
+                  text: "Jvm 虚拟机",
+                  link: "/programming/面试/Jvm 虚拟机",
+                },
+                {
+                  text: "MySQL 面试题",
+                  link: "/programming/面试/MySQL",
+                },
+                {
+                  text: "Vue 面试",
+                  link: "/programming/面试/Vue 面试",
+                },
+                {
                   text: "简历面试题",
                   link: "/programming/面试/简历面试题",
-                },
-                {
-                  text: "mysql面试",
-                  link: "/programming/面试/mysql面试",
-                },
-                {
-                  text: "vue面试",
-                  link: "/programming/面试/vue面试",
-                },
-                {
-                  text: "java",
-                  link: "/programming/面试/java",
-                },
-                {
-                  text: "集合",
-                  link: "/programming/面试/集合",
                 },
                 {
                   text: "项目难点",

@@ -1,6 +1,6 @@
 # Java基础常见面试题总结
 
-## Java是如何实现跨平台的？
+## 1. Java是如何实现跨平台的？
 
 java是通过jvm虚拟机实现跨平台的。
 
@@ -10,7 +10,7 @@ JVM可以理解成一个软件，不同的系统有对应的版本。java文件�
 
 
 
-## Java 与 C++ 的区别
+## 2. Java 与 C++ 的区别
 
 - Java 是纯粹的面向对象语言，所有的对象都继承自 java.lang.Object，C++ 兼容 C ，不但支持面向对象也支持面向过程。
 - Java 通过虚拟机从而实现跨平台特性， C++ 依赖于特定的平台。
@@ -20,7 +20,7 @@ JVM可以理解成一个软件，不同的系统有对应的版本。java文件�
 
 
 
-##  JDK/JRE/JVM三者的关系
+##  3. JDK/JRE/JVM三者的关系
 
 #### **JVM**
 
@@ -46,7 +46,7 @@ jre是Java的运行环境，如果你只需要运行Java程序，那么你只需
 
 
 
-## 面向对象和面向过程的区别？
+## 4. 面向对象和面向过程的区别？
 
 面向对象和面向过程是一种软件开发思想。
 
@@ -67,7 +67,7 @@ jre是Java的运行环境，如果你只需要运行Java程序，那么你只需
 
 
 
-## 面向对象有哪些特性？
+## 5. 面向对象有哪些特性？
 
 面向对象四大特性：封装，继承，多态，抽象
 
@@ -84,7 +84,7 @@ jre是Java的运行环境，如果你只需要运行Java程序，那么你只需
 
 
 
-## 数组到底是不是对象？
+## 6. 数组到底是不是对象？
 
 先说说对象的概念。对象是根据某个类创建出来的一个实例，表示某类事物中一个具体的个体。
 
@@ -107,7 +107,7 @@ System.out.println(clz.getSuperclass().getName());
 
 
 
-## Java的基本数据类型有哪些？
+## 7. Java的基本数据类型有哪些？
 
 - byte，8bit
 - char，16bit
@@ -122,7 +122,7 @@ System.out.println(clz.getSuperclass().getName());
 
 
 
-## 为什么不能用浮点型表示金额？
+## 8. 为什么不能用浮点型表示金额？
 
 由于计算机中保存的小数其实是十进制的小数的近似值，并不是准确值，所以，千万不要在代码中使用浮点数来表示金额等重要的指标。
 
@@ -130,7 +130,7 @@ System.out.println(clz.getSuperclass().getName());
 
 
 
-## 什么是值传递和引用传递？
+## 9. 什么是值传递和引用传递？
 
 - 值传递是对基本型变量而言的，传递的是该变量的一个副本，改变副本不影响原变量。
 - 引用传递一般是对于对象型变量而言的，传递的是该对象地址的一个副本，并不是原对象本身，两者指向同一片内存空间。所以对引用对象进行操作会同时改变原对象。
@@ -142,7 +142,7 @@ System.out.println(clz.getSuperclass().getName());
 
 
 
-## 了解Java的包装类型吗？为什么需要包装类？
+## 10. 了解Java的包装类型吗？为什么需要包装类？
 
 Java 是一种面向对象语言，很多地方都需要使用对象而不是基本数据类型。比如，在集合类中，我们是无法将 int 、double 等类型放进去的。因为集合的容器要求元素是 Object 类型。
 
@@ -150,7 +150,7 @@ Java 是一种面向对象语言，很多地方都需要使用对象而不是基
 
 
 
-## 自动装箱和拆箱
+## 11. 自动装箱和拆箱
 
 装箱：将基础类型转化为包装类型。
 
@@ -166,7 +166,7 @@ Java 是一种面向对象语言，很多地方都需要使用对象而不是基
 
 
 
-##  两个Integer 用== 比较不相等的原因
+##  12. 两个Integer 用 == 比较不相等的原因
 
 下面看一道常见的面试题：
 
@@ -223,15 +223,13 @@ private static class IntegerCache {
 
 
 
-## String 为什么不可变？
+## 13. String 为什么不可变？
 
 先看看什么是不可变的对象。
 
 如果一个对象，在它创建完成之后，不能再改变它的状态，那么这个对象就是不可变的。不能改变状态的意思是，不能改变对象内的成员变量，包括基本数据类型的值不能改变，引用类型的变量不能指向其他的对象，引用类型指向的对象的状态也不能改变。
 
 接着来看Java8 String类的源码：
-
-
 
 ```java
 public final class String
@@ -244,13 +242,9 @@ public final class String
 }
 ```
 
-从源码可以看出，String对象其实在内部就是一个个字符，存储在这个value数组里面的。
+从源码可以看出，String对象其实在内部就是一个个字符，存储在这个value数组里面的。value数组用final修饰，final 修饰的变量，值不能被修改。因此value不可以指向其他对象。
 
-value数组用final修饰，final 修饰的变量，值不能被修改。因此value不可以指向其他对象。
-
-String类内部所有的字段都是私有的，也就是被private修饰。而且String没有对外提供修改内部状态的方法，因此value数组不能改变。
-
-所以，String是不可变的。
+String类内部所有的字段都是私有的，也就是被private修饰。而且String没有对外提供修改内部状态的方法，因此value数组不能改变。所以，String是不可变的。
 
 那为什么String要设计成不可变的？
 
@@ -259,15 +253,11 @@ String类内部所有的字段都是私有的，也就是被private修饰。而�
 1. **线程安全**。同一个字符串实例可以被多个线程共享，因为字符串不可变，本身就是线程安全的。
 2. **支持hash映射和缓存**。因为String的hash值经常会使用到，比如作为 Map 的键，不可变的特性使得 hash 值也不会变，不需要重新计算。
 3. **出于安全考虑**。网络地址URL、文件路径path、密码通常情况下都是以String类型保存，假若String不是固定不变的，将会引起各种安全隐患。比如将密码用String的类型保存，那么它将一直留在内存中，直到垃圾收集器把它清除。假如String类不是固定不变的，那么这个密码可能会被改变，导致出现安全隐患。
-4. **字符串常量池优化**。String对象创建之后，会缓存到字符串常量池中，下次需要创建同样的对象时，可以直接返回缓存的引用。
-
-既然我们的String是不可变的，它内部还有很多substring， replace， replaceAll这些操作的方法。这些方法好像会改变String对象？怎么解释呢？
-
-其实不是的，我们每次调用replace等方法，其实会在堆内存中创建了一个新的对象。然后其value数组引用指向不同的对象。
+4. **字符串常量池优化**。String对象创建之后，会缓存到字符串常量池中，下次需要创建同样的对象时，可以直接返回缓存的引用。既然我们的String是不可变的，它内部还有很多substring， replace， replaceAll这些操作的方法。这些方法好像会改变String对象？怎么解释呢？其实不是的，我们每次调用replace等方法，其实会在堆内存中创建了一个新的对象。然后其value数组引用指向不同的对象。
 
 
 
-## 为何JDK9要将String的底层实现由char[]改成byte[]?
+## 14. 为何JDK9要将String的底层实现由char[]改成byte[]?
 
 主要是为了**节约String占用的内存**。
 
@@ -283,7 +273,7 @@ String类内部所有的字段都是私有的，也就是被private修饰。而�
 
 
 
-##  String, StringBuffer 和 StringBuilder区别
+##  15. String, StringBuffer 和 StringBuilder区别
 
 **1. 可变性**
 
@@ -298,7 +288,7 @@ String类内部所有的字段都是私有的，也就是被private修饰。而�
 
 
 
-## 什么是StringJoiner？
+## 16. 什么是StringJoiner？
 
 StringJoiner是 Java 8 新增的一个 API，它基于 StringBuilder 实现，用于实现对字符串之间通过分隔符拼接的场景。
 
@@ -340,7 +330,7 @@ for (Integer value : values) {
 
 
 
-## String 类的常用方法有哪些？
+## 17. String 类的常用方法有哪些？
 
 - indexOf()：返回指定字符的索引。
 - charAt()：返回指定索引处的字符。
@@ -356,17 +346,17 @@ for (Integer value : values) {
 
 
 
-## new String("hello")会创建几个对象？
+## 18. new String("hello")会创建几个对象？
 
 - 在 Java 中，`new String("hello")` 可能创建 **1 个或 2 个对象**，取决于字符串常量池中是否已存在 `"hello"`：
   - **情况 1**：常量池中不存在 `"hello"`会创建 **2 个对象**：
     1. 字符串常量池中的 `"hello"` 对象（由字面量 `"hello"` 触发）。
     2. 堆内存中通过 `new` 创建的 `String` 对象（该对象的值指向常量池中的 `"hello"`）。
-  - **情况 2**：常量池中已存在 `"hello"`只会创建 **1 个对象**：仅在堆内存中通过 `new` 创建一个 `String` 对象（复用常量池中的 `"hello"`）。
+  - **情况 2**：常量池中已存在 `"hello"`只会创建 **1 个对象**：仅在堆内存中通过 `new` 创建一个 `String` 对象（该对象的值会指向复用常量池中的 `"hello"`）。
 
 
 
-## 什么是字符串常量池？
+## 19. 什么是字符串常量池？
 
 字符串常量池（String Constant Pool）是 Java 堆内存中专门用于存储字符串字面量的**缓存区域**，其核心作用是**复用字符串对象，减少内存消耗**。
 
@@ -380,33 +370,33 @@ for (Integer value : values) {
 
 
 
-## String最大长度是多少？
+## 20. String最大长度是多少？
 
 Java 中 `String` 的最大长度取决于两个限制：
 
 - **编译期**：字符串字面量的长度不能超过 `65535`（`2^16 - 1`），这是由类文件格式（`CONSTANT_Utf8_info` 结构）规定的，超过会导致编译失败。
 - **运行期**：`String` 内部用 `char[]` 存储字符（JDK 9 前），数组长度是 `int` 类型，因此最大长度为 `Integer.MAX_VALUE`（`2^31 - 1`）。但实际中受内存限制，几乎无法达到这个值。
 
-#### 达到最大长度需要多大内存？
+#### 1. 达到最大长度需要多大内存？
 
 以 JDK 8 为例（`String` 基于 `char[]` 实现，每个 `char` 占 2 字节）：
 
 - 若字符串长度为 `Integer.MAX_VALUE`（约 21 亿字符），仅字符数组就需要 `21亿 × 2字节 ≈ 4GB` 内存。
 - 加上 `String` 对象本身的头部信息（约 16 字节）和数组的头部信息（约 24 字节），总内存约 **4GB+**。这远超普通应用的内存配置，因此实际中不可能创建这么长的字符串。
 
-#### String 存储在 JVM 的哪块区域？
+#### 2. String 存储在 JVM 的哪块区域？
 
 - **字符串常量池**：JDK 7 及以后，常量池移至 **堆内存** 中，存储字符串字面量和通过 `intern()` 方法加入的字符串引用。
 - **堆内存**：通过 `new String(...)` 创建的字符串对象，以及字符串对应的 `char[]` 数组（JDK 8 及以前），都存储在堆中。
 - **栈内存**：仅存储字符串变量的引用（指向堆或常量池中的对象），不存储字符串本身。
 
-#### 什么情况下字符串会存储在常量池？
+#### 3. 什么情况下字符串会存储在常量池？
 
 - **字符串字面量**：如 `String s = "abc";`，字面量 `"abc"` 会被加入常量池（首次出现时）。
 - **常量表达式拼接**：如 `String s = "a" + "b";`，编译期会优化为 `"ab"`，直接存储在常量池。
 - **调用 `intern()` 方法**：如 `new String("abc").intern()`，若常量池中没有 `"abc"`，会将其引用加入常量池（JDK 7 及以后）。
 
-#### 常量池中的字符串最大长度是 2^31-1 吗？
+#### 4. 常量池中的字符串最大长度是 2^31-1 吗？
 
 **不是**。常量池中的字符串（字面量）受限于类文件格式，最大长度为 `65535`（`2^16 - 1`）。即使通过 `intern()` 方法将堆中更长的字符串加入常量池，其引用可以指向堆中长度为 `2^31 - 1` 的字符串，但常量池本身存储的只是引用，而非字符串数据本身。
 
@@ -414,7 +404,7 @@ Java 中 `String` 的最大长度取决于两个限制：
 
 
 
-## Object常用方法有哪些？
+## 21. Object常用方法有哪些？
 
 Java 中的 `java.lang.Object` 类是所有类的根类，任何类都直接或间接继承自它。它定义了一些核心方法，以下是最常用的几个：
 
@@ -478,7 +468,7 @@ System.out.println(cls.getName()); // 输出 "java.lang.String"
 
 
 
-## 讲讲深拷贝和浅拷贝？
+## 22. 讲讲深拷贝和浅拷贝？
 
 在 Java 中，拷贝（复制）对象时，根据对对象内部引用类型成员的处理方式不同，分为**浅拷贝（Shallow Copy）** 和**深拷贝（Deep Copy）**，核心区别在于是否复制对象内部的引用类型数据。
 
@@ -540,7 +530,7 @@ public class Test {
 
 
 
-## 两个对象的hashCode()相同，则 equals()是否也一定为 true？
+## 23. 两个对象的hashCode()相同，则 equals()是否也一定为 true？
 
 **不一定。**
 
@@ -571,7 +561,7 @@ System.out.println(str1.equals(str2)); // 输出 false（显然不是同一个�
 
 
 
-## 为什么重写 equals 时一定要重写 hashCode？
+## 24. 为什么重写 equals 时一定要重写 hashCode？
 
 在 Java 中，重写 `equals()` 时必须同时重写 `hashCode()`，这是由两者的**约定规则**和**哈希表的工作原理**共同决定的，否则会导致程序逻辑错误（尤其是在使用哈希集合 / 映射时）。
 
@@ -593,13 +583,13 @@ Java 规范对 `equals()` 和 `hashCode()` 有明确约定：
 假设存在两个对象 `a` 和 `b`：
 
 - `a.equals(b) == true`（逻辑上是同一个对象）；
-- 但未重写 `hashCode()`，导致 `a.hashCode()!= b.hashCode()`（默认按内存地址计算）。
+- 但未重写 `hashCode()`，导致 `a.hashCode()!= b.hashCode()`（`默认按内存地址计算`）。
 
 此时，`HashSet` 会认为 `a` 和 `b` 是不同对象，允许同时存入，违反了 `HashSet` 去重的特性。
 
 
 
-## equals和==有什么区别？
+## 25. equals和==有什么区别？
 
 在 Java 中，`equals` 和 `==` 都用于比较，但两者的比较逻辑和适用场景有本质区别：
 
@@ -638,7 +628,7 @@ Java 规范对 `equals()` 和 `hashCode()` 有明确约定：
 
 
 
-## final, finally, finalize 的区别
+## 26. final, finally, finalize 的区别
 
 `final`、`finally`、`finalize` 是 Java 中名称相似但含义和用途完全不同的三个概念，主要区别如下：
 
@@ -714,7 +704,7 @@ Java 规范对 `equals()` 和 `hashCode()` 有明确约定：
 
 
 
-## Java中的finally一定会被执行吗？
+## 27. Java中的finally一定会被执行吗？
 
 #### 一、`finally` 一定会执行的常规场景
 
@@ -742,7 +732,7 @@ public static int test() {
 
 
 
-## 方法重载和重写的区别？
+## 28. 方法重载和重写的区别？
 
 方法重载（Overload）和方法重写（Override）是 Java 中两个重要的多态相关概念，主要区别如下：
 
@@ -815,7 +805,7 @@ animal.sound(); // 输出"狗汪汪叫"（运行时多态）
 
 
 
-## 接口与抽象类区别？
+## 29. 接口与抽象类区别？
 
 接口（Interface）和抽象类（Abstract Class）是 Java 中实现抽象和多态的两种重要机制，它们的核心区别如下：
 
@@ -889,7 +879,7 @@ interface Flyable {
 
 
 
-## 常见的Exception有哪些？
+## 30. 常见的Exception有哪些？
 
 **常见的RuntimeException：**
 
@@ -908,7 +898,7 @@ interface Flyable {
 
 
 
-## Error和Exception的区别？
+## 31. Error和Exception的区别？
 
 **Error**：JVM 无法解决的严重问题，如栈溢出`StackOverflowError`、内存溢出`OOM`等。程序无法处理的错误。
 
@@ -916,7 +906,7 @@ interface Flyable {
 
 
 
-## 运行时异常和非运行时异常（checked）的区别？
+## 32. 运行时异常和非运行时异常（checked）的区别？
 
 `unchecked exception`包括`RuntimeException`和`Error`类，其他所有异常称为检查（checked）异常。
 
@@ -925,7 +915,7 @@ interface Flyable {
 
 
 
-## throw和throws的区别？
+## 33. throw和throws的区别？
 
 在 Java 中，`throw` 和 `throws` 都用于异常处理，但用途和用法有明显区别：
 
@@ -944,7 +934,7 @@ interface Flyable {
 
 
 
-## BIO/NIO/AIO区别的区别？
+## 34. BIO/NIO/AIO区别的区别？
 
 BIO、NIO、AIO 是 Java 中三种不同的 I/O 模型，主要区别体现在处理 I/O 操作的方式和效率上，尤其在高并发场景下表现差异显著：
 
@@ -1001,7 +991,7 @@ BIO、NIO、AIO 是 Java 中三种不同的 I/O 模型，主要区别体现在�
 
 
 
-## 守护线程是什么？
+## 35. 守护线程是什么？
 
 守护线程（Daemon Thread）是 Java 中一种特殊线程，主要用于为其他线程（用户线程）提供服务，如垃圾回收线程（GC）就是典型的守护线程。
 
@@ -1011,7 +1001,7 @@ BIO、NIO、AIO 是 Java 中三种不同的 I/O 模型，主要区别体现在�
 
 
 
-##  Java 支持多继承吗？
+##  36. Java 支持多继承吗？
 
 **不支持类的多继承**，但支持接口的多实现，以此间接实现类似多继承的功能：
 
@@ -1025,34 +1015,33 @@ BIO、NIO、AIO 是 Java 中三种不同的 I/O 模型，主要区别体现在�
 
 
 
-## 如何实现对象克隆？
+## 37. 如何实现对象克隆？
 
 对象克隆（复制）分为浅拷贝和深拷贝，实现方式如下：
 
-1. **浅拷贝**：
+**浅拷贝**：
 
-   1. 类实现 `Cloneable` 接口（标记接口，无方法）。
-   2. 重写 `Object` 类的 `clone()` 方法，调用 `super.clone()`。
+1. 类实现 `Cloneable` 接口（标记接口，无方法）。
+2. 重写 `Object` 类的 `clone()` 方法，调用 `super.clone()`。
 
-   ```java
-   class Person implements Cloneable {
-       String name;
-       @Override
-       protected Object clone() throws CloneNotSupportedException {
-           return super.clone(); // 浅拷贝
-       }
-   }
-   ```
+```java
+class Person implements Cloneable {
+    String name;
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone(); // 浅拷贝
+    }
+}
+```
 
-   
+**深拷贝**：
 
-- **深拷贝**：
-  1. 方式 1：对引用类型成员递归调用 `clone()`（需所有引用类型都实现 `Cloneable`）。
-  2. 方式 2：通过序列化（如 `ObjectInputStream`/`ObjectOutputStream`）将对象写入流再读出，实现完全独立的复制。
-
+1. 方式 1：对引用类型成员递归调用 `clone()`（需所有引用类型都实现 `Cloneable`）。
+2. 方式 2：通过序列化（如 `ObjectInputStream`/`ObjectOutputStream`）将对象写入流再读出，实现完全独立的复制。
 
 
-## 同步和异步的区别？
+
+## 38. 同步和异步的区别？
 
 核心区别在于**调用方是否需要等待操作完成**：
 
@@ -1061,7 +1050,7 @@ BIO、NIO、AIO 是 Java 中三种不同的 I/O 模型，主要区别体现在�
 
 
 
-## 阻塞和非阻塞的区别？
+## 39. 阻塞和非阻塞的区别？
 
 阻塞和非阻塞关注的是线程的状态。
 
@@ -1075,7 +1064,7 @@ BIO、NIO、AIO 是 Java 中三种不同的 I/O 模型，主要区别体现在�
 
 
 
-## Java8的新特性有哪些？
+## 40. Java8的新特性有哪些？
 
 Lambda 表达式：Lambda允许把函数作为一个方法的参数
 
@@ -1089,7 +1078,7 @@ Date Time API ：加强对日期与时间的处理。
 
 
 
-## 序列化和反序列化
+## 41. 序列化和反序列化
 
 序列化（Serialization）和反序列化（Deserialization）是 Java 中用于处理对象持久化和网络传输的重要机制，核心是将对象的状态转换为可存储或传输的形式，以及将其恢复为对象。
 
@@ -1178,7 +1167,7 @@ class User implements Serializable {
 
 
 
-## 实现序列化和反序列化为什么要实现 Serializable 接口?
+## 42. 实现序列化和反序列化为什么要实现 Serializable 接口?
 
 在 Java 中，实现 `Serializable` 接口是对象支持序列化和反序列化的**必要条件**，这与 Java 序列化机制的设计逻辑密切相关：
 
@@ -1194,7 +1183,7 @@ class User implements Serializable {
 
 
 
-## 实现 Serializable 接口之后，为什么还要显示指定 serialVersionUID 的值?
+## 43. 实现 Serializable 接口之后，为什么还要显示指定 serialVersionUID 的值?
 
 在实现 `Serializable` 接口后，显式指定 `serialVersionUID` 的值主要是为了**保证序列化和反序列化的版本兼容性**，避免类结构发生微小变化时导致反序列化失败。
 
@@ -1224,7 +1213,7 @@ class User implements Serializable {
 
 
 
-## static 属性为什么不会被序列化?
+## 44. static 属性为什么不会被序列化?
 
 因为序列化是针对对象而言的，而 static 属性优先于对象存在，随着类的加载而加载，所以不会被序列化.
 
@@ -1232,7 +1221,7 @@ class User implements Serializable {
 
 
 
-##  transient关键字的作用？
+##  45. transient关键字的作用？
 
 在 Java 中，`transient` 关键字用于修饰类的成员变量，其核心作用是**阻止该变量被序列化**，即当对象进行序列化操作时，被 `transient` 修饰的变量会被忽略，不写入字节序列中。
 
@@ -1257,7 +1246,7 @@ User user = new User("张三", "123456");
 
 **2.反序列化时恢复默认值**
 
-反序列化时，被 `transient` 修饰的变量不会从字节序列中恢复，而是被赋予该类型的默认值（如 `null` for 对象、`0` for 数值类型）：
+反序列化时，被 `transient` 修饰的变量不会从字节序列中恢复，而是被赋予该类型的默认值（如 `null` 对象、`0` 数值类型）：
 
 ```java
 // 反序列化
@@ -1274,7 +1263,7 @@ System.out.println(deserializedUser.getPassword()); // null（默认值）
 
 
 
-## 什么是反射？
+## 46. 什么是反射？
 
 在 Java 中，反射（Reflection）是指程序在**运行时**可以访问、检测和修改自身结构及行为的能力。简单来说，就是 Java 程序可以在运行时 “看透” 自身的类、方法、字段等信息，并动态操作它们，而无需在编译期就确定这些信息。
 
@@ -1340,7 +1329,7 @@ public class ReflectionDemo {
 
 
 
-## 讲讲什么是泛型？
+## 47. 讲讲什么是泛型？
 
 Java泛型是JDK 5中引⼊的⼀个新特性， 允许在定义类和接口的时候使⽤类型参数。声明的类型参数在使⽤时⽤具体的类型来替换。
 
@@ -1348,7 +1337,7 @@ Java泛型是JDK 5中引⼊的⼀个新特性， 允许在定义类和接口的�
 
 
 
-## 如何停止一个正在运行的线程？
+## 48. 如何停止一个正在运行的线程？
 
 在 Java 中，停止一个正在运行的线程需要谨慎处理，因为直接强制终止线程可能导致资源未释放、数据不一致等问题。Java 提供了多种安全的线程终止方式，以下是常见的实现方式及原理：
 
@@ -1403,7 +1392,7 @@ public class StopThreadByFlag {
 
 
 
-## 什么是跨域？
+## 49. 什么是跨域？
 
 在 Web 开发中，**跨域（Cross-Origin）** 指的是浏览器从一个域名的网页去请求另一个域名的资源时，由于浏览器的**同源策略（Same-Origin Policy）** 限制而产生的限制行为。
 
@@ -1473,7 +1462,7 @@ module.exports = {
 
 
 
-##  设计接口要注意什么?
+##  50. 设计接口要注意什么?
 
 1. **接口参数校验**。接口必须校验参数，比如入参是否允许为空，入参长度是否符合预期。
 2. 设计接口时，充分考虑接口的**可扩展性**。思考接口是否可以复用，怎样保持接口的可扩展性。
@@ -1486,7 +1475,7 @@ module.exports = {
 
 
 
-## 过滤器和拦截器有什么区别？
+## 51. 过滤器和拦截器有什么区别？
 
 在 Java Web 开发中，过滤器（Filter）和拦截器（Interceptor）都是用于处理请求的组件，但它们的底层实现、作用范围和使用场景有显著区别。以下是两者的核心区别及对比：
 
@@ -1555,7 +1544,7 @@ public interface HandlerInterceptor {
 
 
 
-## 对接第三方接口要考虑什么？
+## 52. 对接第三方接口要考虑什么？
 
 1. 确认接口对接的**网络协议**，是https/http或者自定义的私有协议等。
 2. 约定好**数据传参、响应格式**（如application/json），弱类型对接强类型语言时要特别注意
@@ -1565,7 +1554,7 @@ public interface HandlerInterceptor {
 
 
 
-## 后端接口性能优化有哪些方法？
+## 53. 后端接口性能优化有哪些方法？
 
 1. **优化索引**。给where条件的关键字段，或者`order by`后面的排序字段，加索引。
 2. **优化sql语句**。比如避免使用select *、批量操作、避免深分页、提升group by的效率等
@@ -1578,7 +1567,7 @@ public interface HandlerInterceptor {
 
 
 
-## 为什么在阿里巴巴Java开发手册中强制要求使用包装类型定义属性呢？
+## 54. 为什么在阿里巴巴Java开发手册中强制要求使用包装类型定义属性呢？
 
 嗯，以布尔字段为例，当我们没有设置对象的字段的值的时候，Boolean类型的变量会设置默认值为`null`，而boolean类型的变量会设置默认值为`false`。
 
@@ -1602,7 +1591,7 @@ public interface HandlerInterceptor {
 
 
 
-## 接口性能提升
+## 55. 接口性能提升
 
 **池化思想**
 

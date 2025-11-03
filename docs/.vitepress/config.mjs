@@ -353,7 +353,7 @@ export default defineConfig({
                 },
                 {
                   text: "MyBatis 面试题",
-                  link: "/programming/MyBatis 面试题",
+                  link: "/programming/面试/MyBatis 面试题",
                 },
                 {
                   text: "Vue 面试",

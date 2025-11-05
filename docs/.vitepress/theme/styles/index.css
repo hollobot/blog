@@ -1,0 +1,47 @@
+@import "./vp-code.css";
+/* .vitepress/theme/style/index.css */
+@import "./vp-code-group.css";
+
+/* .vitepress/theme/custom.css */
+
+:root {
+  /* 苹方（现代简洁，推荐）⭐ */
+  --vp-font-family-base: "PingFang SC", "苹方-简", sans-serif;
+}
+
+:root {
+  --vp-c-brand-1: #10b981;
+  --vp-c-brand-2: #34d399;
+  --vp-c-brand-3: #10b981;
+}
+
+/* 修改内容宽度 */
+.Layout .VPDoc .content-container {
+  max-width: 85% !important;
+}
+
+/* 在你的自定义CSS中 */
+.layout-wide {
+  --vp-layout-max-width: 90%; /* 调整最大宽度 */
+}
+
+/* .vitepress/theme/style/var.css */
+.VPDoc h1 {
+  color: var(--vp-c-brand-1);
+}
+
+/* var.css */
+.vp-doc a {
+  text-decoration: none;
+}
+
+/* .vitepress/theme/style/var.css */
+
+/* VPFeatures 页卡悬浮效果 */
+.VPFeatures .items .item {
+  transition: transform 0.3s;
+}
+
+.VPFeatures .items .item:hover {
+  transform: translateY(-20px);
+}

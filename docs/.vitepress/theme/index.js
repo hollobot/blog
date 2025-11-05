@@ -1,6 +1,6 @@
 import DefaultTheme from "vitepress/theme";
 import LayoutToggle from "../components/LayoutToggle.vue";
-import "./style.css";
+import "./styles/index.css";
 import { h } from 'vue'
 
 export default {

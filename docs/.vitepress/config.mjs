@@ -360,6 +360,10 @@ export default defineConfig({
                   link: "/programming/面试/Redis 面试题",
                 },
                 {
+                  text: "Spring 面试题",
+                  link: "/programming/面试/Spring 面试题",
+                },
+                {
                   text: "Vue 面试",
                   link: "/programming/面试/Vue 面试",
                 },

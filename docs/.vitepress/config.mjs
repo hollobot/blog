@@ -374,6 +374,10 @@ export default defineConfig({
                 {
                   text: "项目难点",
                   link: "/programming/面试/项目难点",
+                },
+                {
+                  text: "面试题",
+                  link: "/programming/面试/面试题",
                 }
               ],
             },

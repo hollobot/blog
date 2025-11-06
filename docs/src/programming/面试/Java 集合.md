@@ -1,6 +1,8 @@
 # Java集合常见面试题总结
 
-##  常见的集合有哪些？
+
+
+##  1. 常见的集合有哪些？
 
 Java集合类主要由两个接口**Collection**和**Map**派生出来的，Collection有三个子接口：List、Set、Queue。
 
@@ -12,7 +14,9 @@ List代表了有序可重复集合，可直接根据元素的索引来访问；S
 
 集合体系中常用的实现类有`ArrayList、LinkedList、HashSet、TreeSet、HashMap、TreeMap`等实现类。
 
-## List 、Set和Map 的区别
+
+
+## 2. List 、Set和Map 的区别
 
 - List 以索引来存取元素，有序的，元素是允许重复的，可以插入多个null；
 - Set 不能存放重复元素，无序的，只允许一个null；
@@ -22,7 +26,7 @@ List代表了有序可重复集合，可直接根据元素的索引来访问；S
 
 
 
-## ArrayList 了解吗？
+## 3. ArrayList 了解吗？
 
 ArrayList 是 Java 集合框架中最常用的 `List` 实现类之一，底层基于**动态数组**实现，支持快速随机访问，是日常开发中存储有序、可重复元素的首选容器。以下从底层原理、核心特性、常用操作及面试注意等方面详细解析：
 
@@ -30,7 +34,7 @@ ArrayList 是 Java 集合框架中最常用的 `List` 实现类之一，底层�
 
 ArrayList 内部维护一个**Object 类型的数组**（`elementData`），用于存储元素。其核心特点是：
 
-- 数组的长度（`capacity`）会根据元素数量动态扩容（扩容以1.5倍）（初始化时可指定初始容量，默认初始容量为 `10`）。
+- 数组的长度（`capacity`）会根据元素数量动态扩容（扩容以1.5倍）（初始化时可指定初始容量，默认初始容量为 ` 0`，首次添加扩至 10）。
 - 支持通过索引（`index`）直接访问元素（类似数组的 `get(index)`），因此**查询效率高**（时间复杂度 `O(1)`）。
 
 #### 二、核心特性
@@ -43,7 +47,7 @@ ArrayList 内部维护一个**Object 类型的数组**（`elementData`），用�
 
 
 
-## 怎么在遍历 ArrayList 时移除一个元素？
+## 4. 怎么在遍历 ArrayList 时移除一个元素？
 
 在遍历 `ArrayList` 时移除元素需要特别注意，若操作不当可能导致 **`ConcurrentModificationException`（并发修改异常）** 或漏删元素。以下是几种安全的实现方式及原理分析：
 
@@ -130,7 +134,7 @@ System.out.println(list); // 输出：[A, C, D]
 
 
 
-##  Arraylist 和 Vector 的区别？
+##  5. Arraylist 和 Vector 的区别？
 
 `ArrayList` 和 `Vector` 都是 Java 集合框架中 `List` 接口的实现类，底层均基于**动态数组**实现，支持有序、可重复、允许 `null` 的元素存储，但二者在**线程安全性、性能、扩容机制**等核心维度存在显著差异，以下是详细对比：
 
@@ -145,7 +149,7 @@ System.out.println(list); // 输出：[A, C, D]
 
 
 
-## Arraylist 与 LinkedList的区别？
+## 6. Arraylist 与 LinkedList的区别？
 
 `ArrayList` 和 `LinkedList` 是 Java 集合框架中 `List` 接口的两大核心实现类，虽然都支持**有序、可重复、允许 null** 的元素存储，但底层数据结构完全不同，导致二者在 **查询效率、增删效率、内存占用** 等维度差异显著。以下从底层原理到实际应用进行全面对比：
 
@@ -161,7 +165,7 @@ System.out.println(list); // 输出：[A, C, D]
 
 
 
-## 讲讲对HashMap的了解？
+## 7. 讲讲对HashMap的了解？
 
 `HashMap` 是 Java 集合框架中最常用的 `Map` 实现类，基于**哈希表**（JDK 8+ 为**数组 + 链表 + 红黑树**）实现，用于存储**键值对（key-value）**，具有**查询、插入、删除效率高**（平均 `O(1)`）的特点，是日常开发中处理键值映射的首选容器。
 
@@ -181,9 +185,9 @@ System.out.println(list); // 输出：[A, C, D]
 
 
 
-## HashMap哈希计算与索引定位
+## 8. HashMap哈希计算与索引定位
 
-- **步骤 1**：计算 key 的哈希值。通过 `key.hashCode()` 得到初始哈希值，再通过扰动函数（JDK 1.8 简化为 `(h = key.hashCode()) ^ (h >>> 16)`）减少哈希冲突，将高 16 位与低 16 位异或，保留高位信息。
+- **步骤 1**：计算 key 的哈希值。通过 `key.hashCode()` 得到初始哈希值，再通过扰动函数（JDK 1.8 简化为 `(h = key.hashCode()) ^ (h >>> 16)`）减少哈希冲突，将高 16 位与低 16 位异或运算，保留高位信息。
 - **步骤 2**：计算哈希桶索引。通过 `(n - 1) & hash` 得到索引（n 为数组长度，因 n 是 2 的幂，等价于 `hash % n`，但位运算效率更高）。
 
 ```java
@@ -198,7 +202,7 @@ return h&(length-1);  //第三步 取模运算
 
 
 
-## 为什么建议设置HashMap的容量？
+## 9. 为什么建议设置HashMap的容量？
 
 HashMap 的扩容机制是当元素数量超过「阈值」（容量 × 负载因子）时，会将容量翻倍（变为原来的 2 倍），并重新计算所有元素的哈希桶索引，将其迁移到新数组中。这个过程涉及：
 
@@ -208,7 +212,7 @@ HashMap 的扩容机制是当元素数量超过「阈值」（容量 × 负载�
 
 
 
-## 说说HashMap put()方法的流程？
+## 10. 说说HashMap put()方法的流程？
 
 HashMap 的 `put()` 方法用于将键值对（key-value）存入集合，其流程可分为「哈希计算→定位位桶→插入 / 覆盖→扩容 / 树化」四个核心阶段，具体步骤如下
 
@@ -274,14 +278,14 @@ HashMap 的 `put()` 方法用于将键值对（key-value）存入集合，其流
 
 
 
-## 在解决 hash 冲突的时候，为什么选择先用链表，再转红黑树?
+## 11. 在解决 hash 冲突的时候，为什么选择先用链表，再转红黑树?
 
 - 因为红黑树需要进行左旋，右旋，变色这些操作来保持平衡，而单链表不需要。
 - 当元素个数小于8个的时候，采用链表结构可以保证查询性能。而当元素个数大于8个的时候并且数组容量大于等于64，会采用红黑树结构。因为红黑树搜索时间复杂度是 `O(logn)`，而链表是 `O(n)`，在n比较大的时候，使用红黑树可以加快查询速度。
 
 
 
-## HashMap 的长度为什么是 2 的幂次方？
+## 12. HashMap 的长度为什么是 2 的幂次方？
 
 **位运算替代取模**
 
@@ -293,13 +297,13 @@ HashMap 中，元素的存储位置（数组索引）由 key 的哈希值映射�
 
 
 
-## HashMap默认加载因子是多少？为什么是 0.75？
+## 13. HashMap默认加载因子是多少？为什么是 0.75？
 
 HashMap 的默认加载因子（load factor）是 **0.75**。这一数值的选择是在**哈希表的空间利用率**和**哈希冲突概率**之间进行权衡的结果，背后有明确的工程实践和概率统计依据。
 
 
 
-## 一般用什么作为HashMap的key?
+## 14. 一般用什么作为HashMap的key?
 
 一般用`Integer`、`String`这种不可变类当 HashMap 当 key。String类比较常用。
 
@@ -308,7 +312,7 @@ HashMap 的默认加载因子（load factor）是 **0.75**。这一数值的选�
 
 
 
-## HashMap为什么线程不安全？
+## 15. HashMap为什么线程不安全？
 
 HashMap 是线程不安全的，主要源于其内部数据结构（数组、链表、红黑树）的操作未进行同步控制，在多线程环境下并发修改时，可能导致数据不一致、死循环甚至异常等问题。具体原因如下
 
@@ -332,7 +336,7 @@ JDK 8 虽将头插法改为**尾插法**避免了死循环，但仍存在其他�
 
 
 
-## HashMap和HashTable的区别？
+## 16. HashMap和HashTable的区别？
 
 HashMap 和 Hashtable 都是 Java 中用于存储键值对的哈希表实现，但两者在设计上有诸多差异，主要体现在**线程安全性**、**功能特性**和**性能**等方面。以下是具体区别：
 
@@ -379,7 +383,7 @@ HashMap 和 Hashtable 都是 Java 中用于存储键值对的哈希表实现，�
 
 
 
-## LinkedHashMap底层原理？
+## 17. LinkedHashMap底层原理？
 
 LinkedHashMap 是 HashMap 的子类，它在 HashMap 的基础上通过维护一个**双向链表**，实现了对元素的**有序访问**（插入顺序或访问顺序）。其底层原理可概括为 “**哈希表 + 双向链表**” 的组合结构，既保留了 HashMap 的高效查询特性，又新增了顺序维护能力。
 
@@ -394,7 +398,7 @@ LinkedHashMap 是 HashMap 的子类，它在 HashMap 的基础上通过维护一
 
 
 
-## 讲一下TreeMap？
+## 18. 讲一下TreeMap？
 
 TreeMap 是 Java 中基于**红黑树**实现的 `Map` 接口实现类，它的核心特点是**键（key）有序**，所有键值对会按照 key 的自然排序（或自定义排序规则）进行存储和访问。与 HashMap 不同，TreeMap 不依赖哈希表，而是通过红黑树的特性保证元素的有序性和高效操作。
 
@@ -422,7 +426,7 @@ TreeMap 的底层是一棵**红黑树**（自平衡二叉查找树），每个�
 
 
 
-## HashSet底层原理？
+## 19. HashSet底层原理？
 
 HashSet 基于 HashMap 实现。放入HashSet中的元素实际上由HashMap的key来保存，而HashMap的value则存储了一个静态的Object对象。
 
@@ -442,7 +446,7 @@ public class HashSet<E> extends AbstractSet<E> implements Set<E>, Cloneable, jav
 
 
 
-## HashSet、LinkedHashSet 和 TreeSet 的区别？
+## 20. HashSet、LinkedHashSet 和 TreeSet 的区别？
 
 `HashSet` 是 `Set` 接口的主要实现类 ，`HashSet` 的底层是 `HashMap`，线程不安全的，可以存储 null 值；
 
@@ -452,7 +456,7 @@ public class HashSet<E> extends AbstractSet<E> implements Set<E>, Cloneable, jav
 
 
 
-## 讲一下ArrayDeque？
+## 21. 讲一下ArrayDeque？
 
 ArrayDeque实现了双端队列，内部使用循环数组实现，默认大小为16。它的特点有：
 
@@ -466,7 +470,7 @@ ArrayDeque和LinkedList都是线程不安全的，可以使用Collections工具�
 
 
 
-## 哪些集合类是线程安全的？哪些不安全？
+## 22. 哪些集合类是线程安全的？哪些不安全？
 
 线性安全的集合类：
 
@@ -486,7 +490,7 @@ ArrayDeque和LinkedList都是线程不安全的，可以使用Collections工具�
 
 
 
-## 迭代器 Iterator 是什么？
+## 23. 迭代器 Iterator 是什么？
 
 在 Java 中，`Iterator`（迭代器）是一种**用于遍历集合（如 `List`、`Set`、`Map` 的键 / 值集合等）元素的接口**，它提供了一种统一的方式来访问集合中的元素，而无需暴露集合的底层数据结构（如数组、链表、红黑树等）。
 
@@ -527,7 +531,7 @@ while (iterator.hasNext()) {
 
 
 
-## Iterator 和 ListIterator 有什么区别？
+## 24. Iterator 和 ListIterator 有什么区别？
 
 `Iterator` 和 `ListIterator` 都是 Java 中用于遍历集合元素的迭代器，但两者的适用范围、功能和使用场景有显著区别。核心差异如下：
 
@@ -558,7 +562,7 @@ while (it.hasPrevious()) {
 
 
 
-## 如何让一个集合不能被修改？
+## 25. 如何让一个集合不能被修改？
 
 在 Java 中，若想让一个集合（如 `List`、`Set`、`Map` 等）不能被修改（即禁止添加、删除、修改元素），可以通过以下几种方式实现，核心思路是**返回一个 “不可修改的视图”**（视图本身不存储数据，仅代理原集合，但屏蔽了修改操作）。
 
@@ -627,7 +631,7 @@ final关键字修饰的成员变量如果是是引用类型的话，则表示这
 
 
 
-## 并发容器
+## 26. 并发容器
 
 JDK 提供的这些容器大部分在 `java.util.concurrent` 包中。
 

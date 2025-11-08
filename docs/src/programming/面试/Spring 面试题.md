@@ -535,9 +535,9 @@ Spring 事务传播行为定义了**当一个事务方法调用另一个事务�
 
 Spring 事务失效的核心原因是**事务切面未正常拦截方法调用**，导致 Spring 无法自动管理事务（开启、提交、回滚）。常见场景有以下 7 种：
 
-1. **方法不是 public 修饰**Spring 事务默认只对 public 方法生效，非 public（如 private、protected）方法的 `@Transactional` 会被忽略。
+1. **方法不是 public 修饰：**Spring 事务默认只对 public 方法生效，非 public（如 private、protected）方法的 `@Transactional` 会被忽略。
 
-2. **自身调用（类内部方法调用）**同一类中，非事务方法 A 调用事务方法 B（如 `this.methodB()`），因未经过 Spring 代理，事务失效。例：
+2. **自身调用（类内部方法调用）：**同一类中，非事务方法 A 调用事务方法 B（如 `this.methodB()`），因未经过 Spring 代理，事务失效。例：
 
    ```java
    @Service

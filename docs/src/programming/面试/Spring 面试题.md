@@ -533,11 +533,11 @@ Spring 事务传播行为定义了**当一个事务方法调用另一个事务�
 
 ##  25. Spring事务在什么情况下会失效？
 
-Spring 事务失效的核心原因是**事务切面未正常拦截方法调用**，导致 Spring 无法自动管理事务（开启、提交、回滚）。常见场景有以下 7 种：
+Spring 事务失效的核心原因是 **`事务切面未正常拦截方法调用`**，导致 Spring 无法自动管理事务（开启、提交、回滚）。常见场景有以下 7 种：
 
-1. **方法不是 public 修饰：**Spring 事务默认只对 public 方法生效，非 public（如 private、protected）方法的 `@Transactional` 会被忽略。
+1. **方法不是 public 修饰：** Spring 事务默认只对 public 方法生效，非 public（如 private、protected）方法的 `@Transactional` 会被忽略。
 
-2. **自身调用（类内部方法调用）：**同一类中，非事务方法 A 调用事务方法 B（如 `this.methodB()`），因未经过 Spring 代理，事务失效。例：
+2. **自身调用（类内部方法调用）：** 同一类中，非事务方法 A 调用事务方法 B（如 `this.methodB()`），因未经过 Spring 代理，事务失效。例：
 
    ```java
    @Service
@@ -550,7 +550,7 @@ Spring 事务失效的核心原因是**事务切面未正常拦截方法调用**
    }
    ```
 
-3. **异常被手动捕获且未抛出**事务方法中若用 `try-catch` 捕获异常却不抛出，Spring 无法感知异常，不会触发回滚。例：
+3. **异常被手动捕获且未抛出：** 事务方法中若用 `try-catch` 捕获异常却不抛出，Spring 无法感知异常，不会触发回滚。例：
 
    ```java
    @Transactional
@@ -563,7 +563,7 @@ Spring 事务失效的核心原因是**事务切面未正常拦截方法调用**
    }
    ```
 
-4. **抛出的异常类型不匹配**Spring 事务默认只对 `RuntimeException` 和 `Error` 回滚，若抛出**受检异常**（如 `IOException`、`SQLException`）且未指定 `rollbackFor`，则不回滚。例：
+4. **抛出的异常类型不匹配：** Spring 事务默认只对 `RuntimeException` 和 `Error` 回滚，若抛出**受检异常**（如 `IOException`、`SQLException`）且未指定 `rollbackFor`，则不回滚。例：
 
    ```java
    @Transactional // 默认不处理 IOException（受检异常）
@@ -572,11 +572,11 @@ Spring 事务失效的核心原因是**事务切面未正常拦截方法调用**
    }
    ```
 
-5. **数据源未配置事务管理器**若未配置 `DataSourceTransactionManager`（或对应数据源的事务管理器），Spring 无事务管理能力，`@Transactional` 无效。
+5. **数据源未配置事务管理器：** 若未配置 `DataSourceTransactionManager`（或对应数据源的事务管理器），Spring 无事务管理能力，`@Transactional` 无效。
 
-6. **事务传播行为配置错误**如配置 `NOT_SUPPORTED`（不支持事务）、`NEVER`（禁止事务）等，会导致事务不生效。
+6. **事务传播行为配置错误：** 如配置 `NOT_SUPPORTED`（不支持事务）、`NEVER`（禁止事务）等，会导致事务不生效。
 
-7. **Bean 未被 Spring 管理**若类未用 `@Service` 等注解注册为 Spring Bean，`@Transactional` 自然无效。
+7. **Bean 未被 Spring 管理：** 若类未用 `@Service` 等注解注册为 Spring Bean，`@Transactional` 自然无效。
 
 **总结**：事务失效的本质是 “Spring 代理未介入” 或 “异常未被正确感知”，避免上述场景即可保证事务正常工作。
 

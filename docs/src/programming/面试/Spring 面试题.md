@@ -254,19 +254,27 @@ Spring IOC 容器初始化可简化为 3 步核心流程：
 
 ## 13. Bean的生命周期
 
-Spring Bean 生命周期（简化技术版）：
+核心结论：Spring Bean 的生命周期是从 IoC 容器初始化 Bean 到最终销毁的完整过程，核心围绕 “实例化 → 初始化 → 使用 → 销毁” 四阶段，全程由容器管理并允许自定义干预。
 
-1. **实例化**：反射调用构造方法，创建原始对象。
-2. **注入依赖**：通过 setter 或字段，自动注入所需属性和其他 Bean。
-3. **容器感知**：
-   - 实现`BeanNameAware`：获取自身在容器中的名称；
-   - 实现`BeanFactoryAware`：获取所在的容器实例。
-4. **初始化前后增强**：`BeanPostProcessor`拦截处理（如 AOP 代理生成）。
-5. **初始化**：执行自定义逻辑（`InitializingBean`接口或`init-method`配置）。
-6. **使用**：单例 Bean 存入缓存复用，原型 Bean 用完即弃。
-7. **销毁**：单例 Bean 在容器关闭时执行销毁逻辑（`DisposableBean`接口或`destroy-method`配置），原型 Bean 由用户处理。
+#### 完整生命周期流程（核心步骤）
 
-核心：容器全程管理单例 Bean 的 “创建→使用→销毁”，原型 Bean 仅初始化阶段由容器负责。
+1. **实例化（Instantiation）**：容器通过反射获取构造器创建 Bean 实例（内存中分配空间，仅完成对象创建，未初始化属性）。
+2. **属性注入（Populate）**：容器将配置的属性值（如 @Autowired 注入的依赖、XML 配置的属性）赋值给 Bean 的成员变量。
+3. **初始化（Initialization）**：Bean 实例化 + 属性注入后，执行初始化逻辑，顺序为：
+   - 执行 BeanNameAware、BeanFactoryAware 等 **Aware 接口方法**（获取容器相关信息，如 Bean 名称、容器对象）。
+   - 执行 BeanPostProcessor 的 **postProcessBeforeInitialization 方法**（初始化前增强，容器级通用处理）。
+   - 执行自定义初始化方法（如 @PostConstruct 注解方法、XML 配置的 init-method 属性指定方法）。
+   - 执行 BeanPostProcessor 的 **postProcessAfterInitialization 方法**（初始化后增强，AOP 动态代理生成在此阶段）。
+4. **使用（In Use）**：Bean 进入可用状态，容器持有 Bean 实例，供程序通过 getBean () 调用或自动注入使用。
+5. **销毁（Destruction）**：容器关闭时触发，顺序为：
+   - 执行自定义销毁方法（如 @PreDestroy 注解方法、XML 配置的 destroy-method 属性指定方法）。
+   - 释放 Bean 占用的资源（如数据库连接、线程池），Bean 实例被垃圾回收。
+
+#### 关键核心点
+
+- 生命周期的核心是 “容器主导”，从创建到销毁的每个阶段都由 IoC 容器触发和管理。
+- 初始化和销毁阶段支持自定义干预，满足个性化资源处理需求。
+- AOP 代理对象在初始化后期（postProcessAfterInitialization）生成，确保代理对象包含完整的 Bean 状态。
 
 
 
@@ -361,7 +369,7 @@ public class Config { ... }
 Spring Bean 作用域就是 “Bean 实例的创建和复用规则”，核心 5 种，记常用的即可：
 
 1. **单例（默认）**：容器里只存一个实例，所有人用同一个，适合无状态（如 Service）。
-2. **原型**：每次要的时候都新创建一个，适合有状态（如请求数据对象）。
+2. **原型**：每次要的时候都新创建一个，适合有状态（如请求数据对象 `pojo`）。
 3. **请求（Web）**：每个 HTTP 请求一个实例，请求结束就销毁。
 4. **会话（Web）**：每个用户会话一个实例，会话过期销毁。
 5. **应用（Web）**：整个 Web 应用一个实例，全局共享。

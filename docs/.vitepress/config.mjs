@@ -1,4 +1,10 @@
 import { defineConfig } from "vitepress";
+import timeline from "vitepress-markdown-timeline";
+import markdownItTaskCheckbox from "markdown-it-task-checkbox";
+import {
+  groupIconMdPlugin,
+  groupIconVitePlugin,
+} from "vitepress-plugin-group-icons";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -378,7 +384,7 @@ export default defineConfig({
                 {
                   text: "面试题",
                   link: "/programming/面试/面试题",
-                }
+                },
               ],
             },
             {
@@ -488,12 +494,23 @@ export default defineConfig({
   vite: {
     // https://cn.vitejs.dev/config/shared-options.html#publicdir
     publicDir: "../src/public", // 指定 public 目录路径
+    plugins: [
+      groupIconVitePlugin(), //代码组图标
+    ],
   },
 
   markdown: {
     image: {
       // 默认禁用；设置为 true 可为所有图片启用懒加载。
       lazyLoading: true,
+    },
+    //行号显示
+    lineNumbers: true,
+
+    config: (md) => {
+      md.use(timeline); //时间线
+      md.use(markdownItTaskCheckbox); //任务列表
+      md.use(groupIconMdPlugin); //代码组图标
     },
   },
 });

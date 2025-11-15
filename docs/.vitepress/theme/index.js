@@ -10,7 +10,7 @@ import "vitepress-markdown-timeline/dist/theme/index.css";
 // 图片预览缩放功能
 import mediumZoom from "medium-zoom";
 import { onMounted, watch, nextTick } from "vue";
-import { useRoute,useData } from "vitepress";
+import { useRoute, useData } from "vitepress";
 
 // 访问量统计功能
 import { inBrowser } from "vitepress";
@@ -25,6 +25,15 @@ import bsz from "../components/bsz.vue";
 // giscus 评论组件
 import giscusTalk from "vitepress-plugin-comment-with-giscus";
 
+// 文章元信息组件、文字数、阅读时间等
+import ArticleMetadata from "../components/ArticleMetadata.vue";
+
+// 放回顶部
+import backtotop from "../components/backtotop.vue";
+
+// 公告
+import notice from "../components/notice.vue";
+
 export default {
   extends: DefaultTheme,
 
@@ -32,6 +41,7 @@ export default {
   enhanceApp({ app, router }) {
     // 注册全局组件
     app.component("LayoutToggle", LayoutToggle);
+    app.component("ArticleMetadata", ArticleMetadata);
 
     // 访问量统计 + 进度条
     if (inBrowser) {
@@ -98,6 +108,10 @@ export default {
       "nav-bar-content-after": () => h(LayoutToggle),
       // 指定组件使用 layout-bottom 插槽，显示在每个页面的底部
       "layout-bottom": () => h(bsz),
+      // 指定组件使用doc-footer-before插槽
+      'doc-footer-before': () => h(backtotop),
+      // 指定组件使用layout-top插槽
+      'layout-top': () => h(notice),
     });
   },
 };

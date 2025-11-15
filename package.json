@@ -19,6 +19,7 @@
     "vitepress-markdown-timeline": "^1.2.2"
   },
   "dependencies": {
+    "@types/dom-view-transitions": "^1.0.6",
     "busuanzi.pure.js": "^1.0.3",
     "markdown-it-task-checkbox": "^1.0.6",
     "medium-zoom": "^1.1.0",

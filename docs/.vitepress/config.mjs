@@ -511,6 +511,12 @@ export default defineConfig({
       md.use(timeline); //时间线
       md.use(markdownItTaskCheckbox); //任务列表
       md.use(groupIconMdPlugin); //代码组图标
+      // 在这里添加自定义的 Markdown 规则、文字数、阅读时间、跟新时间
+      md.renderer.rules.heading_close = (tokens, idx, options, env, slf) => {
+        let htmlResult = slf.renderToken(tokens, idx, options);
+        if (tokens[idx].tag === "h1") htmlResult += `<ArticleMetadata />`;
+        return htmlResult;
+      };
     },
   },
 });

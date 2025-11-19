@@ -148,8 +148,8 @@ MyBatis 有三种核心 `Executor` 执行器，分别是 **SimpleExecutor、Reus
 
 MyBatis 接口绑定有两种方式：
 
-1. **XML 映射文件：**写 XML 文件，用`namespace`对应接口全类名，SQL 的`id`对应接口方法名，适合复杂 SQL。
-2. **注解：**直接在接口方法上用`@Select`等注解写 SQL，无需 XML，适合简单 SQL。
+1. **XML 映射文件：** 写 XML 文件，用`namespace`对应接口全类名，SQL 的`id`对应接口方法名，适合复杂 SQL。
+2. **注解：** 直接在接口方法上用`@Select`等注解写 SQL，无需 XML，适合简单 SQL。
 
 
 
@@ -157,8 +157,8 @@ MyBatis 接口绑定有两种方式：
 
 MyBatis 分页主要两种方式：
 
-1. **原生 SQL 分页：**手动在 SQL 里加数据库分页语法（如 MySQL 的`LIMIT`），传页码和每页条数，需自己算起始位置（`(页码-1)*每页条数`）。适合简单场景，缺点是换数据库要改 SQL。
-2. **PageHelper 插件：**引入插件后，查询前用`PageHelper.startPage(页码, 每页条数)`，自动帮你加分页条件，还能返回总条数等信息，不用手动处理，支持多数据库，更方便。
+1. **原生 SQL 分页：** 手动在 SQL 里加数据库分页语法（如 MySQL 的`LIMIT`），传页码和每页条数，需自己算起始位置（`(页码-1)*每页条数`）。适合简单场景，缺点是换数据库要改 SQL。
+2. **PageHelper 插件：** 引入插件后，查询前用`PageHelper.startPage(页码, 每页条数)`，自动帮你加分页条件，还能返回总条数等信息，不用手动处理，支持多数据库，更方便。
 
 推荐用 PageHelper，简单高效。
 

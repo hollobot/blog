@@ -178,7 +178,7 @@ System.out.println(list); // 输出：[A, C, D]
 **2. 核心参数**
 
 - **初始容量**：默认 16（必须是 2 的幂，方便通过位运算计算哈希桶索引）。
-- **负载因子：**默认 0.75，用于计算扩容阈值（阈值 = 容量 × 负载因子）。（负载因子过高会减少空间开销，但增加哈希冲突概率；过低则相反，需平衡时间和空间成本）。
+- **负载因子**：默认 0.75，用于计算扩容阈值（阈值 = 容量 × 负载因子）。（负载因子过高会减少空间开销，但增加哈希冲突概率；过低则相反，需平衡时间和空间成本）。
 - **扩容阈值**：当元素数量超过该值时，触发扩容（容量翻倍，重新计算所有元素的哈希桶索引并迁移）。
 
 
@@ -307,7 +307,7 @@ HashMap 的默认加载因子（load factor）是 **0.75**。这一数值的选�
 
 一般用`Integer`、`String`这种不可变类当 HashMap 当 key。String类比较常用。
 
-- 因为 String 是不可变的，所以在它创建的时候`hashcode``就被缓存了，不需要重新计算。这就是 HashMap 中的key经常使用字符串的原因。
+- 因为 String 是不可变的，所以在它创建的时候 `hashcode` 就被缓存了，不需要重新计算。这就是 HashMap 中的key经常使用字符串的原因。
 - 获取对象的时候要用到 `equals()` 和 `hashCode()` 方法，而Integer、String这些类都已经重写了 `hashCode()` 以及 `equals()` 方法，不需要自己去重写这两个方法。
 
 
@@ -647,7 +647,7 @@ JDK 提供的这些容器大部分在 `java.util.concurrent` 包中。
 
 
 
-### ConcurrentHashMap
+#### ConcurrentHashMap
 
 `ConcurrentHashMap` 是 `HashMap` 的线程安全版本，解决了 `Hashtable` 全表加锁的性能问题，是并发场景下替代 `HashMap`/`Hashtable` 的首选。
 
@@ -671,7 +671,7 @@ JDK 提供的这些容器大部分在 `java.util.concurrent` 包中。
 
 
 
-### `CopyOnWriteArrayList` / `CopyOnWriteArraySet`
+#### `CopyOnWriteArrayList` / `CopyOnWriteArraySet`
 
 这两个容器基于 **“写时复制（Copy-On-Write, COW）”** 思想实现，核心是 “读无锁、写复制”，适合**读多写少**的场景。
 

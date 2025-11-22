@@ -20,6 +20,24 @@ CREATE DATABASE mydatabase
 # utf8mb4_unicode_ci：通用排序规则（推荐）。
 # utf8mb4_general_ci：较旧的排序规则（性能稍快，但准确性稍差）。
 # utf8mb4_bin：二进制排序（区分大小写）。
+
+# 创建用户
+CREATE USER 'username'@'localhost' IDENTIFIED BY 'password'; # 只允许本地登录
+CREATE USER 'hello'@'%' IDENTIFIED BY '123456'; # 任意IP
+
+# 删除用户
+DROP USER 'username'@'localhost';
+DROP USER 'hello'@'%';
+
+# 给普通用户授予权限
+GRANT ALL PRIVILEGES ON dbname.* TO 'hello'@'%'; # 给某个数据库所有权限
+GRANT SELECT, INSERT, UPDATE, DELETE ON dbname.* TO 'hello'@'%'; # 只授予读写权限
+GRANT SELECT ON dbname.* TO 'hello'@'%'; # 只读权限
+
+# 取消权限
+REVOKE ALL PRIVILEGES ON dbname.* FROM 'hello'@'%'; # 取消全部权限（某个库）
+REVOKE SELECT, INSERT, UPDATE, DELETE ON dbname.* FROM 'hello'@'%';
+
   
 drop database 数据库名;  -- 删除数据库 
 

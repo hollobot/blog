@@ -1389,3 +1389,47 @@ Java 中的线程调度算法主要依赖于**操作系统的线程调度机制*
 `wait()/notify()/notifyAll()` 是 **“基于对象锁的线程协作机制”**，必须与具体的锁对象绑定。由于 Java 中 “锁属于对象”，因此这些方法自然应该定义在 `Object` 类中，让每个对象都能作为线程间通信的 “信号量”。
 
 简单说：锁属于对象，所以操作锁的方法也属于对象。
+
+
+
+## 42. 同时启动100个线程怎么知道线程是否完成？
+
+在 Java 中，要启动 100 个线程并等待它们全部完成，有几种常见且推荐的方法。具体的选择取决于你的使用场景（是简单的测试，还是生产环境的并发任务）。
+
+#### 方案 1：使用 `CountDownLatch`（最经典、最通用）
+
+这是解决“一个线程等待 N 个线程完成”的最标准做法。它像一个倒计时器，主线程阻塞等待，直到计数器归零。
+
+**原理**：初始化一个计数器为 100。每个线程结束时调用 `countDown()`。主线程调用 `await()` 阻塞，直到计数为 0。
+
+```java
+import java.util.concurrent.CountDownLatch;
+
+public class LatchDemo {
+    public static void main(String[] args) throws InterruptedException {
+        int threadCount = 100;
+        // 1. 初始化倒计时锁，计数为 100
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            new Thread(() -> {
+                try {
+                    // 模拟任务
+                    System.out.println(Thread.currentThread().getName() + " 正在运行...");
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    // 2. 任务结束（无论成功失败），计数器减 1
+                    // ！！！一定要放在 finally 块中！！！
+                    latch.countDown();
+                }
+            }).start();
+        }
+
+        // 3. 主线程在此阻塞，直到计数器变为 0
+        latch.await();
+        System.out.println("所有线程已完成！");
+    }
+}
+```

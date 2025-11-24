@@ -1,49 +1,199 @@
+/* 导入 VitePress 代码高亮样式 */
 @import "./vp-code.css";
 /* .vitepress/theme/style/index.css */
+/* 导入代码组样式 */
 @import "./vp-code-group.css";
 
+/* 导入 CSS 变量定义文件 */
 @import "./var.css";
 
 /* .vitepress/theme/custom.css */
 
+/* 全局 UI 字体（与 Trae 风格对齐可在此调整） */
+/* 定义根元素的 CSS 变量作用域 */
 :root {
-  /* 苹方（现代简洁，推荐）⭐ */
+  /* 默认使用苹方；可替换为 Inter/Segoe UI 等 */
+  /* 设置 VitePress 基础字体族为苹方和无衬线字体 */
   --vp-font-family-base: "PingFang SC", "苹方-简", sans-serif;
 }
 
+/* 再次定义根元素变量（亮色模式配色） */
 :root {
+  /* 主题色 */
+  /* 主主题色：翠绿色 (#10b981) */
   --vp-c-brand-1: #10b981;
+  /* 次主题色：较亮的翠绿色 (#34d399) */
   --vp-c-brand-2: #34d399;
+  /* 第三主题色：与主色相同 */
   --vp-c-brand-3: #10b981;
 }
 
 /* 修改内容宽度 */
+/* 选择 Layout 下的 VPDoc 内的内容容器 */
 .Layout .VPDoc .content-container {
+  /* 强制设置最大宽度为 85% */
   max-width: 85% !important;
 }
 
-/* 在你的自定义CSS中 */
+/* 额外宽版布局（需要在页面容器上挂 .layout-wide 时生效） */
+/* 为宽版布局类定义变量 */
 .layout-wide {
-  --vp-layout-max-width: 90%; /* 调整最大宽度 */
+  /* 调整最大宽度 */
+  /* 设置宽版布局的最大宽度为 90% */
+  --vp-layout-max-width: 90%;
 }
 
-/* .vitepress/theme/style/var.css */
+/* 当应用 dark 类时（深色模式） */
+.dark {
+  /* 背景与文本 */
+  /* 主背景色：深蓝灰色（编辑器主背景） */
+  --vp-c-bg: #23272E;
+  /* 替代背景色：稍深的背景色 */
+  --vp-c-bg-alt: #252526;
+  /* 柔和背景色：侧边栏背景色 */
+  --vp-c-bg-soft: #2d2d30;
+  /* 主文本色：浅灰白（主要代码文字） */
+  --vp-c-text-1: #d4d4d4;
+  /* 次要文本色：中等灰色（注释等次要文字） */
+  --vp-c-text-2: #858585;
+  /* 反色文本：深色背景用（保持深色） */
+  --vp-c-text-inverse: #23272E;
+
+  /* 侧边栏配色 */
+  /* 侧边栏背景色 */
+  --vp-sidebar-bg-color: #23272E;
+  /* 侧边栏文本颜色：浅灰白 */
+  --vp-c-sidebar-text: #cccccc;
+  /* 侧边栏悬停背景色：稍亮的灰色 */
+  --vp-c-sidebar-hover-bg: #2a2d2e;
+  /* 侧边栏激活项背景色：更亮的灰色 */
+  --vp-c-sidebar-active-bg: #37373d;
+
+  /* 代码块 */
+  /* 代码块背景色：与主背景一致 */
+  --vp-code-block-bg: #23272E;
+  /* 代码块分割线颜色：深色分割线 */
+  --vp-code-block-divider-color: rgba(255, 255, 255, 0.1);
+
+  /* 搜索框配色 */
+  /* 搜索框背景色：深灰色 */
+  --vp-c-search-bg: #1D1F23;
+  /* 搜索框文本颜色：浅灰白 */
+  --vp-c-search-text: #cccccc;
+  /* 搜索框边框颜色：中等灰色 */
+  --vp-c-search-border: #1D1F23;
+  /* 搜索框聚焦边框颜色：品牌色 */
+  --vp-c-search-border-focus: #10b981;
+  /* 搜索框占位符颜色：暗灰色 */
+  --vp-c-search-placeholder: #858585;
+}
+
+/* 深色模式下的搜索框样式 */
+.dark .DocSearch-Button {
+  /* 搜索框背景色 */
+  background-color: var(--vp-c-search-bg);
+  /* 搜索框边框 */
+  border: 1px solid var(--vp-c-search-border);
+  /* 搜索框文本颜色 */
+  color: var(--vp-c-search-text);
+}
+
+/* 深色模式下的搜索框占位符 */
+.dark .DocSearch-Button-Placeholder {
+  /* 占位符文本颜色 */
+  color: var(--vp-c-search-placeholder);
+}
+
+/* 深色模式下的搜索框聚焦状态 */
+.dark .VPNavBarSearch:focus,
+.dark .DocSearch-Button:focus {
+  /* 聚焦时的边框颜色 */
+  border-color: var(--vp-c-search-border-focus);
+  /* 移除默认外轮廓 */
+  outline: none;
+}
+
+/* 深色模式下的滚动条整体样式 */
+.dark ::-webkit-scrollbar {
+  /* 滚动条宽度 */
+  width: 12px;
+  /* 横向滚动条高度 */
+  height: 12px;
+}
+
+/* 深色模式下的滚动条轨道（背景槽） */
+.dark ::-webkit-scrollbar-track {
+  /* 轨道背景色：深灰 */
+  background: #1e1e1e;
+  /* 轨道圆角 */
+  border-radius: 10px;
+}
+
+/* 深色模式下的滚动条滑块（可拖动部分） */
+.dark ::-webkit-scrollbar-thumb {
+  /* 滑块背景色：中等灰色 */
+  background: #4E4E4E;
+  /* 滑块圆角 */
+  border-radius: 10px;
+  /* 滑块边框：创造内嵌效果 */
+  border: 2px solid #4E4E4E;
+}
+
+/* 深色模式下的滚动条滑块悬停状态 */
+.dark ::-webkit-scrollbar-thumb:hover {
+  /* 悬停时滑块变亮 */
+  background: #5A5A5A;
+}
+
+/* 深色模式下的滚动条滑块激活状态 */
+.dark ::-webkit-scrollbar-thumb:active {
+  /* 点击时滑块更亮 */
+  background: #5E5E5E;
+}
+
+/* 深色模式下的侧边栏滚动条样式（更窄） */
+.dark .VPSidebar ::-webkit-scrollbar {
+  /* 侧边栏滚动条宽度更窄 */
+  width: 8px;
+}
+
+/* 深色模式下的侧边栏滚动条滑块 */
+.dark .VPSidebar ::-webkit-scrollbar-thumb {
+  /* 侧边栏滑块背景色 */
+  background: #424242;
+  /* 圆角 */
+  border-radius: 4px;
+}
+
+/* 深色模式下的侧边栏滚动条滑块悬停 */
+.dark .VPSidebar ::-webkit-scrollbar-thumb:hover {
+  /* 悬停时颜色 */
+  background: #4e4e4e;
+}
+
+/* 文档页标题（H1）使用品牌主色 */
+/* 选择 VPDoc 内的一级标题 */
 .VPDoc h1 {
+  /* 设置标题颜色为品牌主色（翠绿色） */
   color: var(--vp-c-brand-1);
 }
 
-/* var.css */
+/* 文档正文链接去下划线 */
+/* 选择文档内的所有链接 */
 .vp-doc a {
+  /* 移除文本装饰（下划线） */
   text-decoration: none;
 }
 
-/* .vitepress/theme/style/var.css */
-
-/* VPFeatures 页卡悬浮效果 */
+/* 首屏特性卡片悬浮效果 */
+/* 选择特性列表中的单个卡片项 */
 .VPFeatures .items .item {
+  /* 添加平滑的变换过渡效果，持续 0.3 秒 */
   transition: transform 0.3s;
 }
 
+/* 当鼠标悬浮在卡片上时 */
 .VPFeatures .items .item:hover {
+  /* 向上平移 20 像素（创建上浮效果） */
   transform: translateY(-20px);
 }

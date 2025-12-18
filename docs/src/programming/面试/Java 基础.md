@@ -470,63 +470,91 @@ System.out.println(cls.getName()); // 输出 "java.lang.String"
 
 ## 22. 讲讲深拷贝和浅拷贝？
 
-在 Java 中，拷贝（复制）对象时，根据对对象内部引用类型成员的处理方式不同，分为**浅拷贝（Shallow Copy）** 和**深拷贝（Deep Copy）**，核心区别在于是否复制对象内部的引用类型数据。
+#### 一、深拷贝与浅拷贝：核心概念与区别
 
-#### 1. 浅拷贝（Shallow Copy）
+深拷贝（Deep Copy）和浅拷贝（Shallow Copy）是编程中复制数据的两种核心方式，**核心差异在于是否复制「引用类型的嵌套数据」**：
 
-- **定义**：只复制对象本身（基本类型成员会被复制），但对于对象内部的**引用类型成员**（如其他对象、数组等），仅复制其引用地址，不复制引用指向的实际对象。
-- **结果**：原对象和拷贝对象共享同一个引用类型成员（修改其中一个的引用成员，会影响另一个）。
+- 浅拷贝：仅复制数据的「表层结构」，嵌套的引用类型（如对象、数组）仍共享同一块内存；
+- 深拷贝：复制数据的「所有层级结构」，嵌套的引用类型也会被全新创建，新旧数据完全独立，互不影响。
 
-##### **实现方式：**
+#### 二、先理解：值类型 vs 引用类型（基础前提）
 
-- 类实现 `Cloneable` 接口，并重写 `Object` 类的 `clone()` 方法（默认是浅拷贝）
+两种拷贝的差异根源在于数据类型的存储方式：
+
+| 类型     | 存储方式                         | 示例（JavaScript）              | 拷贝特点                       |
+| -------- | -------------------------------- | ------------------------------- | ------------------------------ |
+| 值类型   | 直接存储值（栈内存）             | Number、String、Boolean、Symbol | 拷贝即复制值，天然 “深”        |
+| 引用类型 | 存储内存地址（栈），值存在堆内存 | Object、Array、Function、Map    | 拷贝默认复制地址，需显式深拷贝 |
+
+#### 三、常见实现方式
+
+**浅拷贝**
+
+- 方式 1：实现`Cloneable`接口，重写`clone()`（默认浅拷贝）；
+- 方式 2：拷贝构造器（嵌套引用类型直接赋值）。
 
 ```java
-class Address {
-    String city;
-    public Address(String city) { this.city = city; }
-}
-
-class Person implements Cloneable {
-    String name; // 基本类型的包装类（String是不可变的，特殊）
-    Address address; // 引用类型
-
-    public Person(String name, Address address) {
-        this.name = name;
-        this.address = address;
-    }
-
-    // 重写clone()实现浅拷贝
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone(); // Object默认的clone()是浅拷贝
-    }
-}
-
-// 测试
-public class Test {
-    public static void main(String[] args) throws CloneNotSupportedException {
-        Address addr = new Address("北京");
-        Person p1 = new Person("张三", addr);
-        Person p2 = (Person) p1.clone(); // 浅拷贝
-
-        // 修改p2的引用成员
-        p2.address.city = "上海";
-
-        System.out.println(p1.address.city); // 输出"上海"（p1和p2共享同一个Address对象）
+// 浅拷贝构造器示例
+class User {
+    String name;
+    Address addr; // 嵌套引用类型
+    // 浅拷贝构造器
+    public User(User other) {
+        this.name = other.name; // 值类型直接赋值
+        this.addr = other.addr; // 引用类型共享地址
     }
 }
 ```
 
-#### 2. 深拷贝（Deep Copy）
+**深拷贝**
 
-- **定义**：不仅复制对象本身和基本类型成员，还会递归复制对象内部的**所有引用类型成员**（即复制引用指向的实际对象）。
-- **结果**：原对象和拷贝对象完全独立，各自的引用类型成员指向不同的内存地址（修改其中一个的引用成员，不影响另一个）。
+- 方式 1：手动递归拷贝（嵌套对象也通过 clone / 拷贝构造器新建）；
+- 方式 2：序列化 + 反序列化（实现`Serializable`，字节流重建对象）；
 
-**实现方式：**
+```java
+// 深拷贝构造器示例
+class User {
+    String name;
+    Address addr;
+    // 深拷贝构造器
+    public User(User other) {
+        this.name = other.name;
+        this.addr = new Address(other.addr); // 嵌套对象新建实例
+    }
+}
+```
 
-- 方式 1：让所有引用类型成员也实现 `Cloneable` 接口，在 `clone()` 方法中手动复制引用成员（递归浅拷贝）。
-- 方式 2：通过序列化（如 `ObjectInputStream`/`ObjectOutputStream`）将对象写入流再读出，实现深拷贝（需所有成员支持序列化）。
+#### 四、浅拷贝vs引用
+
+**只是引用赋值（根本没拷贝）**
+
+```java
+A a1 = new A();
+A a2 = a1;
+```
+
+**浅拷贝构造器**
+
+```java
+class User {
+    String name;
+    Address addr;
+
+    public User(User other) {
+        this.name = other.name;
+        this.addr = other.addr;
+    }
+}
+```
+
+**最本质的区别**
+
+| 对比点                 | `a2 = a1` | 浅拷贝构造器 |
+| ---------------------- | --------- | ------------ |
+| 是否 new 新对象        | ❌         | ✅            |
+| 堆中 User 对象数量     | 1 个      | 2 个         |
+| 引用字段是否共享       | 是        | 是           |
+| 修改引用字段影响原对象 | 会        | 会           |
 
 
 
@@ -1768,6 +1796,130 @@ Java 中，一个类从 “被程序引用” 到 “真正可用”，需经历
 - 类内部的实现细节（如辅助变量、私有方法）用 `private`，体现封装性。
 
 
+
+## 61. 如何把一个对象对象转JSON字符串
+
+#### 一、最推荐方案：**Jackson（事实标准）**
+
+```xml
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.16.1</version>
+</dependency>
+```
+
+```java
+String json = mapper.writeValueAsString(user);
+System.out.println(json);
+```
+
+#### 二、toString() 模拟 JSON（硬编码）
+
+```java
+class User {
+    String name;
+    Address addr;
+
+    @Override
+    public String toString() {
+        return "{"
+                + "\"name\":\"" + name + "\","
+                + "\"addr\":" + addr
+                + "}";
+    }
+}
+```
+
+#### 三、通过反射反射获取所有字段（通用）
+
+```java
+import java.lang.reflect.Field;
+
+public class SimpleJsonPrinter {
+
+    public static String toJson(Object obj) {
+        if (obj == null) {
+            return "null";
+        }
+
+        Class<?> clazz = obj.getClass(); // 获取目标对象的类对象
+
+        // String
+        if (clazz == String.class) {
+            return "\"" + obj + "\"";
+        }
+
+        // 基本类型 & 包装类 直接打印
+        if (clazz.isPrimitive() || Number.class.isAssignableFrom(clazz) || clazz == Boolean.class) {
+            return obj.toString();
+        }
+
+        // 普通对象
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+
+        Field[] fields = clazz.getDeclaredFields(); // 获取对象所有字段（不包括父类字段）
+        for (int i = 0; i < fields.length; i++) {
+            Field f = fields[i];
+            f.setAccessible(true); // 破除 private 限制
+
+            if (f.isSynthetic()) { // 跳过  synthetic 字段 如 this$0字段
+                continue;
+            }
+
+            try {
+                Object value = f.get(obj);
+                sb.append("\"").append(f.getName()).append("\":");
+                sb.append(toJson(value));
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (i < fields.length - 1) {
+                sb.append(",");
+            }
+        }
+
+        sb.append("}");
+        return sb.toString();
+    }
+}
+```
+
+
+
+## 62、怎么把一个1-100的整数数组随机打乱
+
+```java
+import java.util.Random;
+
+public class ShuffleDemo {
+    public static void main(String[] args) {
+        int[] arr = new int[100];
+
+        // 1. 初始化 1~100
+        for (int i = 0; i < 100; i++) {
+            arr[i] = i + 1;
+        }
+
+        // 2. Fisher–Yates 洗牌
+        Random random = new Random();
+        for (int i = arr.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1); // [0, i]
+            int tmp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = tmp;
+        }
+
+        // 打印
+        for (int n : arr) {
+            System.out.print(n + " ");
+        }
+    }
+}
+
+```
 
 
 

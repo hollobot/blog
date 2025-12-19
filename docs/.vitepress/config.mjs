@@ -174,6 +174,16 @@ export default defineConfig({
               ],
             },
             {
+              text: "RabbitMQ",
+              collapsed: true,
+              items: [
+                {
+                  text: "RabbitMQ",
+                  link: "/programming/RabbitMQ/RabbitMQ",
+                }
+              ],
+            },
+            {
               text: "MyBatis",
               collapsed: true,
               items: [

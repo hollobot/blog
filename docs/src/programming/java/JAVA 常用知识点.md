@@ -291,7 +291,7 @@ System.out.println("10 - 0.1 = " + subResult); // 输出：9.9
 BigDecimal mulResult = bd1.multiply(bd3);
 System.out.println("0.1 × 10 = " + mulResult); // 输出：1.0
 
-// 4. 除法（divide） 除法必须指定**舍入模式**（避免除不尽时抛出 `ArithmeticException`），这是最容易踩坑的点：
+// 4. 除法（divide） 除法必须指定 `舍入模式`（避免除不尽时抛出 `ArithmeticException`），这是最容易踩坑的点：
 // 10 ÷ 3，保留2位小数，四舍五入 
 BigDecimal divResult = bd3.divide(bd4, 2, RoundingMode.HALF_UP);
 System.out.println("10 ÷ 3 = " + divResult); // 输出：3.33

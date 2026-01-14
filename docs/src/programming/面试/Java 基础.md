@@ -1923,6 +1923,42 @@ public class ShuffleDemo {
 
 
 
+## 63、Java Stream 中将流转换为 Map 时，为什么 key 和 value 都不能为 null ？
+
+#### 核心原因：底层 Map 实现的约束
+
+Java Stream 的 `Collectors.toMap()` 方法本质上是基于 `HashMap`（或你指定的 Map 实现）来构建 Map 的，而 **HashMap 本身允许 value 为 null，但不允许 key 为 null**；而 Stream 的 `Collectors` 工具类为了统一行为和避免潜在问题，**强制要求无论是 key 还是 value 都不能为 null**。
+
+##### 1. 先明确：不同 Map 实现对 null 的支持
+
+| Map 实现类 | Key 允许 null | Value 允许 null |
+| :--------: | :-----------: | :-------------: |
+|  HashMap   |   ❌ 不允许    |     ✅ 允许      |
+| Hashtable  |   ❌ 不允许    |    ❌ 不允许     |
+|  TreeMap   |   ❌ 不允许    |     ✅ 允许      |
+
+##### 2. Stream toMap () 抛空指针的底层逻辑
+
+当你调用 `Collectors.toMap()` 时，底层会调用 `Map.merge()` 方法来填充数据，这个方法的源码逻辑会显式检查：
+
+- 如果生成的 key 为 null → 直接抛出 `NullPointerException`
+- 如果生成的 value 为 null → 同样抛出 `NullPointerException`
+
+即使你指定的是支持 value 为 null 的 HashMap，Stream 的收集器也会主动拦截 null 值，目的是**避免不同 Map 实现的行为不一致**，同时减少空指针引发的隐性 Bug。
+
+##### 3. 解决方案筛掉null
+
+```java
+List<TeacherOperationsDataVo> abnormalDays = teacherWorkMapper.selectAbnormalDays(groupIds);
+
+Map<Integer, String> abnormalDaysMap = abnormalDays.stream()
+        .filter(v -> v.getGroupId() != null)
+        .filter(v -> v.getAbnormalDays() != null)
+        .collect(Collectors.toMap(TeacherOperationsDataVo::getGroupId, TeacherOperationsDataVo::getAbnormalDays));
+```
+
+
+
 ## 注
 
 本文 Java 基础面试题内容参考自网络资料，具体参考来源：《Java 基础常见面试题总结》（作者：大彬）

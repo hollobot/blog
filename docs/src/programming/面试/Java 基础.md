@@ -1959,6 +1959,166 @@ Map<Integer, String> abnormalDaysMap = abnormalDays.stream()
 
 
 
+## 64、Stream 常用 api
+
+#### 通用操作 1：过滤（filter）
+
+**核心**：按条件保留元素，仅展示过滤语法本身
+
+```java
+// 保留nums中大于5的元素
+List<Integer> filterNums = nums.stream()
+        .filter(n -> n > 5) // 过滤条件：n>5
+        .collect(Collectors.toList());
+System.out.println("过滤（>5）：" + filterNums); // [6,7,8,9,10]
+
+// 保留strs中非null且长度=1的元素
+List<String> filterStrs = strs.stream()
+        .filter(s -> s != null && s.length() == 1) // 通用空值+长度过滤
+        .collect(Collectors.toList());
+System.out.println("过滤（非null+长度1）：" + filterStrs); // [a,b,a,c,d]
+```
+
+#### 通用操作 2：映射（map）
+
+**核心**：转换元素类型 / 值，仅展示映射语法本身
+
+```java
+// 将nums中元素乘以2
+List<Integer> mapNums = nums.stream()
+        .map(n -> n * 2) // 数值转换
+        .collect(Collectors.toList());
+System.out.println("映射（×2）：" + mapNums); // [2,4,6,8,10,12,14,16,18,20]
+
+// 将strs中字符串转大写（先过滤null）
+List<String> mapStrs = strs.stream()
+        .filter(s -> s != null)
+        .map(String::toUpperCase) // 字符串转换（方法引用）
+        .collect(Collectors.toList());
+System.out.println("映射（转大写）：" + mapStrs); // [A,B,A,C,D]
+```
+
+#### 通用操作 3：去重（distinct）
+
+**核心**：去除重复元素，通用去重逻辑
+
+```java
+// nums去重（本例无重复，仅展示语法）
+List<Integer> distinctNums = nums.stream()
+        .distinct()
+        .collect(Collectors.toList());
+System.out.println("去重（nums）：" + distinctNums); // [1,2,3,4,5,6,7,8,9,10]
+
+// strs去重（先过滤null）
+List<String> distinctStrs = strs.stream()
+        .filter(s -> s != null)
+        .distinct()
+        .collect(Collectors.toList());
+System.out.println("去重（strs）：" + distinctStrs); // [a,b,c,d]
+```
+
+#### 通用操作 4：排序（sorted）
+
+**核心**：自然排序 / 自定义排序，通用排序逻辑
+
+```java
+// nums倒序排序（自定义排序）
+List<Integer> sortedNums = nums.stream()
+        .sorted((a, b) -> b - a) // 倒序
+        .collect(Collectors.toList());
+System.out.println("排序（倒序）：" + sortedNums); // [10,9,8,7,6,5,4,3,2,1]
+
+// strs自然排序（字母序，先过滤null）
+List<String> sortedStrs = strs.stream()
+        .filter(s -> s != null)
+        .sorted() // 自然排序
+        .collect(Collectors.toList());
+System.out.println("排序（自然序）：" + sortedStrs); // [a,a,b,c,d]
+```
+
+#### 通用操作 5：限制 / 跳过（limit/skip）
+
+**核心**：截取 / 跳过元素，通用截取逻辑
+
+```java
+// nums取前3个元素
+List<Integer> limitNums = nums.stream()
+        .limit(3)
+        .collect(Collectors.toList());
+System.out.println("限制（前3）：" + limitNums); // [1,2,3]
+
+// nums跳过前5个元素
+List<Integer> skipNums = nums.stream()
+        .skip(5)
+        .collect(Collectors.toList());
+System.out.println("跳过（前5）：" + skipNums); // [6,7,8,9,10]
+```
+
+#### 通用操作 6：聚合计算（count/max/min/sum）
+
+**核心**：通用统计计算，无业务含义
+
+```java
+// 统计nums元素总数
+long count = nums.stream().count();
+System.out.println("计数：" + count); // 10
+
+// 找nums最大值
+Optional<Integer> max = nums.stream().max(Integer::compare);
+max.ifPresent(m -> System.out.println("最大值：" + m)); // 10
+
+// 找nums最小值
+Optional<Integer> min = nums.stream().min(Integer::compare);
+min.ifPresent(m -> System.out.println("最小值：" + m)); // 1
+
+// 计算nums总和
+int sum = nums.stream().mapToInt(Integer::intValue).sum();
+System.out.println("求和：" + sum); // 55
+```
+
+#### 通用操作 7：转集合（collect）
+
+**核心**：转为 List/Set/Map，通用集合转换
+
+```java
+// 转为List（基础）
+List<Integer> toList = nums.stream().collect(Collectors.toList());
+
+// 转为Set（自动去重）
+Set<String> toSet = strs.stream()
+        .filter(s -> s != null)
+        .collect(Collectors.toSet());
+System.out.println("转Set：" + toSet); // [a,b,c,d]
+
+// 转为Map（key=元素，value=元素长度/数值，通用映射）
+Map<String, Integer> toMap = strs.stream()
+        .filter(s -> s != null)
+        .collect(Collectors.toMap(
+                s -> s, // key=字符串本身
+                String::length, // value=字符串长度
+                (oldV, newV) -> oldV // 重复key保留旧值
+        ));
+System.out.println("转Map：" + toMap); // {a=1, b=1, c=1, d=1}
+```
+
+#### 通用操作 8：遍历（forEach）
+
+**核心**：通用遍历，无业务处理，仅展示遍历语法
+
+```java
+// 遍历nums并打印
+System.out.print("遍历nums：");
+nums.stream().forEach(n -> System.out.print(n + " ")); // 1 2 3 4 5 6 7 8 9 10
+System.out.println();
+
+// 遍历strs（过滤null）并打印
+System.out.print("遍历strs：");
+strs.stream().filter(s -> s != null).forEach(System.out::print); // abacd
+System.out.println();
+```
+
+
+
 ## 注
 
 本文 Java 基础面试题内容参考自网络资料，具体参考来源：《Java 基础常见面试题总结》（作者：大彬）

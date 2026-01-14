@@ -126,7 +126,7 @@ export default defineConfig({
                 { text: "安装 Java", link: "/programming/java/安装 Java" },
                 { text: "Java 基础", link: "/programming/java/JavaSE" },
                 { text: "并发编程", link: "/programming/java/并发编程" },
-                { text: "Java 小技巧", link: "/programming/java/java 小技巧" },
+                { text: "Java 常用知识点", link: "/programming/java/JAVA 常用知识点" },
               ],
             },
             {

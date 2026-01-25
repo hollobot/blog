@@ -343,3 +343,66 @@ git pull origin master
 git update-index --skip-worktree pom.xml
 ```
 
+
+
+## 统计
+
+#### 查看单个仓库的代码统计
+
+**1. 查看所有提交的代码增删行数(所有作者)**
+
+```bash
+git log --all --numstat --pretty=format: | awk '{added+=$1; deleted+=$2} END {print "新增:", added, "行 | 删除:", deleted, "行 | 总计:", added+deleted, "行"}'
+
+
+git log --since="2024-12-01" --until="2025-01-01" --all --numstat --pretty=format: | awk '{added+=$1; deleted+=$2} END {print "新增:", added, "行 | 删除:", deleted, "行 | 总计:", added+deleted, "行"}'
+
+# --since="2024-12-01" --until="2025-01-01" 限制日期
+```
+
+**2. 查看你个人的提交统计**
+
+```bash
+git log --author="taoxiao" --numstat --pretty=format: | awk '{added+=$1; deleted+=$2} END {print "新增:", added, "行 | 删除:", deleted, "行 | 总计:", added+deleted, "行"}'
+```
+
+**3.查看每个作者的贡献统计**
+
+```bash
+git shortlog -sn --all --no-merges
+```
+
+**4.查看详细的作者贡献(包含行数)**
+
+```bash
+git log --format='%aN' | sort -u | while read name; do echo -en "$name\t"; git log --author="$name" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2 } END { printf "新增: %s 删除: %s\n", add, subs }'; done
+
+git log --since="2025-07-07" --until="2026-01-25" --format='%aN' | sort -u | while read name; do echo -en "$name\t"; git log --author="$name" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2 } END { printf "新增: %s 删除: %s\n", add, subs }'; done
+```
+
+**5.如果想查看所有仓库**
+
+如果你确实需要统计多个仓库,可以用这个简单的命令在包含多个 git 仓库的父目录下运行:
+
+```bash
+#  查看所有提交的代码增删行数(所有作者)
+for dir in */; do 
+  if [ -d "$dir/.git" ]; then 
+    echo "=== $dir ==="
+    cd "$dir"
+    git log --all --numstat --pretty=format: | awk '{added+=$1; deleted+=$2} END {print "新增:", added, "删除:", deleted, "总计:", added+deleted}'
+    cd ..
+  fi
+done
+
+# 查看你个人的提交统计
+for dir in */; do 
+  if [ -d "$dir/.git" ]; then 
+    echo "=== $dir ==="
+    cd "$dir"
+    git log --author="taoxiao" --numstat --pretty=format: | awk '{added+=$1; deleted+=$2} END {print "新增:", added, "行 | 删除:", deleted, "行 | 总计:", added+deleted, "行"}'
+    cd ..
+  fi
+done
+```
+

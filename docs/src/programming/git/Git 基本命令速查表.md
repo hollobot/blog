@@ -345,6 +345,29 @@ git update-index --skip-worktree pom.xml
 
 
 
+## 强制回退
+
+背景：只需要推送部分文件，不小心全部push到线上分支去了。
+
+```bash
+# 1. 撤销提交
+git reset --soft HEAD~1
+
+# 2. 清空暂存区
+git reset
+
+# 3. 只添加需要的文件
+git add src/main/resources/mapper/shiquMapper/TeacherWorkMapper.xml
+
+# 4. 重新提交
+git commit -m "bugfix:查询对不上昵称sql"
+
+# 5. 强制推送
+git push -f origin taoxiao
+```
+
+
+
 ## 统计
 
 #### 查看单个仓库的代码统计

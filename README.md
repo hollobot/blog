@@ -7,41 +7,6 @@
 [![VitePress](https://img.shields.io/badge/VitePress-1.6.3-blue.svg)](https://vitepress.dev/)
 [![License](https://img.shields.io/badge/License-ISC-green.svg)](LICENSE)
 
-[**star-history.com**](https://star-history.com), **the missing GitHub star history graph of GitHub repos.**
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=star-history/star-history&type=Date&theme=dark" />
-  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=star-history/star-history&type=Date" />
-  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=star-history/star-history&type=Date" />
-</picture>
-
-👆 **THIS** is a **`live`** chart created with the following html: 👇
-
-<div align="left">
-
-```html
-<picture>
-  <source
-    media="(prefers-color-scheme: dark)"
-    srcset="
-      https://api.star-history.com/svg?repos=star-history/star-history&type=Date&theme=dark
-    "
-  />
-  <source
-    media="(prefers-color-scheme: light)"
-    srcset="
-      https://api.star-history.com/svg?repos=star-history/star-history&type=Date
-    "
-  />
-  <img
-    alt="Star History Chart"
-    src="https://api.star-history.com/svg?repos=star-history/star-history&type=Date"
-  />
-</picture>
-```
-
-</div>
-
 </div>
 
 ## ✨ 特性
@@ -231,3 +196,9 @@ console.log("Hello World");
 
 </div>
 ```
+# :sparkles: Star History :sparkles:
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=hollobot/blog&type=Date&theme=dark" />
+  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=hollobot/blog&type=Date" />
+  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=hollobot/blog&type=Date" />
+</picture>

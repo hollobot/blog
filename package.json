@@ -15,6 +15,8 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@mdit-vue/shared": "^3.0.2",
+    "sass-embedded": "^1.97.3",
     "vitepress": "^1.6.3",
     "vitepress-markdown-timeline": "^1.2.2"
   },

@@ -34,6 +34,9 @@ import backtotop from "../components/backtotop.vue";
 // 公告
 import notice from "../components/notice.vue";
 
+// 导航链接组件
+import MNavLinks from "./components/MNavLinks.vue";
+
 export default {
   extends: DefaultTheme,
 
@@ -42,6 +45,7 @@ export default {
     // 注册全局组件
     app.component("LayoutToggle", LayoutToggle);
     app.component("ArticleMetadata", ArticleMetadata);
+    app.component("MNavLinks", MNavLinks);
 
     // 访问量统计 + 进度条
     if (inBrowser) {
@@ -89,7 +93,7 @@ export default {
       //默认值为true，表示已启用，此参数可以忽略；
       //如果为false，则表示未启用
       //您可以使用“comment:true”序言在页面上单独启用它
-      true
+      true,
     );
 
     onMounted(() => {
@@ -98,20 +102,29 @@ export default {
 
     watch(
       () => route.path,
-      () => nextTick(() => initZoom())
+      () => nextTick(() => initZoom()),
     );
   },
 
   Layout() {
+    const props = {};
+    // 获取 frontmatter
+    const { frontmatter } = useData();
+
+    /* 添加自定义 class */
+    if (frontmatter.value?.layoutClass) {
+      props.class = frontmatter.value.layoutClass;
+    }
+
     return h(DefaultTheme.Layout, null, {
       // 在导航栏添加布局切换按钮
       "nav-bar-content-after": () => h(LayoutToggle),
       // 指定组件使用 layout-bottom 插槽，显示在每个页面的底部
       "layout-bottom": () => h(bsz),
       // 指定组件使用doc-footer-before插槽
-      'doc-footer-before': () => h(backtotop),
+      "doc-footer-before": () => h(backtotop),
       // 指定组件使用layout-top插槽
-      'layout-top': () => h(notice),
+      "layout-top": () => h(notice),
     });
   },
 };

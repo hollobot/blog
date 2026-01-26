@@ -1,10 +1,16 @@
 import { defineConfig } from "vitepress";
 import timeline from "vitepress-markdown-timeline";
 import markdownItTaskCheckbox from "markdown-it-task-checkbox";
+import path from "path";
+import { fileURLToPath } from "url";  // 添加这行
 import {
   groupIconMdPlugin,
   groupIconVitePlugin,
 } from "vitepress-plugin-group-icons";
+
+// 添加这两行
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -42,6 +48,13 @@ export default defineConfig({
   ],
   outDir: ".vitepress/dist",
   srcDir: "src",
+  vite: {
+    resolve: {
+      alias: {
+        "@theme": path.resolve(__dirname, "./theme"),
+      },
+    },
+  },
   themeConfig: {
     search: {
       provider: "local",
@@ -75,6 +88,7 @@ export default defineConfig({
     logo: "/logo.png",
     // https://vitepress.dev/reference/default-theme-config
     nav: [
+      { text: "导航", link: "/nav/" },
       { text: "首页", link: "/" },
       {
         text: "编程",
@@ -126,7 +140,10 @@ export default defineConfig({
                 { text: "安装 Java", link: "/programming/java/安装 Java" },
                 { text: "Java 基础", link: "/programming/java/JavaSE" },
                 { text: "并发编程", link: "/programming/java/并发编程" },
-                { text: "Java 常用知识点", link: "/programming/java/JAVA 常用知识点" },
+                {
+                  text: "Java 常用知识点",
+                  link: "/programming/java/JAVA 常用知识点",
+                },
               ],
             },
             {
@@ -180,7 +197,7 @@ export default defineConfig({
                 {
                   text: "RabbitMQ",
                   link: "/programming/RabbitMQ/RabbitMQ",
-                }
+                },
               ],
             },
             {
@@ -469,6 +486,7 @@ export default defineConfig({
     socialLinks: [{ icon: "github", link: "https://github.com/hollobot" }],
 
     footer: {
+      message: "如有转载或 CV 的请标注本站原文地址",
       copyright: `版权所有 © 2025-${new Date().getFullYear()} hello`,
     },
 
@@ -489,7 +507,7 @@ export default defineConfig({
       text: "最后更新于",
       formatOptions: {
         dateStyle: "short", // full
-        timeStyle: "short", // medium
+        timeStyle: "medium", // medium
       },
     },
 

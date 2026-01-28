@@ -117,7 +117,7 @@ docker run -d \
 
 
 
-#### 1.基础消费场景：单消费者（简单队列）
+### 1.基础消费场景：单消费者（简单队列）
 
 最简单的消费模式：1 个生产者 → 1 个队列 → 1 个消费者，消息一对一消费，无分发策略，适用于简单的任务处理。
 
@@ -156,7 +156,7 @@ channel.basicConsume("simple_queue", false, consumer);
 
 
 
-#### 2. 负载均衡：多消费者竞争消费（工作队列 / Work Queue）
+### 2. 负载均衡：多消费者竞争消费（工作队列 / Work Queue）
 
 1 个队列绑定多个消费者，RabbitMQ 默认采用**轮询（Round-Robin）** 策略分发消息，每个消息仅被 1 个消费者处理，实现消费能力的水平扩展。
 
@@ -201,7 +201,7 @@ channel.basicConsume("work_queue", false, consumer);
 
 
 
-#### 3. 广播 / 组播：发布订阅（Fanout Exchange）
+### 3. 广播 / 组播：发布订阅（Fanout Exchange）
 
 生产者将消息发送到 Fanout 交换机，交换机将消息**广播到所有绑定的队列**，每个队列的消费者都能收到全量消息（1 条消息被多消费）。
 
@@ -246,7 +246,7 @@ channel.basicConsume(queue1, false, new DefaultConsumer(channel) {
 
 
 
-#### 4. 精准路由：定向消费（Direct Exchange）
+### 4. 精准路由：定向消费（Direct Exchange）
 
 生产者通过 `RoutingKey` 发送消息到 Direct 交换机，交换机根据 `RoutingKey` 精准路由到**绑定了相同 RoutingKey** 的队列，实现 “按规则定向消费”
 
@@ -291,7 +291,7 @@ channel.basicConsume(payQueue, false, new DefaultConsumer(channel) {
 
 
 
-#### 5. 模糊匹配：主题消费（Topic Exchange）
+### 5. 模糊匹配：主题消费（Topic Exchange）
 
 基于 Direct 扩展，支持 `RoutingKey` 的**模糊匹配**（通配符：`*` 匹配 1 个单词，`#` 匹配 0 或多个单词），实现更灵活的路由规则。
 
@@ -329,7 +329,7 @@ channel.queueBind(payOrderQueue, topicExchange, "order.pay.*");
 
 
 
-#### 6. 可靠性保障：死信消费（DLX / 死信队列）
+### 6. 可靠性保障：死信消费（DLX / 死信队列）
 
 原理：类似与普通队列消费失败删除的消息会进入垃圾箱里面，用于后续业务逻辑操作。这个垃圾箱就是死信队列
 

@@ -169,3 +169,387 @@ RabbitMQ 核心组件有生产者、消费者、Connection/Channel、Exchange、
 **面试速答话术**
 
 RabbitMQ 核心角色有生产者、消费者、交换机、队列和 Broker（服务端），交换机负责路由、队列唯一存消息，消息从生产者经交换机路由到队列，再由消费者消费；VHost 是扩展的多租户隔离角色。
+
+
+
+## 6. Exchange（交换机）有哪些？
+
+1. **Direct（直连）**：精准匹配路由键（一对一），比如订单 ID 路由到指定处理队列；
+2. **Fanout（扇出 / 广播）**：无视路由键，消息广播到所有绑定队列，比如日志收集、发布订阅；
+3. **Topic（主题）**：通配符匹配路由键（* 匹配一个词，# 匹配多个词），最灵活，比如电商按地区路由订单（order.#.shanghai）；
+4. **Headers**：按消息头匹配（非路由键），几乎不用，面试可略提。
+
+
+
+## 7. 说一说MQ消息丢失？
+
+**1. 生产者端丢失（消息没发到 MQ）**
+
+- 原因：网络故障、MQ 宕机，生产者发送后无确认
+- 解决：**开启生产者 确认机制（Confirm）**（同步 / 异步），确保消息成功投递到 Exchange；失败则重试 / 记录。
+
+**2. MQ 端丢失（消息到 MQ 后宕机丢失）**
+
+- 原因：Exchange/Queue/ 消息未持久化，MQ 宕机后数据丢失
+- 解决：**三重持久化**—— 交换机持久化、队列持久化、消息持久化（发送时指定 deliveryMode=2）。
+
+**3. 消费者端丢失（消费中宕机，消息未处理完）**
+
+- 原因：消费者自动 Ack，拿到消息后未处理完就宕机，MQ 判定消费成功删除消息
+- 解决：**关闭自动 Ack，开启手动 Ack**，处理完业务再手动确认（basicAck）；处理失败则重入队（basicNack）/ 死信
+
+
+
+## 8. 说说生产者确认机制？
+
+#### **核心配置（application.yml 关键项）**
+
+```yaml
+spring:
+  rabbitmq:
+    # 仅保留生产者确认相关核心配置，基础连接信息（host/port等）面试可略
+    publisher-confirm-type: correlated  # 异步确认（生产环境首选）
+    publisher-returns: true             # 开启Return机制（处理路由失败）
+    template:
+      mandatory: true                   # 路由失败强制触发Return回调
+```
+
+**核心说明**：
+
+- `publisher-confirm-type: correlated`：开启异步确认模式，MQ 收到消息后异步回调生产者；
+- `publisher-returns + mandatory`：兜底处理 “MQ 收到但路由到队列失败” 的消息，避免无声丢失。
+
+#### **关键代码（仅核心回调 + 发送逻辑）**
+
+```java
+@Component
+public class Producer implements RabbitTemplate.ConfirmCallback, RabbitTemplate.ReturnsCallback {
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    // 初始化绑定回调（核心）
+    @PostConstruct
+    public void init() {
+        rabbitTemplate.setConfirmCallback(this);      // 绑定确认回调
+        rabbitTemplate.setReturnsCallback(this);      // 绑定Return回调
+    }
+
+    // 发送消息（核心：带唯一ID用于回调匹配）
+    public void sendMsg(String msg) {
+        CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
+        rabbitTemplate.convertAndSend("exchange", "routingKey", msg, correlationData);
+    }
+
+    // 1. 确认回调：判断消息是否到达MQ的Exchange
+    @Override
+    public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+        if (ack) {
+            // 消息成功到达MQ，无需处理
+        } else {
+            // 消息未到达MQ，触发重试/落地本地消息表（核心兜底逻辑）
+            String msgId = correlationData.getId();
+            System.err.println("消息[" + msgId + "]发送失败：" + cause);
+        }
+    }
+
+    // 2. Return回调：消息到Exchange但路由到Queue失败
+    @Override
+    public void returnedMessage(ReturnedMessage returned) {
+        // 路由失败处理：重试/转发死信（核心兜底逻辑）
+        String msg = new String(returned.getMessage().getBody());
+        System.err.println("消息[" + msg + "]路由失败：" + returned.getReplyText());
+    }
+}
+```
+
+#### 总结
+
+1. 核心配置仅需开启`correlated`异步确认和`Return`机制，是生产者防丢失的关键；
+2. 代码核心是实现两个回调：`ConfirmCallback`确认消息是否到 MQ，`ReturnsCallback`处理路由失败；
+3. `CorrelationData`绑定消息 ID，是精准定位丢失消息、实现重试的核心。
+
+
+
+## 10. 消费者手动消息确认
+
+#### 核心配置（application.yml 关键项）
+
+```yaml
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        acknowledge-mode: manual  # 关闭自动Ack，开启手动确认（核心）
+        # 可选：消费限流（削峰补充，面试加分）
+        prefetch: 1  # 每次只拉取1条消息，处理完再拉取下一条
+```
+
+**核心说明**：
+
+- `acknowledge-mode: manual`：是手动确认的核心开关，关闭自动确认，由代码控制消息是否确认；
+- `prefetch: 1`：消费限流，避免一次性拉取大量消息导致处理中宕机丢失，面试提一下更加分。
+
+#### 关键代码（仅核心消费 + 手动确认逻辑）
+
+```java
+@Component
+public class MsgConsumer {
+
+    // 监听队列，核心：ackMode="MANUAL" 显式指定手动确认
+    @RabbitListener(queues = "test.queue", ackMode = "MANUAL")
+    public void consumeMsg(Message message, Channel channel) throws IOException {
+        long deliveryTag = message.getMessageProperties().getDeliveryTag(); // 获取消息唯一标识
+        try {
+            // 1. 核心业务逻辑：处理消息（如扣库存、更新订单）
+            String msg = new String(message.getBody());
+            System.out.println("处理消息：" + msg);
+
+            // 2. 业务处理成功，手动确认（核心）：multiple=false表示只确认当前这条消息
+            channel.basicAck(deliveryTag, false);
+        } catch (Exception e) {
+            // 3. 业务处理失败，根据场景选择处理方式（二选一）
+            // 方式1：重新入队（重试）：requeue=true
+            channel.basicNack(deliveryTag, false, true);
+            // 方式2：拒绝并丢弃（或转发死信）：requeue=false
+            // channel.basicReject(deliveryTag, false);
+            System.err.println("消息处理失败：" + e.getMessage());
+        }
+    }
+}
+```
+
+#### 总结
+
+1. 核心配置仅需设置`acknowledge-mode: manual`，关闭自动确认；
+2. 代码核心是通过`Channel`的`basicAck`（成功确认）、`basicNack/basicReject`（失败处理）控制消息确认；
+3. `deliveryTag`是消息的唯一标识，用于精准确认单条消息，是手动确认的核心参数。
+
+
+
+## 11. MQ持久化
+
+RabbitMQ 持久化核心是保障**MQ 服务端消息不丢失**，需完成「交换机持久化 + 队列持久化 + 消息持久化」三重配置，以下仅保留核心内容，基础连接配置省略。
+
+#### 核心配置（无额外 yml 开关，持久化通过声明组件时指定参数实现）
+
+注：MQ 持久化无需在 application.yml 中单独加开关，核心是声明交换机 / 队列时指定 “持久化参数”，发送消息时指定 “持久化模式”。
+
+#### 关键代码
+
+**交换机 + 队列持久化（核心：声明时指定 durable=true）**
+
+```java
+@Configuration
+public class RabbitMqPersistentConfig {
+    // 1. 声明持久化直连交换机（durable=true 是核心）
+    @Bean
+    public DirectExchange persistentExchange() {
+        // 参数：交换机名、是否持久化、是否自动删除
+        return new DirectExchange("persistent.exchange", true, false);
+    }
+
+    // 2. 声明持久化队列（durable=true 是核心）
+    @Bean
+    public Queue persistentQueue() {
+        // 参数：队列名、是否持久化、是否排他、是否自动删除
+        return new Queue("persistent.queue", true, false, false);
+    }
+
+    // 3. 绑定交换机和队列（无持久化相关，仅路由规则）
+    @Bean
+    public Binding persistentBinding() {
+        return BindingBuilder.bind(persistentQueue())
+                .to(persistentExchange())
+                .with("persistent.key");
+    }
+}
+```
+
+**消息持久化（核心：发送时指定 deliveryMode=2）**
+
+```java
+@Component
+public class PersistentMsgProducer {
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    public void sendPersistentMsg(String msg) {
+        // 构建消息，指定持久化模式（deliveryMode=2 是核心） deliveryMode：投递模式设置为2
+        Message message = MessageBuilder
+                .withBody(msg.getBytes(StandardCharsets.UTF_8))
+                .setDeliveryMode(MessageDeliveryMode.PERSISTENT) // 等价于deliveryMode=2
+                .build();
+        
+        // 发送持久化消息到持久化交换机/队列
+        rabbitTemplate.send("persistent.exchange", "persistent.key", message);
+    }
+}
+```
+
+**核心说明**
+
+1. **交换机 / 队列持久化**：`durable=true` 表示 MQ 宕机重启后，交换机 / 队列的元数据不会丢失；若为 false，重启后交换机 / 队列会被删除；
+2. **消息持久化**：`deliveryMode=2`（或`MessageDeliveryMode.PERSISTENT`）表示消息会被持久化到磁盘，而非仅存于内存，MQ 宕机后消息不丢失；
+3. 三重持久化需**同时开启**，缺一不可：仅交换机 / 队列持久化，消息仍存内存；仅消息持久化，交换机 / 队列重启后丢失，消息也无法路由。
+
+#### 总结
+
+1. MQ 持久化核心是「交换机 + 队列 + 消息」三重持久化，核心参数为`durable=true`（交换机 / 队列）、`deliveryMode=2`（消息）；
+2. 持久化会增加磁盘 IO 开销，需在可靠性和性能间平衡；
+3. 即使开启持久化，若 MQ 宕机时消息还未刷盘，仍可能丢失（可搭配镜像队列进一步提升可靠性）。
+
+
+
+## 12. 镜像队列
+
+镜像队列是 RabbitMQ 集群下保障**队列高可用**的核心方案，核心是将主队列同步到集群多个节点，主节点宕机后从节点自动接管，以下仅保留核心配置 / 代码，集群搭建、基础连接等内容省略。
+
+#### 一、核心配置
+
+**1. 命令行配置镜像策略（生产环境首选）**
+
+```bash
+# 配置镜像策略：匹配ha.开头的队列，同步到集群所有节点
+rabbitmqctl set_policy ha_policy "^ha\." '{"ha-mode":"all"}' --apply-to queues
+```
+
+**核心参数说明**：
+
+- `ha_policy`：策略名称（自定义）；
+- `^ha\.`：正则匹配队列名，仅对以`ha.`开头的队列生效；
+- `{"ha-mode":"all"}`：镜像模式为 “同步到集群所有节点”（常用）；
+- `--apply-to queues`：策略仅作用于队列（镜像队列核心）。
+
+**2. 控制台配置（可视化操作，面试提即可）**
+
+- 进入 RabbitMQ 控制台 → Admin → Policies → Add / Update a policy；
+- Name：自定义策略名（如 ha_policy）；
+- Pattern：队列匹配正则（如`^ha\.`）；
+- Apply to：选择`Queues`；
+- Definition：添加键值对`ha-mode=all`。
+
+#### 二、关键代码（仅队列声明，无需额外配置）
+
+```java
+@Configuration
+public class MirrorQueueConfig {
+    // 声明队列：名称以ha.开头（匹配镜像策略）+ 开启持久化（核心）
+    @Bean
+    public Queue mirrorQueue() {
+        // 参数：队列名（ha.开头）、是否持久化、是否排他、是否自动删除
+        return new Queue("ha.order.queue", true, false, false);
+    }
+}
+```
+
+**核心说明**：
+
+- 队列名需匹配镜像策略的正则（如`ha.order.queue`），才能被自动设置为镜像队列；
+- 必须开启队列持久化（`durable=true`），否则镜像同步无意义（节点重启队列丢失）。
+
+#### 总结
+
+1. 镜像队列核心是通过「集群策略」实现队列多节点同步，配置关键是设置`ha-mode`（常用`all`）和队列名匹配规则；
+2. 代码仅需声明匹配规则的持久化队列，无需额外逻辑；
+3. 镜像队列需搭配队列 / 消息持久化使用，解决集群下主节点宕机的队列高可用问题。
+
+
+
+## 13.  消息重复消费怎么处理？
+
+- **生产端消息重复**
+  - 生产者发送消息到 MQ 后，因网络波动未收到 MQ 的确认回执，生产者触发重试机制重新发送，导致 MQ 接收到重复消息。
+
+- **消费端消息重复**
+  - 消费者处理完消息后，向 MQ 发送确认（Ack）时出现网络波动，MQ 未收到确认，会判定消息未消费成功，重新将该消息投递到消费者，导致消费者接收到重复消息。
+
+**核心解决思路**：
+
+重复消息无法从根源避免，核心解决方案是**让消费逻辑满足幂等性**（多次执行结果与一次执行一致），关键是为每条消息分配**全局唯一 ID**，消费时通过该 ID 校验消息是否已被处理。
+
+**具体实现方案**：
+
+1. 消费者获取到消息后先根据id去查询redis/db是否存在该消息
+2. 如果不存在，则正常消费，消费完毕后写入redis/db
+3. 如果存在，则证明消息被消费过，直接丢弃
+
+
+
+## 14. RabbitMQ 消费端怎么进行限流？
+
+消费端限流是为了避免 MQ 瞬间推送大量消息压垮消费者（如数据库连接耗尽、服务器 CPU / 内存打满），核心是控制 MQ 每次推送给消费者的消息数量，消费者处理完一批再推送下一批。
+
+#### **核心原理**
+
+通过设置`prefetch`（预取数）参数，指定 MQ 最多给每个消费者推送`N`条未确认的消息，只有当消费者确认了`N`条消息中的部分 / 全部后，MQ 才会补充推送新消息，实现 “处理一批、拉取一批” 的限流效果。
+
+#### **配置层面（application.yml 核心项）**
+
+```yaml
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        acknowledge-mode: manual  # 限流必须配合手动确认（核心前提）
+        prefetch: 10              # 核心：每次最多预取10条未确认消息
+        # 可选：批量确认（进一步控制频率）
+        batch-size: 5             # 每确认5条消息再批量反馈给MQ
+```
+
+**关键说明**：
+
+- `acknowledge-mode: manual`：限流必须开启手动确认，否则 MQ 会一次性推送所有消息，限流失效；
+- `prefetch: 10`：表示每个消费者最多持有 10 条未确认的消息，处理完部分后 MQ 才会补新消息；值越小，限流越严格（如设为 1 则 “处理一条、拉取一条”）。
+
+#### 代码层面（仅核心消费逻辑）
+
+```java
+@Component
+public class LimitConsumer {
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    // 监听队列，配合配置实现限流
+    @RabbitListener(queues = "business.queue")
+    public void consumeMsg(Message message, Channel channel) throws IOException {
+        long deliveryTag = message.getMessageProperties().getDeliveryTag();
+        try {
+            // 1. 处理单条消息业务逻辑
+            String content = new String(message.getBody());
+            processBusiness(content);
+
+            // 2. 手动确认（确认后MQ才会补新消息）
+            // 批量确认：channel.basicAck(deliveryTag, true);（确认当前及之前所有消息）
+            // 单条确认：channel.basicAck(deliveryTag, false);
+            channel.basicAck(deliveryTag, false);
+            //举例：假设 MQ 推给你 3 条消息，编号是 1、2、3，你处理完 2 号消息后调用上面这个方法，仅 2 号消息被确认，MQ 只会把 2 号从 “未确认列表” 移除，1、3 仍保留。
+        } catch (Exception e) {
+            // 处理失败，重新入队或拒绝
+            channel.basicNack(deliveryTag, false, true);
+        }
+    }
+
+    // 业务处理逻辑（模拟耗时操作）
+    private void processBusiness(String content) {
+        // 如：数据库写入、接口调用等，耗时操作更需限流
+        try {
+            Thread.sleep(100); // 模拟业务处理耗时
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+}
+```
+
+#### 进阶补充（面试加分）
+
+1. **全局限流**：若需对整个队列限流（所有消费者合计），可结合 MQ 的`x-max-length`（队列最大消息数）或自定义限流逻辑（如基于 Redis 计数）；
+2. **动态调整**：生产环境可通过 RabbitMQ 控制台 / API 动态修改`prefetch`值，无需重启服务；
+3. **注意事项**：`prefetch`值需根据消费者处理能力调整（如处理单条消息耗时 100ms，prefetch 设为 10 则每秒处理约 10条），避免过小导致消费速度慢，过大导致限流失效。`prefetch: N` 的核心是：**MQ 给每个消费者最多保留 N 条 “未确认的消息”**，消费者确认一条，MQ 才会补一条新的，形成 “消费 - 确认 - 补消息” 的循环。
+
+#### 总结
+
+1. 消费端限流核心是`手动确认 + prefetch参数`，控制 MQ 单次推送的未确认消息数；
+2. 限流的前提是开启手动确认，否则 prefetch 参数无效；
+3. 核心目标是平衡消费速度和消费者资源占用，避免消费者被海量消息压垮。

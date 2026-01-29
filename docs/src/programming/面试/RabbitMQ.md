@@ -311,7 +311,7 @@ public class MsgConsumer {
             // 3. 业务处理失败，根据场景选择处理方式（二选一）
             // 方式1：重新入队（重试）：requeue=true
             channel.basicNack(deliveryTag, false, true);
-            // 方式2：拒绝并丢弃（或转发死信）：requeue=false
+            // 方式2：拒绝并丢弃（或转发死信）：requeue=false （basicReject 不支持批量确认操作）
             // channel.basicReject(deliveryTag, false);
             System.err.println("消息处理失败：" + e.getMessage());
         }
@@ -545,7 +545,7 @@ public class LimitConsumer {
 #### 进阶补充（面试加分）
 
 1. **全局限流**：若需对整个队列限流（所有消费者合计），可结合 MQ 的`x-max-length`（队列最大消息数）或自定义限流逻辑（如基于 Redis 计数）；
-2. **动态调整**：生产环境可通过 RabbitMQ 控制台 / API 动态修改`prefetch`值，无需重启服务；
+2. **动态调整**：生产环境可通过 RabbitMQ 控制台 / API 动态修改`prefetch`值，无需重启服务，prefetch 是针对客户端的设置；
 3. **注意事项**：`prefetch`值需根据消费者处理能力调整（如处理单条消息耗时 100ms，prefetch 设为 10 则每秒处理约 10条），避免过小导致消费速度慢，过大导致限流失效。`prefetch: N` 的核心是：**MQ 给每个消费者最多保留 N 条 “未确认的消息”**，消费者确认一条，MQ 才会补一条新的，形成 “消费 - 确认 - 补消息” 的循环。
 
 #### 总结
@@ -553,3 +553,406 @@ public class LimitConsumer {
 1. 消费端限流核心是`手动确认 + prefetch参数`，控制 MQ 单次推送的未确认消息数；
 2. 限流的前提是开启手动确认，否则 prefetch 参数无效；
 3. 核心目标是平衡消费速度和消费者资源占用，避免消费者被海量消息压垮。
+
+
+
+## 15. 什么是死信队列？
+
+#### **先明确：死信队列（Dead Letter Queue，DLQ）是什么**
+
+死信队列并不是 RabbitMQ 的一种特殊队列类型，而是**普通队列的 “特殊用途”**—— 专门用来接收 “死信消息” 的普通队列。
+
+所谓**死信消息**，是指在正常队列中满足某些条件，无法被正常消费，被 RabbitMQ “淘汰” 并转发到指定队列（即死信队列）的消息。
+
+**消息成为死信的 3 个核心条件**：
+
+1. 消息被消费者**拒绝确认（basic.reject/basic.nack）**，且设置`requeue=false`（不重新入队）。
+2. 消息在队列中**过期（TTL）**（队列设置了整体过期时间，或消息本身设置了单独过期时间）。
+3. 正常队列达到**最大长度（max-length）**，无法再接收新消息，淘汰最早的消息。
+
+#### 关键配置（核心，无基础冗余配置）
+
+1. 正常业务队列需要添加 2 个核心参数（声明队列时配置）：
+
+   - `x-dead-letter-exchange`：指定死信交换机（DLX）的名称（必须提前声明该交换机）。
+   - `x-dead-letter-routing-key`：指定死信消息路由到死信队列的路由键（可选，若不指定，使用消息原有的路由键）。
+
+   
+
+2. 可选补充（触发死信的常见配置）：
+
+   - `x-message-ttl`：队列中消息的默认过期时间（毫秒），超过该时间未被消费的消息成为死信。
+
+   - `x-max-length`：队列的最大消息长度，超过后淘汰旧消息成为死信。
+
+   - 也可以给消息单独设置过期时间，遵循「**最短过期时间优先**」
+
+     
+
+**关键代码（以 Java 的 Spring AMQP 为例，最常用生产环境方案）**
+
+Spring AMQP 已经封装了 RabbitMQ 的操作，核心是通过队列的`arguments`配置死信相关参数，以下是核心代码片段（省略基础的连接配置、交换机 / 队列绑定的冗余代码）。
+
+**配置类（核心：正常队列的死信参数配置）**
+
+```java
+import org.springframework.amqp.core.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import java.util.HashMap;
+import java.util.Map;
+
+@Configuration
+public class DlxQueueConfig {
+
+    // 1. 声明 死信交换机（普通的direct交换机即可，并非特殊类型）
+    @Bean
+    public DirectExchange dlxExchange() {
+        // 持久化、不自动删除
+        return new DirectExchange("DLX_EXCHANGE", true, false);
+    }
+
+    // 2. 声明 死信队列（普通队列，专门接收死信消息）
+    @Bean
+    public Queue dlxQueue() {
+        return QueueBuilder.durable("DLX_QUEUE") // 持久化死信队列，避免消息丢失
+                .build();
+    }
+
+    // 3. 绑定 死信交换机与死信队列（指定路由键：DLX_ROUTING_KEY）
+    @Bean
+    public Binding dlxBinding() {
+        return BindingBuilder.bind(dlxQueue())
+                .to(dlxExchange())
+                .with("DLX_ROUTING_KEY");
+    }
+
+    // 4. 声明 正常业务队列（核心：配置死信相关参数）
+    @Bean
+    public Queue businessQueue() {
+        // 封装死信相关配置参数
+        Map<String, Object> arguments = new HashMap<>(4);
+        // 关键配置1：指定死信交换机
+        arguments.put("x-dead-letter-exchange", "DLX_EXCHANGE");
+        // 关键配置2：指定死信路由键（对应死信交换机与死信队列的绑定键）
+        arguments.put("x-dead-letter-routing-key", "DLX_ROUTING_KEY");
+        // 可选配置：消息过期时间（60秒），触发死信条件2
+        arguments.put("x-message-ttl", 60000);
+        // 可选配置：队列最大长度（1000条），触发死信条件3
+        arguments.put("x-max-length", 1000);
+
+        // 声明正常队列，传入死信配置参数
+        return QueueBuilder.durable("BUSINESS_QUEUE")
+                .withArguments(arguments) // 核心：注入死信相关配置
+                .build();
+    }
+
+    // 5. 声明 业务交换机（普通direct交换机，用于发送正常业务消息）
+    @Bean
+    public DirectExchange businessExchange() {
+        return new DirectExchange("BUSINESS_EXCHANGE", true, false);
+    }
+
+    // 6. 绑定 业务交换机与业务队列
+    @Bean
+    public Binding businessBinding() {
+        return BindingBuilder.bind(businessQueue())
+                .to(businessExchange())
+                .with("BUSINESS_ROUTING_KEY");
+    }
+}
+```
+
+**消费者代码（核心：拒绝消息并设置 requeue=false，触发死信条件 1）**
+
+这是触发死信的最常见主动操作，消费者处理消息失败时，拒绝该消息且不重新入队，消息会被转发到死信队列。
+
+```java
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class BusinessConsumer {
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    // 监听正常业务队列
+    @RabbitListener(queues = "BUSINESS_QUEUE")
+    public void consumeBusinessMessage(String message) {
+        try {
+            // 模拟业务处理失败
+            int a = 1 / 0;
+            // 正常处理，手动发送ack，不批量确认
+            channel.basicAck(deliveryTag, false);
+        } catch (Exception e) {
+            System.out.println("业务处理失败，手动发送nack");
+            // 手动发送nack，不批量确认，requeue=false：不重新入队。触发死信条件
+            channel.basicNack(deliveryTag, false, false);
+        }
+    }
+
+    // 监听死信队列，处理死信消息（可做重试、归档、告警等操作）
+    @RabbitListener(queues = "DLX_QUEUE")
+    public void consumeDlxMessage(String message) {
+        System.out.println("处理死信消息：" + message);
+        // 此处可实现：消息归档到数据库、发送告警通知、定时重试等逻辑
+    }
+}
+```
+
+**关键代码讲解（极简）**
+
+1. 死信交换机 / 队列和普通组件无区别，只是用途专属。
+2. 业务队列的`args`参数是核心，告诉 RabbitMQ 死信要转发到哪里。
+3. 消费者抛出异常且不重试（默认配置），等价于`requeue=false`，触发死信转发。
+
+#### 总结
+
+1. 死信队列是接收异常消息的普通队列，依赖死信交换机转发。
+2. 核心配置是业务队列的`x-dead-letter-exchange`和`x-dead-letter-routing-key`。
+3. 核心操作是消费者拒绝消息且`requeue=false`，触发消息进入死信队列。
+
+
+
+
+
+## 16. 说说pull模式
+
+RabbitMQ 的 Pull 模式，是**消费者主动向 RabbitMQ 服务器 “请求拉取” 消息**的消费模式 —— 消费者需要主动调用 API（如`basic.get`），每次调用要么获取到一条消息（若队列中有消息），要么获取到空（若队列中无消息），完全由消费者控制拉取的时机、频率和数量。
+
+与之相对的是我们之前一直聊的**Push 模式（推送模式）**（`basic.consume`），即 RabbitMQ 服务器主动将消息推送给已订阅队列的消费者，推送规则受`prefetch`预取数控制。
+
+#### **Pull 模式 关键特点**
+
+- **主动可控**：消费节奏完全由消费者掌控，想什么时候拉取、拉取多少次，都由消费者决定，服务器不会主动推送。
+- **无长连接订阅**：Pull 模式不需要消费者持续订阅队列，调用`basic.get`时建立短暂交互，获取消息后即可断开（也可保持连接）。
+- **单条拉取**：RabbitMQ 的`basic.get` API**每次只能拉取一条消息**，不支持批量拉取（若需批量，需循环调用）。
+- **无自动推送优化**：没有`prefetch`预取数的优化，无法像 Push 模式那样批量预取提升吞吐量，高并发场景下效率较低。
+- **确认机制**：拉取到消息后，同样需要手动确认（`basic.ack`）或否定确认（`basic.nack`/`basic.reject`），否则消息会保持 “未确认” 状态。
+
+#### **Pull 模式 关键代码（Java AMQP 原生 API，最简实现）**
+
+Spring AMQP 对 Pull 模式支持较弱（更推荐 Push 模式），因此展示原生 API 的核心代码，更易理解本质：
+
+```java
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.GetResponse;
+
+public class RabbitMQPullConsumer {
+    // 队列名称
+    private static final String QUEUE_NAME = "SIMPLE_BUSINESS_QUEUE";
+
+    public static void main(String[] args) throws Exception {
+        // 1. 创建连接工厂并配置
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        factory.setUsername("guest");
+        factory.setPassword("guest");
+
+        // 2. 建立连接和通道
+        try (Connection connection = factory.newConnection();
+             Channel channel = connection.createChannel()) {
+
+            // 3. 核心：主动拉取消息（Pull模式核心API：basic.get()）
+            while (true) {
+                // 调用basic.get()拉取单条消息，两个参数：
+                // 参数1：队列名称
+                // 参数2：autoAck（是否自动确认，此处设为false，手动确认）
+                GetResponse response = channel.basicGet(QUEUE_NAME, false);
+
+                if (response != null) {
+                    // 4. 成功拉取到消息，处理消息
+                    String message = new String(response.getBody(), "UTF-8");
+                    System.out.println("拉取到消息：" + message);
+
+                    // 5. 手动确认消息（处理成功后，告知服务器删除消息）
+                    channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
+                } else {
+                    // 6. 队列中无消息，暂停一段时间再拉取（避免空循环占用CPU）
+                    System.out.println("队列中暂无消息，5秒后重试...");
+                    Thread.sleep(5000);
+                }
+            }
+        }
+    }
+}
+```
+
+#### Pull 模式 适用场景
+
+Pull 模式不是主流消费模式，仅在特定场景下使用：
+
+1. **定时任务消费**：比如每天凌晨 3 点定时拉取队列中的统计消息，处理数据报表。
+2. **按需查询消费**：比如后台管理系统中，管理员手动点击 “拉取未处理消息” 按钮，才获取并处理消息。
+3. **低频率、低吞吐量场景**：队列消息产生频率极低（比如几小时一条），无需消费者持续监听，主动拉取更节省资源。
+
+#### 总结
+
+1. Pull 模式是消费者主动调用`basic.get()`拉取消息的模式，消费节奏完全由消费者掌控。
+2. 核心特点是主动可控，但吞吐量较低，不支持批量拉取，非生产环境主流。
+3. 关键代码的核心是`basic.get()` API，且需处理空消息场景避免 CPU 浪费。
+4. 适用低频率、按需消费场景，高并发核心业务优先使用 Push 模式（配合`prefetch`优化）。
+
+
+
+
+
+## 17. 怎么单独设置消息的过期时间？
+
+在生产端发送消息的时候可以给消息设置过期时间，单位为毫秒(ms)。遵循「**最短过期时间优先**」
+
+```java
+@Component
+public class SendExpiredMessage {
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    public void sendMessageWithExpiration(String content) {
+        MessageProperties props = new MessageProperties();
+        // 核心：给单个消息设置过期时间（10秒，字符串类型的毫秒数）
+        props.setExpiration("10000"); 
+        
+        // 封装消息内容和过期属性
+        Message message = new Message(content.getBytes(), props);
+        
+        // 发送到业务队列
+        rabbitTemplate.send("SIMPLE_BUSINESS_QUEUE", message);
+    }
+    
+    // 或者
+    public void sendMessageWithExpiration(String content) {
+       	Message message = new Message("tyson".getBytes(), mp);
+        
+		message.getMessageProperties().setExpiration("10000");
+        
+        // 发送到业务队列
+        rabbitTemplate.send("SIMPLE_BUSINESS_QUEUE", message);
+    }
+}
+```
+
+
+
+## 18. 延时队列怎么实现？
+
+RabbitMQ 延时队列的实现方案，首先**RabbitMQ 没有提供原生的 “延时队列” 类型**，实际开发中主要通过两种方案实现，其中「死信队列 + TTL」是最常用、最成熟的方案，另一种是借助 RabbitMQ 的`rabbitmq_delayed_message_exchange`插件实现。
+
+延时队列的核心需求：**消息发送后，不立即被消费者消费，而是等待指定的延迟时间后，才被消费处理**（比如订单 30 分钟未支付自动关闭、超时任务提醒）。
+
+#### 方案一：死信队列 + TTL（推荐，无需额外插件，兼容性好）
+
+这是生产环境的首选方案，核心思路是：**利用 “消息 / 队列 TTL（过期时间）+ 死信队列”，让消息在 “延时队列”（实际是普通队列，仅用于存放延时消息）中过期，过期后转为死信，被转发到真正的业务队列，消费者监听业务队列实现延时消费**。
+
+**实现逻辑（4 步极简）**
+
+1. 声明「延时队列」（无消费者监听，仅用于存放消息，让消息在这里过期），配置 TTL 和死信交换机。
+2. 声明「死信交换机」和「目标业务队列」（消费者监听该队列），绑定两者。
+3. 发送消息到「延时队列」，消息在该队列中等待 TTL 过期。
+4. 消息过期后转为死信，通过死信交换机转发到「目标业务队列」，消费者消费该消息，实现延时效果。
+
+**配置类（核心：延时队列的 TTL + 死信配置）**
+
+```java
+import org.springframework.amqp.core.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import java.util.HashMap;
+import java.util.Map;
+
+@Configuration
+public class DelayQueueByDlxConfig {
+
+    // 1. 死信交换机（用于转发过期的延时消息）
+    @Bean
+    public DirectExchange delayDlxExchange() {
+        return new DirectExchange("DELAY_DLX_EXCHANGE", true, false);
+    }
+
+    // 2. 目标业务队列（消费者监听，最终处理延时消息）
+    @Bean
+    public Queue delayTargetQueue() {
+        return QueueBuilder.durable("DELAY_TARGET_QUEUE").build();
+    }
+
+    // 3. 绑定死信交换机与目标业务队列
+    @Bean
+    public Binding delayDlxBinding() {
+        return BindingBuilder.bind(delayTargetQueue())
+                .to(delayDlxExchange())
+                .with("DELAY_DLX_KEY");
+    }
+
+    // 4. 延时队列（核心：配置TTL+死信参数，无消费者监听）
+    @Bean
+    public Queue delayQueue() {
+        Map<String, Object> args = new HashMap<>();
+        // 关键1：配置队列级TTL（所有消息默认延时时间，单位：毫秒，此处30秒）
+        args.put("x-message-ttl", 30000);
+        // 关键2：指定死信交换机（转发过期消息）
+        args.put("x-dead-letter-exchange", "DELAY_DLX_EXCHANGE");
+        // 关键3：指定死信路由键（对应死信交换机与目标队列的绑定键）
+        args.put("x-dead-letter-routing-key", "DELAY_DLX_KEY");
+
+        // 声明延时队列，持久化
+        return QueueBuilder.durable("DELAY_QUEUE").withArguments(args).build();
+    }
+
+    // 5. 延时交换机（用于发送消息到延时队列，普通Direct交换机）
+    @Bean
+    public DirectExchange delayExchange() {
+        return new DirectExchange("DELAY_EXCHANGE", true, false);
+    }
+
+    // 6. 绑定延时交换机与延时队列
+    @Bean
+    public Binding delayBinding() {
+        return BindingBuilder.bind(delayQueue())
+                .to(delayExchange())
+                .with("DELAY_KEY");
+    }
+}
+```
+
+**方案一关键细节**
+
+1. **TTL 的两种配置方式**（和之前死信队列的 TTL 一致）：遵循「**最短过期时间优先**」
+   - 队列级 TTL（`x-message-ttl`）：所有消息默认延时时间，配置在延时队列上，优点是统一管理，缺点是无法单独设置不同消息的延时时间。
+   - 消息级 TTL（`expiration`）：发送消息时单独设置，优点是灵活，不同消息可设置不同延时，缺点是只有消息到队列头部才会检查过期，存在 “队头阻塞” 问题。
+2. **延时队列无消费者**：这是核心！如果给延时队列配置消费者，消息会被立即消费，无法实现延时效果。
+3. **优点与缺点**：
+   - 优点：无需额外安装插件，兼容性好，实现简单，符合 RabbitMQ 原生逻辑。
+   - 缺点：如果使用队列级 TTL，消息延时时间固定；如果使用消息级 TTL，存在 “队头阻塞” 问题（前面的消息未过期，后面的消息即使过期也无法被转发）。
+
+
+
+#### 方案二：`rabbitmq_delayed_message_exchange` 插件（灵活，无队头阻塞）
+
+这是 RabbitMQ 官方推荐的延时队列方案，需要安装额外插件，核心思路是：**声明一个特殊的 “延时交换机”（类型为`x-delayed-message`），消息发送到该交换机后，不会立即转发到队列，而是由交换机缓存，等待指定延时时间后，再转发到目标队列**。
+
+**实现步骤（核心 3 步）**
+
+1. 安装`rabbitmq_delayed_message_exchange`插件。
+2. 声明延时交换机（类型为`x-delayed-message`）和目标队列，绑定两者。
+3. 发送消息时，通过消息头`x-delay`指定延时时间，消息会在交换机中延时后转发到队列。
+
+
+
+## 18. 队列级 TTL 和消息级 TTL 核心区别？
+
+队列级 TTL 和消息级 TTL 核心区别：
+
+1. 生效范围：队列级是整个队列所有消息统一过期，消息级仅单条生效、每条可独立配不同时间；
+2. 过期处理：队列级批量主动过期，无队头阻塞；消息级仅在消息到队头时懒检查，有队头阻塞问题；
+3. 精准性：队列级到期就转死信，延时精准度高；消息级易被头部慢过期消息卡住，精准度低；
+4. 灵活性：队列级声明队列时配置，全局固定不灵活；消息级发送消息时配置，单条可调灵活性高；
+5. 生效规则：队列级是过期时间上限，消息级只能缩短过期时间，比队列级长则无效。
+
+适用场景一句话：
+
+队列级适合所有消息延时一致、要求精准的场景；消息级适合单条需不同延时的低消息量场景。

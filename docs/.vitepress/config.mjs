@@ -195,7 +195,7 @@ export default defineConfig({
               collapsed: true,
               items: [
                 {
-                  text: "RabbitMQ",
+                  text: "RabbitMQ 基础",
                   link: "/programming/RabbitMQ/RabbitMQ",
                 },
               ],
@@ -391,6 +391,10 @@ export default defineConfig({
                 {
                   text: "Redis 面试题",
                   link: "/programming/面试/Redis 面试题",
+                },
+                {
+                  text: "RabbitMQ 面试题",
+                  link: "/programming/面试/RabbitMQ",
                 },
                 {
                   text: "Spring 面试题",

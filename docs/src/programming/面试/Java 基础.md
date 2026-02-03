@@ -1959,6 +1959,18 @@ Map<Integer, String> abnormalDaysMap = abnormalDays.stream()
 
 
 
+## 64. `StringBuilder` 和 `String`的 `equals()` 的区别？
+
+| 比较项            | String.equals() | StringBuilder.equals()        |
+| ----------------- | --------------- | ----------------------------- |
+| **比较内容**      | 比较字符串内容  | 比较对象引用（内存地址）      |
+| **重写了 equals** | ✅ 是            | ❌ 否（使用 Object 的 equals） |
+| **常用场景**      | 字符串内容比较  | 几乎不用于比较                |
+
+
+
+
+
 ## 注
 
 本文 Java 基础面试题内容参考自网络资料，具体参考来源：《Java 基础常见面试题总结》（作者：大彬）

@@ -14,16 +14,16 @@ const __dirname = path.dirname(__filename);
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  base: "/blog/",
-  title: "hello blog",
-  description: "code blog",
+  base: "/log/",
+  title: "hello log",
+  description: "code log",
   head: [
     [
       "link",
       {
         rel: "apple-touch-icon",
         sizes: "180x180",
-        href: "/blog/favicon-180x180.png",
+        href: "/log/favicon-180x180.png",
       },
     ],
     [
@@ -32,7 +32,7 @@ export default defineConfig({
         rel: "icon",
         type: "image/png",
         sizes: "32x32",
-        href: "/blog/favicon-32x32.png",
+        href: "/log/favicon-32x32.png",
       },
     ],
     [
@@ -41,10 +41,10 @@ export default defineConfig({
         rel: "icon",
         type: "image/png",
         sizes: "16x16",
-        href: "/blog/favicon-16x16.png",
+        href: "/log/favicon-16x16.png",
       },
     ],
-    ["link", { rel: "shortcut icon", href: "/blog/favicon.ico" }],
+    ["link", { rel: "shortcut icon", href: "/log/favicon.ico" }],
   ],
   outDir: ".vitepress/dist",
   srcDir: "src",

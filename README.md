@@ -1,6 +1,6 @@
 <div align="center">
 
-# :sparkles: Hello Blog :sparkles:
+# :sparkles: Hello Log :sparkles:
 
 一个基于 VitePress 构建的个人技术博客，记录编程学习笔记、技术总结和面试经验。
 
@@ -86,7 +86,7 @@ npm install
 npm run dev
 ```
 
-访问 http://localhost:5173/blog/ 查看效果
+访问 http://localhost:5173/log/ 查看效果
 
 ### 构建生产版本
 
@@ -103,7 +103,7 @@ npm run docs:preview
 ## 📦 项目结构
 
 ```
-blog/
+log/
 ├── docs/
 │   ├── .vitepress/          # VitePress 配置
 │   │   ├── components/      # 自定义组件
@@ -198,7 +198,7 @@ console.log("Hello World");
 ```
 # :sparkles: Star History :sparkles:
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=hollobot/blog&type=Date&theme=dark" />
-  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=hollobot/blog&type=Date" />
-  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=hollobot/blog&type=Date" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=hollobot/log&type=Date&theme=dark" />
+  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=hollobot/log&type=Date" />
+  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=hollobot/log&type=Date" />
 </picture>

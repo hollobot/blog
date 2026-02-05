@@ -3,7 +3,7 @@
 layout: home
 
 hero:
-  name: "hello blog"
+  name: "hello log"
   image:
     src: /logo.png
     alt: hello

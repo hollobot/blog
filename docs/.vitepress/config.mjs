@@ -147,7 +147,7 @@ export default defineConfig({
               ],
             },
             {
-              text: "MySQL",
+              text: "MySQL1",
               collapsed: true,
               items: [
                 {

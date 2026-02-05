@@ -78,7 +78,7 @@ export default {
     // giscus配置
     giscusTalk(
       {
-        repo: "hollobot/log", //仓库
+        repo: "hollobot/blog", //仓库
         repoId: "R_kgDOOulU_w", //仓库ID
         category: "General", // 讨论分类
         categoryId: "DIC_kwDOOulU_84Cx0GE", //讨论分类ID

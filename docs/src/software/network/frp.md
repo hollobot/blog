@@ -4,7 +4,21 @@
 
 ------
 
-## 一、文件组成说明
+## 一、下载
+
+[`frp download`](https://github.com/fatedier/frp/releases)
+
+```shell
+# 下载
+wget https://github.com/fatedier/frp/releases/download/v0.65.0/frp_0.65.0_linux_amd64.tar.gz
+
+# 解压
+tar -zxvf frp_0.65.0_linux_amd64.tar.gz
+```
+
+
+
+## 二、文件组成说明
 
 你的 FRP 工具目录里有以下 **5 个文件**：
 
@@ -26,7 +40,7 @@ LICENSE       # 开源许可文件
 
 ------
 
-## 二、Linux 服务器（服务端）配置
+## 三、Linux 服务器（服务端）配置
 
 ### 📌 1) 修改 `frps.toml`
 
@@ -105,7 +119,7 @@ ss -tunlp | grep frps
 
 ------
 
-## 三、Windows 或 内网机器（客户端）配置
+## 四、Windows 或 内网机器（客户端）配置
 
 ### 📌 1) 修改 `frpc.toml`
 
@@ -177,7 +191,7 @@ frpc.exe -c frpc.toml
 
 ------
 
-## 四、测试是否启动成功
+## 五、测试是否启动成功
 
 ### ✅ 1) 检查连接状态
 
@@ -210,7 +224,7 @@ http://你的服务器公网IP:8080
 
 ------
 
-## 五、注意事项
+## 六、注意事项
 
 ✔ FRPS 和 FRPC 的 `token` 必须完全一致，否则无法连接。 
 

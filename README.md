@@ -2,7 +2,7 @@
 
 # :sparkles: Hello Log :sparkles:
 
-一个基于 VitePress 构建的个人技术博客，记录编程学习笔记、技术总结和面试经验。
+一个基于 VitePress 构建的个人技术日志，记录编程学习笔记、技术总结和面试经验。
 
 [![VitePress](https://img.shields.io/badge/VitePress-1.6.3-blue.svg)](https://vitepress.dev/)
 [![License](https://img.shields.io/badge/License-ISC-green.svg)](LICENSE)

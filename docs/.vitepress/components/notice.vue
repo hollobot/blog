@@ -57,7 +57,7 @@ setTimeout(() => {
             </defs>
           </svg>
         </div>
-        <h3 class="notice-title">欢迎来到 Hello 的博客</h3>
+        <h3 class="notice-title">欢迎来到 Hello 的日志</h3>
         <p class="notice-subtitle">感谢您的访问 🎉</p>
       </div>
 

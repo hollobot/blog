@@ -103,7 +103,7 @@ npm run docs:preview
 ## 📦 项目结构
 
 ```
-log/
+blog/
 ├── docs/
 │   ├── .vitepress/          # VitePress 配置
 │   │   ├── components/      # 自定义组件
@@ -198,7 +198,7 @@ console.log("Hello World");
 ```
 # :sparkles: Star History :sparkles:
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=hollobot/log&type=Date&theme=dark" />
-  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=hollobot/log&type=Date" />
-  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=hollobot/log&type=Date" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=hollobot/blog&type=Date&theme=dark" />
+  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=hollobot/blog&type=Date" />
+  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=hollobot/blog&type=Date" />
 </picture>

@@ -1833,7 +1833,7 @@ public interface HandlerInterceptor {
 
 #### **核心优势（开发广泛使用的原因）**
 
-1. **代码更简洁，可读性强：** 用 “声明式” 语法描述 “要做什么”（如过滤、转换），而非 “怎么做”（如手动循环），摆脱模板代码，业务逻辑一目了然。
+1. **代码更简洁：** 用 “声明式” 语法描述 “要做什么”（如过滤、转换），而非 “怎么做”（如手动循环），摆脱模板代码，业务逻辑一目了然。
 2. **复杂操作链式组合：** 中间操作（`filter`/`map`/`sorted` 等）可链式调用，轻松实现多步处理（如过滤→去重→排序→分组），无需嵌套循环或临时变量。
 3. **并行处理简单高效：** 只需调用 `parallelStream()`，底层自动通过 `Fork/Join` 框架实现多线程拆分处理，无需手动管理线程，大数据量场景性能优势明显。
 4. **减少安全风险：** 设计上鼓励 “只读” 处理，避免遍历中修改集合导致的 `ConcurrentModificationException`，配合 `collect` 收集结果更安全。
@@ -1841,7 +1841,7 @@ public interface HandlerInterceptor {
 
 
 
-## 59. 类加载与初始化顺序
+## 58. 类加载与初始化顺序
 
 在 Java 开发中，类的加载与初始化流程（静态块、构造器、父子类继承执行顺序）是绕不开的基础，也是面试高频考点。本文结合多组实战案例，带你穿透 “类加载阶段” 与 “对象创建阶段” 的执行逻辑，彻底掌握核心规则！
 
@@ -1885,7 +1885,7 @@ Java 中，一个类从 “被程序引用” 到 “真正可用”，需经历
 
 
 
-## 60. java 修饰符的范围
+## 59. java 修饰符的范围
 
 在 Java 中，访问修饰符用于控制类、方法、字段等成员的访问范围，共有 4 种核心修饰符，按访问权限从大到小排序为：`public` > `protected` > 缺省（默认，无修饰符）> `private`。
 
@@ -1914,7 +1914,7 @@ Java 中，一个类从 “被程序引用” 到 “真正可用”，需经历
 
 
 
-## 61. 如何把一个对象对象转JSON字符串
+## 60. 如何把一个对象对象转JSON字符串
 
 #### 一、最推荐方案：**Jackson（事实标准）**
 
@@ -2006,7 +2006,7 @@ public class SimpleJsonPrinter {
 
 
 
-## 62、怎么把一个1-100的整数数组随机打乱
+## 61、怎么把一个1-100的整数数组随机打乱
 
 ```java
 import java.util.Random;
@@ -2040,7 +2040,7 @@ public class ShuffleDemo {
 
 
 
-## 63、Java Stream 中将流转换为 Map 时，为什么 key 和 value 都不能为 null ？
+## 62、Java Stream 中将流转换为 Map 时，为什么 key 和 value 都不能为 null ？
 
 #### 核心原因：底层 Map 实现的约束
 
@@ -2076,7 +2076,7 @@ Map<Integer, String> abnormalDaysMap = abnormalDays.stream()
 
 
 
-## 64. `StringBuilder` 和 `String`的 `equals()` 的区别？
+## 63. `StringBuilder` 和 `String`的 `equals()` 的区别？
 
 | 比较项            | String.equals() | StringBuilder.equals()        |
 | ----------------- | --------------- | ----------------------------- |

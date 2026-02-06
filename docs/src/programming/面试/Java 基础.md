@@ -675,7 +675,7 @@ class User {
 
 
 
-## 23. 两个对象的hashCode()相同，则 equals()是否也一定为 true？
+## 23. 两个对象的hashCode()相同，则equals()是否也一定为 true？
 
 **不一定。**
 

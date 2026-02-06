@@ -273,7 +273,7 @@ public class Producer implements RabbitTemplate.ConfirmCallback, RabbitTemplate.
 
 
 
-## 10. 消费者手动消息确认
+## 9. 消费者手动消息确认
 
 #### 核心配置（application.yml 关键项）
 
@@ -329,7 +329,7 @@ public class MsgConsumer {
 
 
 
-## 11. MQ持久化
+## 10. MQ持久化
 
 RabbitMQ 持久化核心是保障**MQ 服务端消息不丢失**，需完成「交换机持久化 + 队列持久化 + 消息持久化」三重配置，以下仅保留核心内容，基础连接配置省略。
 
@@ -403,7 +403,7 @@ public class PersistentMsgProducer {
 
 
 
-## 12. 镜像队列
+## 11. 镜像队列
 
 镜像队列是 RabbitMQ 集群下保障**队列高可用**的核心方案，核心是将主队列同步到集群多个节点，主节点宕机后从节点自动接管，以下仅保留核心配置 / 代码，集群搭建、基础连接等内容省略。
 
@@ -458,7 +458,7 @@ public class MirrorQueueConfig {
 
 
 
-## 13.  消息重复消费怎么处理？
+## 12.  消息重复消费怎么处理？
 
 - **生产端消息重复**
   - 生产者发送消息到 MQ 后，因网络波动未收到 MQ 的确认回执，生产者触发重试机制重新发送，导致 MQ 接收到重复消息。
@@ -478,7 +478,7 @@ public class MirrorQueueConfig {
 
 
 
-## 14. RabbitMQ 消费端怎么进行限流？
+## 13. RabbitMQ 消费端怎么进行限流？
 
 消费端限流是为了避免 MQ 瞬间推送大量消息压垮消费者（如数据库连接耗尽、服务器 CPU / 内存打满），核心是控制 MQ 每次推送给消费者的消息数量，消费者处理完一批再推送下一批。
 
@@ -558,7 +558,7 @@ public class LimitConsumer {
 
 
 
-## 15. 什么是死信队列？
+## 14. 什么是死信队列？
 
 #### **先明确：死信队列（Dead Letter Queue，DLQ）是什么**
 
@@ -721,7 +721,7 @@ public class BusinessConsumer {
 
 
 
-## 16. 说说pull模式
+## 15. 说说pull模式
 
 RabbitMQ 的 Pull 模式，是**消费者主动向 RabbitMQ 服务器 “请求拉取” 消息**的消费模式 —— 消费者需要主动调用 API（如`basic.get`），每次调用要么获取到一条消息（若队列中有消息），要么获取到空（若队列中无消息），完全由消费者控制拉取的时机、频率和数量。
 
@@ -804,7 +804,7 @@ Pull 模式不是主流消费模式，仅在特定场景下使用：
 
 
 
-## 17. 怎么单独设置消息的过期时间？
+## 16. 怎么单独设置消息的过期时间？
 
 在生产端发送消息的时候可以给消息设置过期时间，单位为毫秒(ms)。遵循「**最短过期时间优先**」
 
@@ -841,7 +841,7 @@ public class SendExpiredMessage {
 
 
 
-## 18. 延时队列怎么实现？
+## 17. 延时队列怎么实现？
 
 RabbitMQ 延时队列的实现方案，首先**RabbitMQ 没有提供原生的 “延时队列” 类型**，实际开发中主要通过两种方案实现，其中「死信队列 + TTL」是最常用、最成熟的方案，另一种是借助 RabbitMQ 的`rabbitmq_delayed_message_exchange`插件实现。
 

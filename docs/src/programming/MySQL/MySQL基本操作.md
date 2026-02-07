@@ -254,3 +254,215 @@ SELECT * FROM 表名 ORDER BY 列名 ASC|DESC;
 SELECT * FROM 表名 LIMIT 偏移量, 数量;
 ```
 
+
+
+## 9. CASE 条件判断语法
+
+`CASE` 是 MySQL 中实现 “多条件分支” 的核心，分「简单 CASE」和「搜索 CASE」，后者更灵活。
+
+模板 1：简单 CASE（匹配固定字段值）
+
+```sql
+SELECT 
+  字段名,
+  CASE 匹配字段
+    WHEN 匹配值1 THEN 结果1
+    WHEN 匹配值2 THEN 结果2
+    ELSE 默认结果  -- 可选，无匹配时返回NULL
+  END AS 别名
+FROM 表名;
+```
+
+模板 2：搜索 CASE（自定义条件，推荐）
+
+```sql
+SELECT 
+  字段名,
+  CASE 
+    WHEN 条件1 THEN 结果1
+    WHEN 条件2 THEN 结果2
+    ELSE 默认结果  -- 可选
+  END AS 别名
+FROM 表名;
+```
+
+#### **常用场景示例**
+
+场景 1：字段值替换（比如评分分级）
+
+```sql
+-- 将评分转为等级：≥4→高分，3→中等，≤2→低分
+SELECT 
+  movie_id,
+  rating,
+  CASE 
+    WHEN rating >= 4 THEN '高分'
+    WHEN rating = 3 THEN '中等'
+    ELSE '低分'
+  END AS rating_level
+FROM MovieRating;
+```
+
+场景 2：条件累加（统计）
+
+```sql
+-- 统计2020年2月每部电影的高分（≥4）、低分（≤2）次数
+SELECT 
+  m.title,
+  SUM(CASE WHEN mr.rating >=4 AND mr.created_at BETWEEN '2020-02-01' AND '2020-02-29' THEN 1 ELSE 0 END) AS high_score_count,
+  SUM(CASE WHEN mr.rating <=2 AND mr.created_at BETWEEN '2020-02-01' AND '2020-02-29' THEN 1 ELSE 0 END) AS low_score_count
+FROM MovieRating mr
+JOIN Movies m ON mr.movie_id = m.movie_id
+GROUP BY m.movie_id, m.title;
+```
+
+
+
+## 10. WITH 语法（CTE 公用表表达式，MySQL 8.0+ 支持）
+
+`WITH` 用于定义临时结果集（CTE），简化复杂查询（替代子查询嵌套），可理解为 “临时表”，仅在当前查询中有效。
+
+模板 1：单 CTE
+
+```sql
+WITH cte_name AS (
+  -- 子查询：定义CTE的内容
+  SELECT 字段1, 字段2 FROM 表名 WHERE 条件
+)
+-- 主查询：使用CTE
+SELECT * FROM cte_name;
+```
+
+模板 2：多 CTE（逗号分隔）
+
+```sql
+WITH 
+cte1 AS (SELECT 字段 FROM 表1 WHERE 条件),
+cte2 AS (SELECT 字段 FROM 表2 WHERE 条件)
+-- 关联多个CTE查询
+SELECT * FROM cte1 JOIN cte2 ON cte1.字段 = cte2.字段;
+```
+
+#### 常用场景示例
+
+场景 1：简化嵌套查询（比如先统计用户评论数，再查最活跃用户）
+
+```sql
+-- 步骤1：定义CTE统计每个用户的评论数
+WITH user_comment_count AS (
+  SELECT 
+    user_id,
+    COUNT(*) AS comment_num
+  FROM MovieRating
+  GROUP BY user_id
+)
+-- 步骤2：关联用户表，查评论数最多的用户
+SELECT u.name, ucc.comment_num
+FROM user_comment_count ucc
+JOIN Users u ON ucc.user_id = u.user_id
+ORDER BY ucc.comment_num DESC
+LIMIT 1;
+```
+
+场景 2：递归 CTE（查询层级数据，比如部门树）
+
+```sql
+-- 示例：部门表（id:部门ID，name:部门名，parent_id:上级部门ID）
+WITH RECURSIVE dept_tree AS (
+  -- 初始层：顶级部门（parent_id=0）
+  SELECT id, name, parent_id, 1 AS level
+  FROM dept
+  WHERE parent_id = 0
+  UNION ALL
+  -- 递归层：关联子部门
+  SELECT d.id, d.name, d.parent_id, dt.level + 1 AS level
+  FROM dept d
+  JOIN dept_tree dt ON d.parent_id = dt.id
+)
+-- 查询所有部门及层级
+SELECT * FROM dept_tree;
+```
+
+
+
+## 11. UNION / UNION ALL 专属语法模板
+
+`UNION` 用于纵向拼接多个查询结果，核心要求：**拼接的查询结果列数一致、列类型兼容**，以下是模板：
+
+```sql
+-- 规则：
+-- 1. UNION：自动去重（性能低，需比对所有行）
+-- 2. UNION ALL：保留所有行（无去重，性能高，推荐优先用）
+-- 3. 每个子查询必须用括号包裹（尤其是带ORDER BY/LIMIT时）
+
+(
+  -- 子查询1：第一个结果集
+  SELECT 
+    字段1, 字段2, 字段3  -- 列数/类型需与子查询2一致
+  FROM 表A
+  WHERE 表A.条件
+)
+UNION ALL  -- 替换为UNION则去重
+(
+  -- 子查询2：第二个结果集
+  SELECT 
+    字段A, 字段B, 字段C  -- 列数必须=子查询1，类型需兼容（如字符串/数值）
+  FROM 表B
+  WHERE 表B.条件
+);
+```
+
+
+
+## 12. MySQL 全核心语法整合基础模板
+
+以下是**单 SELECT 语句**的 MySQL 全核心语法整合模板，浓缩了 `SELECT` 核心能力，覆盖条件筛选、联表、分组、聚合、CASE 条件、排序、限制等所有高频场景，无多余子查询 / CTE，仅保留最核心的单 SELECT 骨架，注释清晰且可直接复用：
+
+```sql
+select
+  -- 1. 字段选择：基础字段/聚合函数/case条件/别名
+  t1.id as 主键id,
+  t1.name as 名称,
+  t2.category as 分类,
+  -- case条件判断（字段值替换/条件统计二合一）
+  case 
+    when t1.score >= 90 then '优秀'
+    when t1.score >= 60 then '合格'
+    else '不合格'
+  end as 评分等级,
+  count(distinct t1.user_id) as 去重统计数,  -- 去重聚合
+  avg(t1.amount) as 平均值,                 -- 平均值聚合
+  sum(case when t1.status = '有效' then 1 else 0 end) as 条件累加数  -- 条件聚合
+from 主表 t1  -- 主表+别名（简化写法）
+  -- 2. 联表查询（按需切换join类型）
+  join 关联表 t2 on t1.关联字段 = t2.关联字段  -- 内连接（交集）
+  left join 补充表 t3 on t1.关联字段 = t3.关联字段   -- 左连接（保留主表所有行）
+  -- 3. 前置筛选（分组前过滤行）
+where
+  -- 日期范围筛选（推荐写法，利用索引）
+  t1.create_time >= '2020-01-01' and t1.create_time < '2021-01-01'
+  -- 基础条件筛选
+  and t1.status in ('正常', '待处理')
+  and t1.amount > 0
+  -- 排除条件
+  and t1.name not like '测试%'
+-- 4. 分组（非聚合字段必须包含在group by中）
+group by
+  t1.id,
+  t1.name,
+  t2.category,
+  评分等级  -- 可直接用字段别名（mysql 8.0+支持）
+-- 5. 分组后筛选（仅针对聚合结果）
+having
+  平均值 >= 50  -- 聚合结果筛选
+  and 条件累加数 > 0
+-- 6. 排序（多字段+独立升降序）
+order by
+  平均值 desc,  -- 降序（核心排序）
+  名称 asc,     -- 升序（兜底排序，asc可省略）
+  主键id asc    -- 最终兜底（避免排序不稳定）
+-- 7. 结果限制（分页/取前n条）
+limit 10 offset 20;  -- 分页：跳过20条，取10条（也可简写 limit 20,10）
+-- limit 5;  -- 简化：直接取前5条（无分页时用）
+```
+

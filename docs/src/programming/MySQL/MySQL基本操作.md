@@ -414,7 +414,30 @@ UNION ALL  -- 替换为UNION则去重
 
 
 
-## 12. MySQL 全核心语法整合基础模板
+## 12. IF 函数的核心语法
+
+`IF`函数是 MySQL 特有的简化条件判断函数（替代复杂的`CASE`），语法非常简洁：
+
+```sql
+IF(条件表达式, 满足条件时的返回值, 不满足条件时的返回值)
+```
+
+示例 1：替代 CASE 实现价格符号调整（核心需求）
+
+```sql
+select 
+    stock_name,
+    sum(
+        -- IF语法：判断是否为Buy，是则-price，否则price（默认Sell）
+        IF(operation = 'Buy', -price, price)
+    ) as total_profit  -- 总盈亏
+from Stocks
+group by stock_name;
+```
+
+
+
+## 13. MySQL 全核心语法整合基础模板
 
 以下是**单 SELECT 语句**的 MySQL 全核心语法整合模板，浓缩了 `SELECT` 核心能力，覆盖条件筛选、联表、分组、聚合、CASE 条件、排序、限制等所有高频场景，无多余子查询 / CTE，仅保留最核心的单 SELECT 骨架，注释清晰且可直接复用：
 

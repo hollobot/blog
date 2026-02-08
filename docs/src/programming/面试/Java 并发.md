@@ -680,7 +680,7 @@ public static void main(String[] args) throws InterruptedException {
 
 - 使用 `synchronized` 或 `Lock`：通过锁将操作包裹为 “同步块”，同一时间只有一个线程能执行，确保原子性。
 
-- 使用原子类（`java.util.concurrent.atomic`）：如 `AtomicInteger`、`AtomicLong`，底层通过 **CAS****（Compare and Swap）** 指令实现原子操作（CPU 级别的原子性）。
+- 使用原子类（`java.util.concurrent.atomic`）：如 `AtomicInteger`、`AtomicLong`，底层通过 **CAS（Compare and Swap）** 指令实现原子操作（CPU 级别的原子性）。
 
   ```java
   private static AtomicInteger count = new AtomicInteger(0);
@@ -803,15 +803,15 @@ class Main{
 
 ## 20. ReentrantLock和synchronized区别
 
-| 特性             | `synchronized`                      | `ReentrantLock`                               |
-| ---------------- | ----------------------------------- | --------------------------------------------- |
-| 实现方式         | JVM 内置关键字（隐式锁）            | AQS 框架实现（显式锁）                        |
-| 锁获取 / 释放    | 自动                                | 手动（`lock()`/`unlock()`）                   |
-| 公平性           | 仅支持非公平锁                      | 支持公平 / 非公平锁（构造器指定）             |
-| 高级功能         | 无（不可中断、无超时、单条件）      | 支持中断、超时、多条件变量                    |
-| 性能（JDK 1.6+） | 与 `ReentrantLock` 接近，优化更深入 | 略逊于 `synchronized`（非公平锁场景差异极小） |
-| 可重入性         | 支持                                | 支持                                          |
-| 代码简洁性       | 高（无需手动管理锁）                | 低（需手动释放，否则易死锁）                  |
+| 特性             | `synchronized`                      | `ReentrantLock`                                              |
+| ---------------- | ----------------------------------- | ------------------------------------------------------------ |
+| 实现方式         | JVM 内置关键字（隐式锁）            | AQS 框架实现（显式锁）                                       |
+| 锁获取 / 释放    | 自动                                | 手动（`lock()`/`unlock()`）                                  |
+| 公平性           | 仅支持非公平锁                      | 设置公平锁的方式：`new ReentrantLock(true)`。 支持公平 / 非公平锁（默认） |
+| 高级功能         | 无（不可中断、无超时、单条件）      | 支持中断、超时、多条件变量                                   |
+| 性能（JDK 1.6+） | 与 `ReentrantLock` 接近，优化更深入 | 略逊于 `synchronized`（非公平锁场景差异极小）                |
+| 可重入性         | 支持                                | 支持                                                         |
+| 代码简洁性       | 高（无需手动管理锁）                | 低（需手动释放，否则易死锁）                                 |
 
 
 

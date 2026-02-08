@@ -51,9 +51,15 @@
 #### 2. **返回值**
 
 - `execute()`：**无返回值（void）**。无法获取任务的执行结果或判断任务是否完成。
+
 - `submit()`：**返回 `Future<T>` 对象**。`Future` 是一个 “未来结果” 的持有者，通过它可以：
-  - 调用 `get()` 方法获取任务执行结果（`Callable` 的返回值或 `Runnable` 关联的 `result`），若任务未完成，`get()` 会阻塞直到结果返回；
+  
+  - 调用 `get()` 方法获取任务执行结果（`Callable` 的返回值或 `Runnable` 关联的 `result`），若任务未完成，`get()` 会阻塞直到结果返回
+  
+    **`submit()` 方法本身不会阻塞主线程**，只有调用 `Future.get()` 方法时，主线程才会被阻塞。
+  
   - 调用 `isDone()` 判断任务是否执行完毕；
+  
   - 调用 `cancel()` 取消未执行的任务。
 
 #### 3. **异常处理**
@@ -112,16 +118,16 @@ executor.shutdown();
 
 在 Java 中，线程的生命周期由 **`Thread.State` 枚举类**表示，一共有 **6 种状态**：
 
-**1.NEW（新建）** 线程对象被创建，但还没有调用 `start()` 方法。
+**1.new（新建）** 线程对象被创建，但还没有调用 `start()` 方法。
 
 ```java
 Thread t = new Thread(() -> {
     System.out.println("Hello Thread");
 });
-System.out.println(t.getState()); // NEW
+System.out.println(t.getState()); // new
 ```
 
-**2.RUNNABLE（就绪/可运行）**
+**2.runnable（就绪/可运行）**
 
 调用 `start()` 后进入该状态，等待 CPU 调度。
 
@@ -129,18 +135,18 @@ System.out.println(t.getState()); // NEW
 
 ```java
 t.start();
-System.out.println(t.getState()); // RUNNABLE
+System.out.println(t.getState()); // runnable
 ```
 
-**3.RUNNING（运行）**
+**3.running（运行）**
 
-实际上 Java **没有单独的 RUNNING 状态**，在 `Thread.State` 中它被包含在 **RUNNABLE（就绪/可运行）**。
+实际上 Java **没有单独的 running状态**，在 `Thread.State` 中它被包含在 **runnable（就绪/可运行）**。
 
 一旦 CPU 调度该线程，它就处于运行状态
 
-注意：线程只能从 RUNNABLE（就绪/可运行） → RUNNING（运行），由 CPU 决定。
+注意：线程只能从 runnable（就绪/可运行） → running（运行），由 CPU 决定。
 
-**4.BLOCKED（阻塞）**
+**4.blocked （阻塞）**
 
 线程在等待 **获取某个对象锁** 时进入此状态。
 
@@ -148,11 +154,11 @@ System.out.println(t.getState()); // RUNNABLE
 
 ```java
 synchronized(obj) {  // 一个线程已经持有 obj 锁
-    // 其他线程进入时会进入 BLOCKED
+    // 其他线程进入时会进入 blocked 
 }
 ```
 
-**5.WAITING（无限期等待）**
+**5.waiting（无限期等待）**
 
 线程进入等待状态，**必须被其他线程显式唤醒**（`notify()` / `notifyAll()`）。
 
@@ -160,27 +166,27 @@ synchronized(obj) {  // 一个线程已经持有 obj 锁
 
 ```java
 synchronized(obj) {
-    obj.wait(); // WAITING
+    obj.wait(); // waiting
 }
 ```
 
-**6.TIMED_WAITING（限时等待）**
+**6.timed_waiting（限时等待）**
 
 和 WAITING 类似，但可以在 **超时后自动返回**。
 
 常见方法：`sleep(long millis)`、`join(long millis)`、`wait(long millis)`、`parkNanos()` / `parkUntil()`（JUC 里的 LockSupport）
 
 ```java
-Thread.sleep(1000); // TIMED_WAITING
+Thread.sleep(1000); // timed_waiting
 ```
 
-**7.TERMINATED（终止）**
+**7.terminated（终止）**
 
 线程执行完 `run()` 方法后，进入终止状态。
 
 ```java
 t.join(); 
-System.out.println(t.getState()); // TERMINATED
+System.out.println(t.getState()); // terminated
 ```
 
 **流程图**

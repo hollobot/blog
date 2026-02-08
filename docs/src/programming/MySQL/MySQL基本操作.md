@@ -498,7 +498,7 @@ FROM Users
 WHERE mail REGEXP '^[a-zA-Z][a-zA-Z0-9_.-]{0,}@leetcode.com$';
 ```
 
-### REGEXP_LIKE 使用
+### 二、REGEXP_LIKE 使用
 
 `REGEXP_LIKE` 是 MySQL 8.0+ 支持的**正则匹配函数**，作用和 `REGEXP`/`RLIKE` 关键字等价，但语法更规范（符合 SQL 标准），且支持**匹配模式参数**（解决大小写、字符集冲突的关键）。
 
@@ -529,6 +529,14 @@ where regexp_like(mail,'^[a-zA-Z][a-zA-Z0-9._-]{0,}@leetcode\\.com$','c')
 - 匹配模式 `'c'` 区分大小写字母
 
 
+
+**筛选出 `DIAB1` 开头的比如**： `DIAB100 MYOP` `ACNE DIAB100`
+
+```sql
+select *
+from Patients
+where regexp_like(conditions,'^(DIAB1|.* DIAB1).*$','c')
+```
 
 
 

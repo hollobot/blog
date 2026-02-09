@@ -625,7 +625,7 @@ where regexp_like(conditions,'^(DIAB1|.* DIAB1).*$','c')
 
 **1. 字符串切割（substring/substr）**
 
-- **语法模板**：`substring(字符串, 起始位置, 长度)`（起始位置从 1 开始）
+- **语法模板**：`substring(字符串, 起始位置, 长度)`（起始位置从 1 开始，左闭右开）
 
 - ```sql
   select substring('mysql函数', 1, 5);  -- 输出 'mysql'

@@ -2,7 +2,61 @@
 
 # MySQL 基础
 
-## **1. 数据库、表** 
+## MySQL 全核心语法整合基础模板
+
+以下是**单 SELECT 语句**的 MySQL 全核心语法整合模板，浓缩了 `SELECT` 核心能力，覆盖条件筛选、联表、分组、聚合、CASE 条件、排序、限制等所有高频场景，无多余子查询 / CTE，仅保留最核心的单 SELECT 骨架，注释清晰且可直接复用：
+
+```sql
+select
+  -- 1. 字段选择：基础字段/聚合函数/case条件/别名
+  t1.id as 主键id,
+  t1.name as 名称,
+  t2.category as 分类,
+  -- case条件判断（字段值替换/条件统计二合一）
+  case 
+    when t1.score >= 90 then '优秀'
+    when t1.score >= 60 then '合格'
+    else '不合格'
+  end as 评分等级,
+  count(distinct t1.user_id) as 去重统计数,  -- 去重聚合
+  avg(t1.amount) as 平均值,                 -- 平均值聚合
+  sum(case when t1.status = '有效' then 1 else 0 end) as 条件累加数  -- 条件聚合
+from 主表 t1  -- 主表+别名（简化写法）
+  -- 2. 联表查询（按需切换join类型）
+  join 关联表 t2 on t1.关联字段 = t2.关联字段  -- 内连接（交集）
+  left join 补充表 t3 on t1.关联字段 = t3.关联字段   -- 左连接（保留主表所有行）
+  -- 3. 前置筛选（分组前过滤行）
+where
+  -- 日期范围筛选（推荐写法，利用索引）
+  t1.create_time >= '2020-01-01' and t1.create_time < '2021-01-01'
+  -- 基础条件筛选
+  and t1.status in ('正常', '待处理')
+  and t1.amount > 0
+  -- 排除条件
+  and t1.name not like '测试%'
+-- 4. 分组（非聚合字段必须包含在group by中）
+group by
+  t1.id,
+  t1.name,
+  t2.category,
+  评分等级  -- 可直接用字段别名（mysql 8.0+支持）
+-- 5. 分组后筛选（仅针对聚合结果）
+having
+  平均值 >= 50  -- 聚合结果筛选
+  and 条件累加数 > 0
+-- 6. 排序（多字段+独立升降序）
+order by
+  平均值 desc,  -- 降序（核心排序）
+  名称 asc,     -- 升序（兜底排序，asc可省略）
+  主键id asc    -- 最终兜底（避免排序不稳定）
+-- 7. 结果限制（分页/取前n条）
+limit 10 offset 20;  -- 分页：跳过20条，取10条（也可简写 limit 20,10）
+-- limit 5;  -- 简化：直接取前5条（无分页时用）
+```
+
+
+
+## 1. 数据表/库操作 
 
 ```sql
 #语法结构
@@ -211,7 +265,7 @@ SET total_purchases = (
 WHERE customer_type = 'Premium';
 ```
 
-## 8. 数据库查询 
+## 8. 联表查询
 
 **基本查询结构**
 
@@ -528,8 +582,6 @@ where regexp_like(mail,'^[a-zA-Z][a-zA-Z0-9._-]{0,}@leetcode\\.com$','c')
 - `@leetcode\\.com` 需要 `\\` 转义特殊字符 `'.'`
 - 匹配模式 `'c'` 区分大小写字母
 
-
-
 **筛选出 `DIAB1` 开头的比如**： `DIAB100 MYOP` `ACNE DIAB100`
 
 ```sql
@@ -540,55 +592,116 @@ where regexp_like(conditions,'^(DIAB1|.* DIAB1).*$','c')
 
 
 
-## 14. MySQL 全核心语法整合基础模板
+## 14. 常用函数语法用例
 
-以下是**单 SELECT 语句**的 MySQL 全核心语法整合模板，浓缩了 `SELECT` 核心能力，覆盖条件筛选、联表、分组、聚合、CASE 条件、排序、限制等所有高频场景，无多余子查询 / CTE，仅保留最核心的单 SELECT 骨架，注释清晰且可直接复用：
+#### 一、数值处理函数
 
-```sql
-select
-  -- 1. 字段选择：基础字段/聚合函数/case条件/别名
-  t1.id as 主键id,
-  t1.name as 名称,
-  t2.category as 分类,
-  -- case条件判断（字段值替换/条件统计二合一）
-  case 
-    when t1.score >= 90 then '优秀'
-    when t1.score >= 60 then '合格'
-    else '不合格'
-  end as 评分等级,
-  count(distinct t1.user_id) as 去重统计数,  -- 去重聚合
-  avg(t1.amount) as 平均值,                 -- 平均值聚合
-  sum(case when t1.status = '有效' then 1 else 0 end) as 条件累加数  -- 条件聚合
-from 主表 t1  -- 主表+别名（简化写法）
-  -- 2. 联表查询（按需切换join类型）
-  join 关联表 t2 on t1.关联字段 = t2.关联字段  -- 内连接（交集）
-  left join 补充表 t3 on t1.关联字段 = t3.关联字段   -- 左连接（保留主表所有行）
-  -- 3. 前置筛选（分组前过滤行）
-where
-  -- 日期范围筛选（推荐写法，利用索引）
-  t1.create_time >= '2020-01-01' and t1.create_time < '2021-01-01'
-  -- 基础条件筛选
-  and t1.status in ('正常', '待处理')
-  and t1.amount > 0
-  -- 排除条件
-  and t1.name not like '测试%'
--- 4. 分组（非聚合字段必须包含在group by中）
-group by
-  t1.id,
-  t1.name,
-  t2.category,
-  评分等级  -- 可直接用字段别名（mysql 8.0+支持）
--- 5. 分组后筛选（仅针对聚合结果）
-having
-  平均值 >= 50  -- 聚合结果筛选
-  and 条件累加数 > 0
--- 6. 排序（多字段+独立升降序）
-order by
-  平均值 desc,  -- 降序（核心排序）
-  名称 asc,     -- 升序（兜底排序，asc可省略）
-  主键id asc    -- 最终兜底（避免排序不稳定）
--- 7. 结果限制（分页/取前n条）
-limit 10 offset 20;  -- 分页：跳过20条，取10条（也可简写 limit 20,10）
--- limit 5;  -- 简化：直接取前5条（无分页时用）
-```
+**1. 保留指定小数位数（round）**
 
+- **语法模板**：`round(数值, 保留小数位数)`
+
+- ```sql
+  select round(3.14159, 2);  -- 输出 3.14
+  ```
+
+**2. 强制保留指定小数位数（format，转字符串）**
+
+- **语法模板**：`format(数值, 保留小数位数)`
+
+- ```sql
+  select format(1234.567, 2);  -- 输出 '1,234.57'（带千分位）
+  ```
+
+**3. 向上 / 向下取整**
+
+- **语法模板**：`ceil(数值)`（向上）、`floor(数值)`（向下）
+
+- ```sql
+  select ceil(3.2);   -- 输出 4
+  select floor(3.9);  -- 输出 3
+  ```
+
+#### 二、字符串处理函数
+
+**1. 字符串切割（substring/substr）**
+
+- **语法模板**：`substring(字符串, 起始位置, 长度)`（起始位置从 1 开始）
+
+- ```sql
+  select substring('mysql函数', 1, 5);  -- 输出 'mysql'
+  ```
+
+**2. 按分隔符切割（substring_index）**
+
+- **语法模板**：`substring_index(字符串, 分隔符, 截取次数)`（正从左数，负从右数）
+
+- ```sql
+  select substring_index('a,b,c,d', ',', 2);  -- 输出 'a,b'
+  select substring_index('a,b,c,d', ',', -2); -- 输出 'c,d'
+  ```
+
+**3. 大小写转换**
+
+- **语法模板**：`upper(字符串)`（转大写）、`lower(字符串)`（转小写）
+
+- ```sql
+  select upper('mysql');  -- 输出 'MYSQL'
+  select lower('MYSQL');  -- 输出 'mysql'
+  ```
+
+**4. 字符串长度**
+
+- **语法模板**：`length(字符串)`（字节长度）、`char_length(字符串)`（字符长度）
+
+- ```sql
+  select length('mysql');         -- 输出 5（字节）
+  select char_length('mysql函数'); -- 输出 7（字符）
+  ```
+
+**5. 字符串拼接**
+
+- **语法模板**：`concat(字符串1, 字符串2, ...)`
+
+- ```sql
+  select concat('hello', ' ', 'mysql');  -- 输出 'hello mysql'
+  ```
+
+#### 三、日期处理函数
+
+**1. 获取当前时间**
+
+- **语法模板**：`now()`（日期 + 时间）、`curdate()`（仅日期）、`curtime()`（仅时间）
+
+- ```sql
+  select now();      -- 输出 2026-02-09 10:00:00（示例）
+  select curdate();  -- 输出 2026-02-09
+  select curtime();  -- 输出 10:00:00（示例）
+  ```
+
+**2. 日期格式化**
+
+- **语法模板**：`date_format(日期, 格式符)`
+
+- ```sql
+  select date_format(now(), '%Y-%m-%d %H:%i:%s');  -- 输出 2026-02-09 10:00:00
+  ```
+
+#### 四、其他常用函数
+
+**1. 空值处理（ifnull）**
+
+- **语法模板**：`ifnull(字段/值, 替代值)`（为空返回替代值，否则返回原值）
+
+- ```sql
+  select ifnull(null, '空值');  -- 输出 '空值'
+  ```
+
+**2. 去重计数**
+
+- **语法模板**：`count(distinct 字段)`
+
+- ```sql
+  select count(distinct user_id) from user;  -- 统计不重复的用户数
+  ```
+
+  

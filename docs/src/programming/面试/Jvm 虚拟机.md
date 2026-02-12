@@ -707,36 +707,7 @@ JVM 判断对象是否存活只有两种核心思路，其中**可达性分析�
 
 #### 可达性分析算法图表
 
-```mermaid
-flowchart TB
-
-    subgraph roots["GC Roots（垃圾回收根节点）"]
-        A["虚拟机栈-局部变量 user"]
-        B["方法区-静态变量 CONFIG"]
-        C["本地方法栈-JNI引用"]
-    end
-
-    subgraph alive["存活对象（引用链可达）"]
-        D["User对象（被A引用）"]
-        E["Address对象（User的成员）"]
-        F["Config对象（被B引用）"]
-    end
-
-    subgraph dead["可回收对象（无引用链可达）"]
-        G["Order对象（无任何GC Roots指向）"]
-    end
-
-    %% 引用链关系
-    A --> D
-    D --> E
-    B --> F
-
-    %% 样式区分
-    style roots fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    style alive fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-    style dead fill:#ffebee,stroke:#c62828,stroke-width:2px
-
-```
+![image-20260212112806579](./assets/image-20260212112806579.png)
 
 #### 总结
 

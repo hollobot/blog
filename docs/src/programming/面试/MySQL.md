@@ -1214,43 +1214,101 @@ MySQL 主从同步（Master-Slave Replication）是一种 **数据备份与读�
 
 `show processlist` 是 MySQL 中用于 **查看当前数据库连接和执行中的线程** 的重要命令，常用于排查连接数过高、慢查询阻塞等问题。
 
-#### 核心作用
+#### 一、核心作用
 
-- 查看当前有多少客户端连接到 MySQL 服务器。
-- 了解每个连接正在执行的 SQL 语句（或状态）。
-- 识别长时间运行的线程（如慢查询）、锁等待线程，定位性能瓶颈。
+- 查看当前所有客户端与 MySQL 的连接信息（谁在连、从哪连、执行什么操作）；
+- 定位慢查询 / 卡死的 SQL（执行时间过长的进程）；
+- 排查锁阻塞（比如某个进程长时间处于 “Waiting for table lock” 状态）；
+- 清理异常连接（杀死卡死 / 空闲的进程）。
 
-#### 常用用法
+#### 二、使用方式（两种常用形式）
 
-1. **基础命令**：
+1. 基础版：`SHOW PROCESSLIST`
 
    ```sql
-   show processlist;  -- 显示当前活跃线程（前100条）
-   show full processlist;  -- 显示所有线程，且SQL语句不截断（完整显示）
+   -- 查看当前所有进程（仅显示前100行，Info字段只显示前100个字符）
+   SHOW PROCESSLIST;
+   
+   -- 查看全量进程（无行数限制，Info字段显示完整SQL）
+   SHOW FULL PROCESSLIST;
    ```
 
-2. **关键字段含义**：
+2. 进阶版：查询系统表
 
-   | 字段      | 说明                                                         | 重要性示例                           |
-   | --------- | ------------------------------------------------------------ | ------------------------------------ |
-   | `Id`      | 线程 ID（可用于 `kill Id` 终止线程）                         | 需终止卡死的线程时用                 |
-   | `User`    | 执行该线程的用户名                                           | 识别是否有异常用户连接               |
-   | `Host`    | 客户端的 IP 和端口                                           | 定位来源，如是否有恶意 IP 频繁连接   |
-   | `db`      | 当前操作的数据库                                             | 确认线程属于哪个库                   |
-   | `Command` | 线程状态（如 `Query` 表示执行 SQL，`Sleep` 表示空闲）        | `Sleep` 过多可能是连接池未释放       |
-   | `Time`    | 线程持续时间（秒）                                           | `Time` 过大可能是慢查询或锁等待      |
-   | `State`   | 线程具体状态（如 `Sending data` 表示传输数据，`Locked` 表示锁等待） | 定位阻塞原因（如 `Locked` 说明被锁） |
-   | `Info`    | 执行的 SQL 语句（`full` 模式下显示完整）                     | 直接查看慢查询的具体 SQL             |
+   ```sql
+   -- 从information_schema库查询，支持筛选、排序（更灵活）
+   SELECT * FROM information_schema.processlist 
+   WHERE COMMAND != 'Sleep' -- 排除空闲连接
+     AND TIME > 10 -- 筛选执行时间>10秒的进程
+   ORDER BY TIME DESC;
+   ```
 
-#### 实际使用场景
+   #### 三、关键字段含义：
 
-1. **排查慢查询**：筛选 `Time` 很大且 `Command` 为 `Query` 的线程，通过 `Info` 查看具体 SQL，分析优化。
-2. **解决连接数过高**：若 `show processlist` 显示大量 `Sleep` 状态的线程（`Time` 很大），可能是连接池配置不合理，需调整超时参数（如 `wait_timeout`）。
-3. **处理锁阻塞**：若某线程 `State` 为 `Locked`，结合 `Time` 可判断被其他线程阻塞，通过 `Id` 找到阻塞源并终止（`kill 阻塞线程Id`）。
+   `processlist`的关键字段决定了排查方向，核心字段如下：
+
+   | 字段名  | 含义与核心解读                                               |
+   | ------- | ------------------------------------------------------------ |
+   | Id      | 进程 ID（杀死进程用`KILL Id;`）                              |
+   | User    | 发起连接的 MySQL 用户（如 root、app_user）                   |
+   | Host    | 客户端 IP + 端口（如`192.168.1.100:54321`，定位哪个客户端的连接） |
+   | db      | 该进程操作的数据库名（NULL 表示未指定库）                    |
+   | Command | 进程当前状态（核心！）：- Sleep：空闲连接（客户端未发指令）- Query：正在执行 SQL- Connect：正在建立连接- Locked：被锁阻塞- Update/Insert/Delete：执行写操作 |
+   | Time    | 进程处于当前状态的时长（单位：秒）：- Sleep>300：闲置过久的连接- Query>10：慢查询嫌疑 |
+   | State   | 更细粒度的执行状态（如`Sending data`：正在返回数据、`Waiting for row lock`：等行锁） |
+   | Info    | 进程正在执行的 SQL 语句（NULL 表示无 SQL），`SHOW FULL PROCESSLIST`显示完整 SQL |
+
+#### 四、实战场景示例
+
+1. 排查慢查询（执行时间过长的 SQL）
+
+   ```sql
+   -- 找出执行时间>30秒的非空闲进程，显示完整SQL
+   SELECT Id, User, Host, Time, Info 
+   FROM information_schema.processlist 
+   WHERE Command != 'Sleep' AND Time > 30
+   ORDER BY Time DESC;
+   ```
+
+2. 杀死卡死的进程
+
+   ```sql
+   -- 先查进程ID（比如Id=123）
+   SHOW FULL PROCESSLIST;
+   -- 杀死该进程
+   KILL 123;
+   ```
+
+3. 排查锁阻塞（找被锁的进程）
+
+   ```sql
+   -- 筛选处于Locked状态的进程
+   SELECT Id, User, Info, State 
+   FROM information_schema.processlist 
+   WHERE State LIKE '%lock%';
+   ```
+
+4. 统计空闲连接数（优化连接池）
+
+   ```sql
+   -- 统计Sleep状态且空闲>60秒的连接数
+   SELECT COUNT(*) AS idle_conn 
+   FROM information_schema.processlist 
+   WHERE Command = 'Sleep' AND Time > 60;
+   ```
+
+#### 五、关键注意事项
+
+1. `SHOW PROCESSLIST`需要`PROCESS`权限（普通用户默认只有查看自己的进程，root 可看所有）；
+2. `Time`字段对 Sleep 进程：表示空闲时长；对 Query 进程：表示 SQL 执行时长；
+3. 不要随意 kill 系统进程（如`system user`的复制进程），仅清理业务异常进程；
+4. 若大量 Sleep 进程，需优化应用连接池（如缩短空闲超时时间`wait_timeout`）。
 
 #### 总结
 
-`show processlist` 是 MySQL 运维的 “听诊器”，通过它能实时观察数据库的 “活动状态”，快速定位连接、查询、锁相关的问题。日常排查性能问题时，几乎是必用命令。
+1. `processlist`是 MySQL 的 “任务管理器”，核心用于排查连接、慢查询、锁阻塞问题；
+2. 重点关注`Command`（进程状态）、`Time`（执行 / 空闲时长）、`Info`（执行的 SQL）三个字段；
+3. 实战中优先用`SHOW FULL PROCESSLIST`看完整 SQL，或用系统表做精准筛选，异常进程用`KILL Id`清理。
 
 
 
@@ -1262,8 +1320,6 @@ MySQL 中 `LIMIT 1000,10` 和 `LIMIT 10` 的执行速度 **不一样**，通常 
 - **`LIMIT 1000,10`**：需先扫描并跳过 **前 1000 条数据**，再读取接下来的 10 条。关键问题：即使只需要最后 10 条，MySQL 也必须先处理前面的 1000 条（无论是全表扫描还是走索引，都要定位到第 1000 条的位置），扫描范围更大。
 
 关键问题：即使只需要最后 10 条，MySQL 也必须先处理前面的 1000 条（无论是全表扫描还是走索引，都要定位到第 1000 条的位置），扫描范围更大。
-
-
 
 
 

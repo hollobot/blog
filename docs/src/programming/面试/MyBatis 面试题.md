@@ -291,7 +291,7 @@ MyBatis 的缓存分为**一级缓存**和**二级缓存**，核心作用是减�
 
      ```xml
      <mapper namespace="com.mapper.UserMapper">
-       <cache/> <!-- 开启二级缓存 -->
+       <cache/> <!-- 开启二级缓存 --> 
      </mapper>
      ```
 

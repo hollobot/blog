@@ -19,12 +19,12 @@ function closeNotice() {
   }, 300)
 }
 
-// 5秒后自动关闭
+// 2秒后自动关闭
 setTimeout(() => {
   if (visible.value) {
     closeNotice()
   }
-}, 5000)
+}, 2000)
 </script>
 
 <template>
@@ -91,7 +91,7 @@ setTimeout(() => {
         </div>
 
         <div class="notice-tip">
-          <span>💡 提示：本公告将在 5 秒后自动关闭</span>
+          <span>💡 提示：本公告将在 2 秒后自动关闭</span>
         </div>
       </div>
 
@@ -320,7 +320,7 @@ setTimeout(() => {
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   color: #333;
-  text-decoration: none;
+  /* text-decoration: none; */
   font-size: 14px;
   font-weight: 500;
   transition: all 0.2s ease;

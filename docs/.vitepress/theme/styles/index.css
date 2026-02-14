@@ -182,7 +182,7 @@
 /* 选择文档内的所有链接 */
 .vp-doc a {
   /* 移除文本装饰（下划线） */
-  text-decoration: none;
+  /* text-decoration: none; */
 }
 
 /* 首屏特性卡片悬浮效果 */

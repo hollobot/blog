@@ -131,6 +131,14 @@ export default defineConfig({
                   text: "图",
                   link: "/programming/数据结构/图",
                 },
+                {
+                  text: "回溯",
+                  link: "/programming/数据结构/回溯",
+                },
+                {
+                  text: "动态规划",
+                  link: "/programming/数据结构/动态规划",
+                },
               ],
             },
             {

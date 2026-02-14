@@ -124,7 +124,7 @@ MyBatis 有三种核心 `Executor` 执行器，分别是 **SimpleExecutor、Reus
 
 #### 1. SimpleExecutor（默认执行器）
 
-- **特点**：每次执行 SQL 都会创建一个新的 `PreparedStatement`，执行完毕后关闭。
+- **特点**：每次执行 SQL 都会创建一个新的 `PreparedStatement` （预编译 SQL 模板），执行完毕后关闭。
 - **适用场景**：大多数普通场景，尤其是 SQL 执行频率低、语句不重复的情况。
 - **示例**：两次执行相同的 `select * from user where id=?` 会生成两个不同的 `PreparedStatement`。
 

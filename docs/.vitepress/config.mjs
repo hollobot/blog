@@ -92,7 +92,7 @@ export default defineConfig({
       { text: "首页", link: "/" },
       {
         text: "编程",
-        link: "/programming/java/JavaSE",
+        link: "/programming/数据结构/index",
       },
       { text: "工具", link: "/software/cursor/cursor" },
       { text: "休闲", link: "/leisureTime/minecraft/药水篇" },
@@ -107,6 +107,10 @@ export default defineConfig({
               text: "数据结构",
               collapsed: true,
               items: [
+                {
+                  text: "简介",
+                  link: "/programming/数据结构/index",
+                },
                 {
                   text: "数组与链表",
                   link: "/programming/数据结构/数组与链表",

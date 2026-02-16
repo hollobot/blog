@@ -634,6 +634,8 @@ hashMap.containsValue(5);         // 判断是否包含值
 hashMap.remove("apple");          // 删除键值对
 hashMap.size();                   // 获取大小
 hashMap.isEmpty();                // 判断是否为空
+hashMap.keySet();                 // 拿到所有key
+hashMap.values();				  // 拿到所有value
 
 // Java 8 新方法
 hashMap.putIfAbsent("grape", 8);  // 如果不存在则添加

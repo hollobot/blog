@@ -143,6 +143,10 @@ export default defineConfig({
                   text: "动态规划",
                   link: "/programming/数据结构/动态规划",
                 },
+                {
+                  text: "滑动窗口与双指针",
+                  link: "/programming/数据结构/滑动窗口与双指针",
+                },
               ],
             },
             {

@@ -371,6 +371,10 @@ export default defineConfig({
                   link: "/programming/linux/配置虚拟机",
                 },
                 {
+                  text: "CentoS9配置",
+                  link: "/programming/linux/CentoS9配置",
+                },
+                {
                   text: "docker",
                   link: "/programming/linux/docker",
                 },

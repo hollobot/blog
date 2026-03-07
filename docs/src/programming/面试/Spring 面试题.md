@@ -332,7 +332,7 @@ public class UserServiceProxy extends UserService{
 
 
 
-## 13-4. Spring事务
+## 13-3. Spring事务
 
 当我们在某个方法上加了 `@Transactional` 注解后，就表示该方法在调用时会开启Spring事务，这时候这个类的Bean对象也是代理对象，与上面AOP生成代理对象存入Spring容器类似。
 
@@ -376,7 +376,7 @@ public class UserServiceProxy extends UserService{
 
 
 
-## 13-3. Bean的生命周期
+## 13-4. Bean的生命周期
 
 核心结论：Spring Bean 的生命周期是从 IoC 容器初始化 Bean 到最终销毁的完整过程，核心围绕 “实例化 → 初始化 → 使用 → 销毁” 四阶段，全程由容器管理并允许自定义干预。
 

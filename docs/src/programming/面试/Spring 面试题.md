@@ -252,7 +252,131 @@ Spring IOC 容器初始化可简化为 3 步核心流程：
 
 
 
-## 13. Bean的生命周期
+## 13-1. Bean的创建过程
+
+那么Spring到底是如何来创建一个Bean的呢，这个就是Bean创建的生命周期，大致过程如下
+
+1. **实例化**：利用该类的构造方法来实例化得到一个对象（但是如何一个类中有多个构造方法，Spring则会进行选择，这个叫做**推断构造方法**）。
+
+   > 构造方法怎么选择?
+
+   - 如果存在无参默认构造器，直接选择无参。
+
+   - 不存在无参默认构造器且构造器识别到多个，优先选择有@Autowired修饰的构造器，如果没有修饰且识别到多个那么会抛出异常，因为spring无法判断选择哪个构造器
+
+2. **依赖注入**：得到一个对象后，Spring会判断该对象中是否存在被@Autowired注解了的属性，把这些属性找出来并由Spring进行赋值
+
+3. **Aware回调**：依赖注入后，Spring会判断该对象是否实现了BeanNameAware接口、BeanClassLoaderAware接口、BeanFactoryAware接口，如果实现了，就表示当前对象必须实现该接口中所定义的setBeanName()、setBeanClassLoader()、setBeanFactory()方法，那Spring就会调用这些方法并传入相应的参数。
+
+4. **初始化前**：Aware回调后，Spring会判断该对象中是否存在某个方法被@PostConstruct注解了，如果存在，Spring会调用当前对象的此方法。
+
+5. **初始化**：紧接着，Spring会判断该对象是否实现了 `InitializingBean` 接口，如果实现了，就表示当前对象必须实现该接口中的 `afterPropertiesSet()` 方法，那Spring就会调用当前对象中的 `afterPropertiesSet()` 方法。
+
+6. **初始化后**：最后，Spring会判断当前对象需不需要进行AOP，如果不需要那么Bean就创建完了，如果需要进行AOP，则会进行动态代理并生成一个代理对象做为Bean存入Spring容器。
+
+   - 当 Spring 检测到当前 Bean 被「切面（Aspect）」匹配上时，就会为这个 Bean 生成动态代理对象，替代原对象存入Spring容器
+
+#### **注**：
+
+**1. 如果Spring选择了一个有参的构造方法，Spring在调用这个有参构造方法时，需要传入参数，那这个参数是怎么来的呢？**
+
+- Spring会根据入参的类型和入参的名字去Spring容器中找Bean对象（以单例Bean为例，Spring会从单例池那个Map中去找）
+  - 先根据入参类型找，如果只找到一个，那就直接用来作为入参
+  - 如果根据类型找到多个，则再根据入参名字来确定唯一一个
+  - 最终如果没有找到，则会报错，无法创建当前Bean对象
+
+
+
+## 13-2. AOP大致流程
+
+AOP就是进行动态代理，在创建一个Bean的过程中，Spring在最后一步会去判断当前正在创建的这个Bean是不是需要进行AOP，如果需要则会进行动态代理
+
+#### 一. 如何判断当前Bean对象需不需要进行AOP:
+
+1. 找出所有的切面Bean。（通过@Aspect 修饰的类）
+2. 遍历切面中的每个方法，看是否写了@Before、@After等注解
+3. 如果写了，则判断所对应的Pointcut是否和当前Bean对象的类是否匹配
+4. 如果匹配则表示当前Bean对象有匹配的的Pointcut，表示需要进行AOP
+
+
+
+#### 二. 利用cglib进行AOP的大致流程：
+
+> 原理：通过生成目标对象的子类对象，进行重写目标方法。
+
+1. 生成代理类UserServiceProxy，代理类继承UserService（目标对象）
+2. 代理类中重写了父类的方法，比如UserService中的test()方法
+3. 代理类中还会有一个target属性，该属性的值为被代理对象（也就是通过UserService类推断构造方法实例化出来的对象，进行了依赖注入、初始化等步骤的对象）
+4. 代理类中的test()方法被执行时的逻辑如下：
+   - 直线切面逻辑。
+   - 通过target对象调用test()方法。
+
+```java
+/**
+ * UserService 目标对象
+ * UserServiceProxy 代理对象
+ */
+public class UserServiceProxy extends UserService{
+
+    /** 目标对象 也就是通过UserService类推断构造方法实例化出来的对象，进行了依赖注入、初始化等步骤的对象*/
+    UserService target;
+
+    @Override
+    void test() {
+        // 执行 @Before
+        target.test();
+        // 执行 @After
+    }
+}
+```
+
+
+
+## 13-4. Spring事务
+
+当我们在某个方法上加了 `@Transactional` 注解后，就表示该方法在调用时会开启Spring事务，这时候这个类的Bean对象也是代理对象，与上面AOP生成代理对象存入Spring容器类似。
+
+**Spring事务的代理对象执行某个方法时的步骤：**
+
+1. 判断当前执行的方法是否存在@Transactional注解
+2. 如果存在，则利用事务管理器（TransactionMananger）新建一个数据库连接
+3. 修改数据库连接的 `autocommit=false` 关闭自动提交事务
+4. 执行target.test()，执行程序员所写的业务逻辑代码，也就是执行SQL。
+5. 执行完了之后如果没有出现异常，则提交，否则回滚
+
+
+
+#### 注意：
+
+- 执行target.test()，这个target实际是代理对象，由于用了@Transactional注解，所以生成动态代理对象，替代原对象存入Spring容器。
+
+- 事务失效根本原因是因为没有用代理对象去调用这个被`@Transactional`修饰的方法
+
+  ```java
+  // 事务是否会失效的判断标准：某个加了@Transactional注解的方法被调用时，要判断到底是不是直接被代理对象调用的，如果是则事务会生效，如果不是则失效。
+  @Component
+  public class UserService {
+  
+      @Transactional
+      public void test(){
+          // 执行 sql 业务
+          System.out.println("外部调用事务不会失效");
+          test2();
+      }
+  
+      @Transactional
+      public void test2(){
+          // 执行 sql 业务
+          System.out.println("事务失效，调用的对象不是代理对象，而是this普通对象");
+      }
+  }
+  ```
+
+  
+
+
+
+## 13-3. Bean的生命周期
 
 核心结论：Spring Bean 的生命周期是从 IoC 容器初始化 Bean 到最终销毁的完整过程，核心围绕 “实例化 → 初始化 → 使用 → 销毁” 四阶段，全程由容器管理并允许自定义干预。
 

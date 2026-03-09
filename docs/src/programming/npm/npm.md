@@ -62,6 +62,14 @@ $env:https_proxy = "http://127.0.0.1:7897"
 # 查看代理
 $env:http_proxy
 $env:https_proxy
+
+# linux
+export http_proxy=http://192.168.30.1:7897
+export https_proxy=http://192.168.30.1:7897
+
+# 查看代理
+echo $http_proxy
+echo $https_proxy
 ```
 
 ## npm install

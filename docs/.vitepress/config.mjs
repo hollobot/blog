@@ -301,6 +301,16 @@ export default defineConfig({
               ],
             },
             {
+              text: "工具链",
+              collapsed: true,
+              items: [
+                {
+                  text: "MinIO",
+                  link: "/programming/工具链/MinIO",
+                },
+              ],
+            },
+            {
               text: "Vue",
               collapsed: true, // 设置为false则默认展开
               items: [

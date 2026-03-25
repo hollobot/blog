@@ -216,6 +216,16 @@ export default defineConfig({
                 },
               ],
             },
+             {
+              text: "ElasticSearch",
+              collapsed: true,
+              items: [
+                {
+                  text: "ElasticSearch 快速开始",
+                  link: "/programming/ElasticSearch/ElasticSearch快速开始",
+                },
+              ],
+            },
             {
               text: "MyBatis",
               collapsed: true,

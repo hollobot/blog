@@ -8,7 +8,6 @@
 > - Java：**17+**
 > - 系统：**CentOS 7 / RHEL 7**
 
-------
 
 ## 一、Linux (CentOS 7) 安装 Elasticsearch
 

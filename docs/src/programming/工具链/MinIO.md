@@ -1,6 +1,5 @@
 # MinIO 对象存储系统
 
-------
 
 ## 一、MinIO Linux 部署
 

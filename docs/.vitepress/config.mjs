@@ -94,7 +94,7 @@ export default defineConfig({
         text: "编程",
         link: "/programming/数据结构/index",
       },
-      { text: "AI", link: "/programming/AI/ollama本地部署大模型" },
+      { text: "AI", link: "/AI/ollama本地部署大模型" },
       { text: "工具", link: "/software/cursor/cursor" },
       { text: "休闲", link: "/leisureTime/minecraft/药水篇" },
     ],

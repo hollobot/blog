@@ -216,7 +216,7 @@ export default defineConfig({
                 },
               ],
             },
-             {
+            {
               text: "ElasticSearch",
               collapsed: true,
               items: [
@@ -317,6 +317,16 @@ export default defineConfig({
                 {
                   text: "MinIO",
                   link: "/programming/工具链/MinIO",
+                },
+              ],
+            },
+            {
+              text: "AI",
+              collapsed: true,
+              items: [
+                {
+                  text: "ollama",
+                  link: "/programming/AI/ollama本地部署大模型",
                 },
               ],
             },

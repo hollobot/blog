@@ -127,6 +127,9 @@ sudo systemctl daemon-reload
 # 开机自启动
 sudo systemctl enable elasticsearch
 
+# 禁用自启动
+sudo systemctl disable elasticsearch
+
 # 启动之前可能出现：ES 的 keystore（密钥库）里存了 SSL 密码，但你在配置文件里关闭了 SSL，两者冲突了。
 # 删除 transport ssl 的 keystore 密码
 /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.transport.ssl.keystore.secure_password

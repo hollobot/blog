@@ -487,7 +487,27 @@ export default defineConfig({
           items: [
             {
               text: "快速开始",
-              link: "/programming/AI/ollama本地部署大模型",
+              link: "/AI/ollama/ollama本地部署大模型",
+            },
+          ],
+        },
+        {
+          text: "LangChain4j",
+          collapsed: true,
+          items: [
+            {
+              text: "快速开始",
+              link: "/AI/LangChain4j/Spring Boot 整合 LangChain4j 快速开始",
+            },
+          ],
+        },
+        {
+          text: "RAG",
+          collapsed: true,
+          items: [
+            {
+              text: "快速开始",
+              link: "/AI/RAG/快速开始",
             },
           ],
         },

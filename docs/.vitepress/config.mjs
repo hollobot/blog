@@ -321,16 +321,6 @@ export default defineConfig({
               ],
             },
             {
-              text: "AI",
-              collapsed: true,
-              items: [
-                {
-                  text: "ollama",
-                  link: "/programming/AI/ollama本地部署大模型",
-                },
-              ],
-            },
-            {
               text: "Vue",
               collapsed: true, // 设置为false则默认展开
               items: [
@@ -485,6 +475,18 @@ export default defineConfig({
                   link: "/programming/project/chat",
                 },
               ],
+            },
+          ],
+        },
+      ],
+      "/AI/": [
+        {
+          text: "ollama",
+          collapsed: true,
+          items: [
+            {
+              text: "快速开始",
+              link: "/programming/AI/ollama本地部署大模型",
             },
           ],
         },

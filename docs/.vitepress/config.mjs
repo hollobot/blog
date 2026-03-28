@@ -102,7 +102,7 @@ export default defineConfig({
     sidebar: {
       "/programming/": [
         {
-          text: "编程",
+          text: "基础",
           items: [
             {
               text: "数据结构",
@@ -151,6 +151,69 @@ export default defineConfig({
               ],
             },
             {
+              text: "设计模式",
+              collapsed: true,
+              items: [
+                {
+                  text: "单例模式",
+                  link: "/programming/设计模式/单例模式",
+                },
+                {
+                  text: "工厂模式",
+                  link: "/programming/设计模式/工厂模式",
+                },
+                {
+                  text: "策略模式",
+                  link: "/programming/设计模式/策略模式",
+                },
+                {
+                  text: "观察者模式",
+                  link: "/programming/设计模式/观察者模式",
+                },
+              ],
+            },
+            {
+              text: "Git",
+              collapsed: true,
+              items: [
+                {
+                  text: "git 快速上手",
+                  link: "/programming/git/Git 基本命令速查表",
+                },
+              ],
+            },
+            {
+              text: "Linux",
+              collapsed: true,
+              items: [
+                {
+                  text: "基本指令",
+                  link: "/programming/linux/linux",
+                },
+                {
+                  text: "配置虚拟机",
+                  link: "/programming/linux/配置虚拟机",
+                },
+                {
+                  text: "CentoS9配置",
+                  link: "/programming/linux/CentoS9配置",
+                },
+                {
+                  text: "docker",
+                  link: "/programming/linux/docker",
+                },
+                {
+                  text: "vim 指令",
+                  link: "/programming/linux/vim",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          text: "后端",
+          items: [
+            {
               text: "Java",
               collapsed: true, // 设置为false则默认展开
               items: [
@@ -160,70 +223,6 @@ export default defineConfig({
                 {
                   text: "Java 常用知识点",
                   link: "/programming/java/JAVA 常用知识点",
-                },
-              ],
-            },
-            {
-              text: "MySQL",
-              collapsed: true,
-              items: [
-                {
-                  text: "MySQL 安装",
-                  link: "/programming/MySQL/MySQL 安装",
-                },
-                {
-                  text: "MySQL 基础",
-                  link: "/programming/MySQL/MySQL基本操作",
-                },
-                { text: "MySQL 函数", link: "/programming/MySQL/MySQL函数" },
-                { text: "索引", link: "/programming/MySQL/索引" },
-                { text: "事务", link: "/programming/MySQL/事务" },
-                { text: "锁", link: "/programming/MySQL/锁" },
-              ],
-            },
-            {
-              text: "Redis",
-              collapsed: true,
-              items: [
-                {
-                  text: "Redis 安装",
-                  link: "/programming/Redis/Redis 安装",
-                },
-                {
-                  text: "Redis 入门",
-                  link: "/programming/Redis/Redis 入门",
-                },
-                {
-                  text: "Redis 使用场景",
-                  link: "/programming/Redis/Redis 使用场景",
-                },
-                {
-                  text: "分布式缓存",
-                  link: "/programming/Redis/分布式缓存",
-                },
-                {
-                  text: "Redis 实践",
-                  link: "/programming/Redis/Redis 实践",
-                },
-              ],
-            },
-            {
-              text: "RabbitMQ",
-              collapsed: true,
-              items: [
-                {
-                  text: "RabbitMQ 基础",
-                  link: "/programming/RabbitMQ/RabbitMQ",
-                },
-              ],
-            },
-            {
-              text: "ElasticSearch",
-              collapsed: true,
-              items: [
-                {
-                  text: "ElasticSearch 快速开始",
-                  link: "/programming/ElasticSearch/ElasticSearch快速开始",
                 },
               ],
             },
@@ -280,34 +279,86 @@ export default defineConfig({
               ],
             },
             {
-              text: "Design Pattern",
-              collapsed: true,
-              items: [
-                {
-                  text: "单例模式",
-                  link: "/programming/设计模式/单例模式",
-                },
-                {
-                  text: "工厂模式",
-                  link: "/programming/设计模式/工厂模式",
-                },
-                {
-                  text: "策略模式",
-                  link: "/programming/设计模式/策略模式",
-                },
-                {
-                  text: "观察者模式",
-                  link: "/programming/设计模式/观察者模式",
-                },
-              ],
-            },
-            {
               text: "Jvm",
               collapsed: true,
               items: [
                 {
                   text: "jvm 基础",
                   link: "/programming/jvm/jvm",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          text: "数据库",
+          items: [
+            {
+              text: "MySQL",
+              collapsed: true,
+              items: [
+                {
+                  text: "MySQL 安装",
+                  link: "/programming/MySQL/MySQL 安装",
+                },
+                {
+                  text: "MySQL 基础",
+                  link: "/programming/MySQL/MySQL基本操作",
+                },
+                { text: "MySQL 函数", link: "/programming/MySQL/MySQL函数" },
+                { text: "索引", link: "/programming/MySQL/索引" },
+                { text: "事务", link: "/programming/MySQL/事务" },
+                { text: "锁", link: "/programming/MySQL/锁" },
+              ],
+            },
+            {
+              text: "Redis",
+              collapsed: true,
+              items: [
+                {
+                  text: "Redis 安装",
+                  link: "/programming/Redis/Redis 安装",
+                },
+                {
+                  text: "Redis 入门",
+                  link: "/programming/Redis/Redis 入门",
+                },
+                {
+                  text: "Redis 使用场景",
+                  link: "/programming/Redis/Redis 使用场景",
+                },
+                {
+                  text: "分布式缓存",
+                  link: "/programming/Redis/分布式缓存",
+                },
+                {
+                  text: "Redis 实践",
+                  link: "/programming/Redis/Redis 实践",
+                },
+              ],
+            },
+            {
+              text: "ElasticSearch",
+              collapsed: true,
+              items: [
+                {
+                  text: "ElasticSearch 快速开始",
+                  link: "/programming/ElasticSearch/ElasticSearch快速开始",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          text: "中间件",
+          items: [
+            {
+              text: "RabbitMQ",
+              collapsed: true,
+              items: [
+                {
+                  text: "RabbitMQ 基础",
+                  link: "/programming/RabbitMQ/RabbitMQ",
                 },
               ],
             },
@@ -321,6 +372,11 @@ export default defineConfig({
                 },
               ],
             },
+          ],
+        },
+        {
+          text: "前端",
+          items: [
             {
               text: "Vue",
               collapsed: true, // 设置为false则默认展开
@@ -344,7 +400,6 @@ export default defineConfig({
               collapsed: true,
               items: [{ text: "ipc 通讯", link: "/programming/electron/ipc" }],
             },
-
             {
               text: "VitePress",
               collapsed: true,
@@ -360,16 +415,6 @@ export default defineConfig({
               ],
             },
             {
-              text: "Git",
-              collapsed: true,
-              items: [
-                {
-                  text: "git 快速上手",
-                  link: "/programming/git/Git 基本命令速查表",
-                },
-              ],
-            },
-            {
               text: "npm",
               collapsed: true,
               items: [
@@ -379,32 +424,11 @@ export default defineConfig({
                 },
               ],
             },
-            {
-              text: "Linux",
-              collapsed: true,
-              items: [
-                {
-                  text: "基本指令",
-                  link: "/programming/linux/linux",
-                },
-                {
-                  text: "配置虚拟机",
-                  link: "/programming/linux/配置虚拟机",
-                },
-                {
-                  text: "CentoS9配置",
-                  link: "/programming/linux/CentoS9配置",
-                },
-                {
-                  text: "docker",
-                  link: "/programming/linux/docker",
-                },
-                {
-                  text: "vim 指令",
-                  link: "/programming/linux/vim",
-                },
-              ],
-            },
+          ],
+        },
+        {
+          text: "面试和项目",
+          items: [
             {
               text: "面试",
               collapsed: true,
@@ -489,7 +513,7 @@ export default defineConfig({
               collapsed: true,
               items: [
                 {
-                  text: "快速开始",
+                  text: "本地部署",
                   link: "/AI/ollama/ollama本地部署大模型",
                 },
               ],

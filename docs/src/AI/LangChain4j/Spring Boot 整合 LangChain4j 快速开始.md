@@ -1,4 +1,4 @@
-## Spring Boot 整合 LangChain4j 快速开始
+# Spring Boot 整合 LangChain4j 快速开始
 
 ## 快速开始
 

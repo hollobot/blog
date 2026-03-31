@@ -556,12 +556,12 @@ export default defineConfig({
               ],
             },
             {
-              text: "idea",
+              text: "JetBrains",
               collapsed: true,
               items: [
                 {
-                  text: "idea 无限重置试用30天",
-                  link: "/software/idea/idea",
+                  text: "一键激活 JetBrains 全家桶",
+                  link: "/software/JetBrains/index",
                 },
               ],
             },

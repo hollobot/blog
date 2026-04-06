@@ -151,6 +151,16 @@ export default defineConfig({
               ],
             },
             {
+              text: "计算机组成原理",
+              collapsed: true,
+              items: [
+                {
+                  text: "基础",
+                  link: "/programming/计算机组成原理/计算机组成原理",
+                },
+              ],
+            },
+            {
               text: "设计模式",
               collapsed: true,
               items: [

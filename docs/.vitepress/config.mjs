@@ -155,7 +155,7 @@ export default defineConfig({
               collapsed: true,
               items: [
                 {
-                  text: "基础",
+                  text: "基础知识",
                   link: "/programming/计算机组成原理/计算机组成原理",
                 },
               ],

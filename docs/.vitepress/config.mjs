@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  base: "/blog/",
+  base: process.env.DEPLOY_ENV === 'cf' ? '/' : '/blog/',
   title: "hello log",
   description: "code log",
   head: [

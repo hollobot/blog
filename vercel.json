@@ -1,0 +1,8 @@
+{
+  "buildCommand": "npm run docs:build",
+  "outputDirectory": "docs/.vitepress/dist",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/blog/:path*", "destination": "/:path*" }
+  ]
+}

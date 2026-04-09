@@ -1,0 +1,593 @@
+<script setup>
+import { ref } from "vue";
+
+const activeSection = ref("all");
+
+const tocItems = [
+  { id: "all", label: "全部" },
+  { id: "vocab", label: "AI 基础词汇" },
+  { id: "models", label: "模型与推理" },
+  { id: "frameworks", label: "Java AI 框架" },
+  { id: "langchain", label: "LangChain4j" },
+  { id: "spring", label: "Spring AI" },
+  { id: "rag", label: "RAG 检索增强" },
+  { id: "agents", label: "Agent 智能体" },
+  { id: "practice", label: "实战项目" },
+];
+
+const isVisible = (id) => activeSection.value === "all" || activeSection.value === id;
+</script>
+
+<template>
+  <section class="ai-note-wrap">
+    <div class="header">
+      <h1>Java AI 开发笔记</h1>
+      <p>从基础概念 -> 核心框架 -> 实战开发的完整指南</p>
+    </div>
+
+    <div class="toc">
+      <button
+        v-for="item in tocItems"
+        :key="item.id"
+        class="toc-btn"
+        :class="{ active: activeSection === item.id }"
+        @click="activeSection = item.id"
+      >
+        {{ item.label }}
+      </button>
+    </div>
+
+    <div v-show="isVisible('vocab')" class="section">
+      <div class="section-title">AI 基础词汇 <span class="badge">必读</span></div>
+      <div class="cards">
+        <div class="card"><div class="card-title">LLM（大语言模型）</div><p>Large Language Model，如 GPT-4、Claude、Gemini。基于 Transformer 架构，通过海量文本训练，能理解和生成自然语言。</p><span class="tag">核心概念</span></div>
+        <div class="card"><div class="card-title">Token（词元）</div><p>文本的最小处理单位，不等于一个汉字或单词。中文约 1.5-2 字/token，英文约 3-4 字符/token。影响计费和上下文长度。</p><span class="tag">计量单位</span></div>
+        <div class="card"><div class="card-title">Prompt（提示词）</div><p>发送给模型的输入文本，包括 System Prompt（系统指令）和 User Message（用户消息）。Prompt 工程是提升输出质量的关键。</p><span class="tag">交互基础</span></div>
+        <div class="card"><div class="card-title">Context Window（上下文窗口）</div><p>模型一次能处理的最大 token 数量。GPT-4 Turbo 支持 128K，Claude 3 支持 200K。超出后早期内容被截断。</p><span class="tag">限制参数</span></div>
+        <div class="card"><div class="card-title">Embedding（嵌入向量）</div><p>将文本转化为高维向量（浮点数数组），语义相似的文本向量距离更近。是语义搜索和 RAG 的基础技术。</p><span class="tag">向量表示</span></div>
+        <div class="card"><div class="card-title">Temperature（温度）</div><p>控制输出随机性的参数，范围 0~2。0 = 确定性输出（适合代码），1 = 平衡，>1 = 更具创意但可能不稳定。</p><span class="tag">生成参数</span></div>
+        <div class="card"><div class="card-title">Fine-tuning（微调）</div><p>在预训练模型基础上，使用特定领域数据继续训练，使模型更擅长特定任务。成本高但效果针对性强。</p><span class="tag">训练方式</span></div>
+        <div class="card"><div class="card-title">RAG（检索增强生成）</div><p>Retrieval-Augmented Generation，先从知识库检索相关文档片段，再将其注入 Prompt，让模型基于私有数据回答。</p><span class="tag">架构模式</span></div>
+        <div class="card"><div class="card-title">Agent（智能体）</div><p>能自主规划、调用工具（Tool）、执行多步骤任务的 AI 系统。通过 ReAct 等推理框架循环执行直到目标完成。</p><span class="tag">高级应用</span></div>
+        <div class="card"><div class="card-title">Vector Store（向量数据库）</div><p>专门存储和检索 Embedding 向量的数据库，支持语义相似度搜索（ANN 近似最近邻）。如 Chroma、Pinecone、PGVector。</p><span class="tag">存储组件</span></div>
+        <div class="card"><div class="card-title">Tool / Function Calling</div><p>让模型能够调用外部函数（API、数据库、计算器等）的能力。模型返回 JSON 结构，由宿主程序执行并将结果返回模型。</p><span class="tag">扩展能力</span></div>
+        <div class="card"><div class="card-title">Inference（推理）</div><p>使用训练好的模型生成输出的过程，区别于训练过程。API 调用即推理。本地推理可用 Ollama + llama.cpp。</p><span class="tag">运行方式</span></div>
+      </div>
+    </div>
+
+    <div v-show="isVisible('models')" class="section">
+      <div class="section-title">主流模型与 API <span class="badge">对比</span></div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>模型/服务</th><th>提供商</th><th>特点</th><th>Java 接入方式</th></tr>
+          <tr><td><strong>GPT-4o</strong></td><td>OpenAI</td><td>多模态，速度快，支持 Function Calling</td><td>OpenAI Java SDK / LangChain4j</td></tr>
+          <tr><td><strong>Claude 3.5 Sonnet</strong></td><td>Anthropic</td><td>长上下文 200K，代码能力强</td><td>Anthropic Java SDK / Spring AI</td></tr>
+          <tr><td><strong>Gemini 1.5 Pro</strong></td><td>Google</td><td>超长上下文 1M，多模态</td><td>Google AI Java SDK</td></tr>
+          <tr><td><strong>Llama 3</strong></td><td>Meta（开源）</td><td>可本地部署，无数据隐私风险</td><td>Ollama + LangChain4j</td></tr>
+          <tr><td><strong>Qwen2</strong></td><td>阿里（开源）</td><td>中文优化，多尺寸可选</td><td>Ollama / DashScope API</td></tr>
+        </table>
+      </div>
+      <div class="note">企业内网数据场景推荐使用 Ollama 部署本地模型（Llama 3 / Qwen2），避免数据外发风险。</div>
+    </div>
+
+    <div v-show="isVisible('frameworks')" class="section">
+      <div class="section-title">Java AI 主流框架 <span class="badge">选型</span></div>
+      <div class="cards">
+        <div class="card card-top-violet">
+          <div class="card-title">LangChain4j</div>
+          <p>Java 生态最成熟的 AI 框架，对标 Python LangChain。支持 15+ 模型、10+ 向量库，提供 Chain、RAG、Agent、Tool 等高级抽象。</p>
+          <span class="tag">★★★★★ 推荐</span><span class="tag">独立使用</span>
+        </div>
+        <div class="card card-top-green">
+          <div class="card-title">Spring AI</div>
+          <p>Spring 官方 AI 框架，与 Spring Boot 深度集成，自动配置极简。适合已有 Spring 项目。功能在持续完善中。</p>
+          <span class="tag">★★★★ 推荐</span><span class="tag">Spring 生态</span>
+        </div>
+        <div class="card">
+          <div class="card-title">OpenAI Java SDK</div>
+          <p>OpenAI 官方 Java 客户端，仅限 OpenAI/Azure OpenAI，功能精简但官方维护，API 兼容性最好。</p>
+          <span class="tag">★★★</span><span class="tag">OpenAI 专用</span>
+        </div>
+        <div class="card">
+          <div class="card-title">Ollama Java Client</div>
+          <p>本地模型调用客户端，配合 Ollama 服务使用，适合本地推理场景，无需联网。</p>
+          <span class="tag">★★★</span><span class="tag">本地部署</span>
+        </div>
+      </div>
+    </div>
+
+    <div v-show="isVisible('langchain')" class="section">
+      <div class="section-title">LangChain4j 核心用法</div>
+      <div class="note">Maven 依赖：<code>langchain4j-open-ai</code> 或 <code>langchain4j-ollama</code>，核心包 <code>langchain4j-core</code></div>
+
+      <p class="mini-title">1. 基础对话调用</p>
+<pre><span class="cmt">// 添加依赖：dev.langchain4j:langchain4j-open-ai:0.31.0</span>
+<span class="kw">import</span> dev.langchain4j.model.openai.OpenAiChatModel;
+<span class="kw">import</span> dev.langchain4j.model.chat.ChatLanguageModel;
+
+ChatLanguageModel model = OpenAiChatModel.builder()
+    .apiKey(<span class="str">"your-api-key"</span>)
+    .modelName(<span class="str">"gpt-4o"</span>)
+    .temperature(<span class="fn">0.7</span>)
+    .build();
+
+String response = model.<span class="fn">generate</span>(<span class="str">"用 Java 写一个冒泡排序"</span>);
+System.out.<span class="fn">println</span>(response);</pre>
+
+      <p class="mini-title">2. AI Service 接口（推荐方式）</p>
+<pre><span class="cmt">// 定义 AI 服务接口</span>
+<span class="kw">interface</span> <span class="fn">AssistantService</span> {
+    <span class="kw">@SystemMessage</span>(<span class="str">"你是一个专业的 Java 技术专家，用简洁的中文回答"</span>)
+    String <span class="fn">chat</span>(<span class="kw">@UserMessage</span> String userMessage);
+
+    <span class="cmt">// 支持结构化输出</span>
+    <span class="fn">@UserMessage</span>(<span class="str">"分析这段代码的问题：&#123;&#123;code&#125;&#125;"</span>)
+    CodeReview <span class="fn">reviewCode</span>(<span class="kw">@V</span>(<span class="str">"code"</span>) String code);
+}
+
+<span class="cmt">// 创建代理实例</span>
+AssistantService assistant = AiServices.<span class="fn">builder</span>(AssistantService.class)
+    .chatLanguageModel(model)
+    .chatMemory(MessageWindowChatMemory.<span class="fn">withMaxMessages</span>(<span class="fn">10</span>))
+    .build();
+
+String answer = assistant.<span class="fn">chat</span>(<span class="str">"Java 中 volatile 有什么作用？"</span>);</pre>
+
+      <p class="mini-title">3. Tool（工具调用）</p>
+<pre><span class="cmt">// 定义工具类</span>
+<span class="kw">class</span> <span class="fn">DatabaseTool</span> {
+    <span class="kw">@Tool</span>(<span class="str">"根据用户ID查询用户信息"</span>)
+    <span class="kw">public</span> String <span class="fn">getUserById</span>(<span class="kw">@P</span>(<span class="str">"用户ID"</span>) <span class="kw">long</span> userId) {
+        <span class="kw">return</span> userRepository.<span class="fn">findById</span>(userId).<span class="fn">toString</span>();
+    }
+}
+
+<span class="cmt">// 注册工具到 AI Service</span>
+AssistantService assistant = AiServices.<span class="fn">builder</span>(AssistantService.class)
+    .chatLanguageModel(model)
+    .tools(<span class="kw">new</span> <span class="fn">DatabaseTool</span>())
+    .build();</pre>
+    </div>
+
+    <div v-show="isVisible('spring')" class="section">
+      <div class="section-title">Spring AI 集成</div>
+      <div class="note">添加依赖：<code>spring-ai-openai-spring-boot-starter</code>，需要 Spring Boot 3.2+</div>
+
+      <p class="mini-title">application.yml 配置</p>
+<pre>spring:
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-4o
+          temperature: 0.7
+      embedding:
+        options:
+          model: text-embedding-3-small</pre>
+
+      <p class="mini-title">Controller 中直接注入使用</p>
+<pre><span class="kw">@RestController</span>
+<span class="kw">@RequestMapping</span>(<span class="str">"/ai"</span>)
+<span class="kw">public class</span> <span class="fn">AiController</span> {
+
+    <span class="kw">@Autowired</span>
+    <span class="kw">private</span> ChatClient chatClient;
+
+    <span class="kw">@GetMapping</span>(<span class="str">"/chat"</span>)
+    <span class="kw">public</span> String <span class="fn">chat</span>(<span class="kw">@RequestParam</span> String message) {
+        <span class="kw">return</span> chatClient.prompt()
+            .system(<span class="str">"你是专业的 Java 开发助手"</span>)
+            .user(message)
+            .call()
+            .content();
+    }
+
+    <span class="kw">@GetMapping</span>(value = <span class="str">"/stream"</span>, produces = <span class="str">"text/event-stream"</span>)
+    <span class="kw">public</span> Flux&lt;String&gt; <span class="fn">stream</span>(<span class="kw">@RequestParam</span> String message) {
+        <span class="kw">return</span> chatClient.prompt()
+            .user(message)
+            .stream()
+            .content();
+    }
+}</pre>
+    </div>
+
+    <div v-show="isVisible('rag')" class="section">
+      <div class="section-title">RAG 检索增强生成 <span class="badge">核心架构</span></div>
+      <div class="flow">
+        <div class="flow-step"><div class="step-num">1</div><div class="step-body"><strong>文档加载与切片</strong><span>读取 PDF/Word/网页，切分成 300~500 token 的 Chunk，保留语义完整性</span></div></div>
+        <div class="flow-step"><div class="step-num">2</div><div class="step-body"><strong>Embedding 向量化</strong><span>调用嵌入模型（text-embedding-3-small）将每个 Chunk 转为 1536 维向量</span></div></div>
+        <div class="flow-step"><div class="step-num">3</div><div class="step-body"><strong>存入向量数据库</strong><span>将向量 + 原文存入 Chroma / PGVector / Redis Vector 等</span></div></div>
+        <div class="flow-step"><div class="step-num">4</div><div class="step-body"><strong>用户查询向量化</strong><span>将用户问题同样转为向量</span></div></div>
+        <div class="flow-step"><div class="step-num">5</div><div class="step-body"><strong>语义相似度检索</strong><span>在向量库中找 Top-K 最相似的文档片段（余弦相似度）</span></div></div>
+        <div class="flow-step"><div class="step-num">6</div><div class="step-body"><strong>注入 Prompt 生成答案</strong><span>将检索结果拼入提示词，让模型基于上下文回答，附带来源引用</span></div></div>
+      </div>
+
+<pre><span class="cmt">// LangChain4j RAG 实现示例</span>
+<span class="cmt">// Step 1: 加载文档并分割</span>
+Document document = FileSystemDocumentLoader.<span class="fn">loadDocument</span>(<span class="str">"knowledge.pdf"</span>);
+DocumentSplitter splitter = DocumentSplitters.<span class="fn">recursive</span>(<span class="fn">500</span>, <span class="fn">50</span>);
+List&lt;TextSegment&gt; segments = splitter.<span class="fn">split</span>(document);
+
+<span class="cmt">// Step 2: 向量化并存储</span>
+EmbeddingModel embeddingModel = OpenAiEmbeddingModel.<span class="fn">withApiKey</span>(apiKey);
+EmbeddingStore&lt;TextSegment&gt; store = <span class="kw">new</span> <span class="fn">InMemoryEmbeddingStore</span>&lt;&gt;();
+EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
+    .embeddingModel(embeddingModel)
+    .embeddingStore(store)
+    .build();
+ingestor.<span class="fn">ingest</span>(document);
+
+<span class="cmt">// Step 3: 构建 RAG 检索器</span>
+ContentRetriever retriever = EmbeddingStoreContentRetriever.builder()
+    .embeddingStore(store)
+    .embeddingModel(embeddingModel)
+    .maxResults(<span class="fn">3</span>)
+    .minScore(<span class="fn">0.6</span>)
+    .build();
+
+<span class="cmt">// Step 4: 注入 AI Service</span>
+<span class="kw">interface</span> <span class="fn">KnowledgeAssistant</span> {
+    String <span class="fn">answer</span>(<span class="kw">@UserMessage</span> String question);
+}
+KnowledgeAssistant assistant = AiServices.<span class="fn">builder</span>(KnowledgeAssistant.class)
+    .chatLanguageModel(chatModel)
+    .contentRetriever(retriever)
+    .build();</pre>
+    </div>
+
+    <div v-show="isVisible('agents')" class="section">
+      <div class="section-title">Agent 智能体开发 <span class="badge">高级</span></div>
+      <div class="warn">Agent 适合多步骤复杂任务，但需要控制循环次数（maxIterations），避免无限循环和费用失控。</div>
+      <div class="cards">
+        <div class="card"><div class="card-title">ReAct 模式</div><p>Reason + Act 循环：思考 -> 选择工具 -> 执行 -> 观察结果 -> 继续思考，直到任务完成。LangChain4j 内置支持。</p></div>
+        <div class="card"><div class="card-title">常用工具类型</div><p>Web 搜索、数据库查询、代码执行、文件读写、HTTP API 调用、计算器、发送邮件/消息等。</p></div>
+        <div class="card"><div class="card-title">记忆管理</div><p>短期记忆（对话历史）用 MessageWindowChatMemory，长期记忆可结合 Redis 或向量库持久化存储。</p></div>
+        <div class="card"><div class="card-title">多 Agent 协作</div><p>一个 Orchestrator Agent 负责规划任务，多个 Worker Agent 各司其职（代码 Agent、搜索 Agent 等）。</p></div>
+      </div>
+<pre><span class="cmt">// 定义多工具 Agent</span>
+<span class="kw">class</span> <span class="fn">SearchTool</span> {
+    <span class="kw">@Tool</span>(<span class="str">"搜索互联网上的最新信息"</span>)
+    String <span class="fn">search</span>(<span class="kw">@P</span>(<span class="str">"搜索关键词"</span>) String query) { <span class="cmt">/* ... */</span> }
+}
+
+<span class="kw">class</span> <span class="fn">CodeTool</span> {
+    <span class="kw">@Tool</span>(<span class="str">"执行 Java 代码并返回结果"</span>)
+    String <span class="fn">execute</span>(<span class="kw">@P</span>(<span class="str">"Java 代码字符串"</span>) String code) { <span class="cmt">/* ... */</span> }
+}
+
+<span class="kw">interface</span> <span class="fn">ResearchAgent</span> {
+    <span class="kw">@SystemMessage</span>(<span class="str">"你是一个研究助手，可以搜索信息和执行代码来回答问题"</span>)
+    String <span class="fn">research</span>(<span class="kw">@UserMessage</span> String task);
+}
+
+ResearchAgent agent = AiServices.<span class="fn">builder</span>(ResearchAgent.class)
+    .chatLanguageModel(model)
+    .tools(<span class="kw">new</span> <span class="fn">SearchTool</span>(), <span class="kw">new</span> <span class="fn">CodeTool</span>())
+    .chatMemory(MessageWindowChatMemory.<span class="fn">withMaxMessages</span>(<span class="fn">20</span>))
+    .build();</pre>
+    </div>
+
+    <div v-show="isVisible('practice')" class="section">
+      <div class="section-title">实战项目架构 <span class="badge">落地</span></div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>项目类型</th><th>核心技术栈</th><th>关键点</th></tr>
+          <tr><td><strong>企业知识库问答</strong></td><td>Spring Boot + LangChain4j + PGVector</td><td>文档解析、Chunk 策略、多租户隔离</td></tr>
+          <tr><td><strong>AI 客服机器人</strong></td><td>Spring AI + Redis Memory + WebSocket</td><td>意图识别、对话管理、人工转接</td></tr>
+          <tr><td><strong>代码审查助手</strong></td><td>LangChain4j + GitHub API</td><td>PR 触发、差异分析、安全扫描</td></tr>
+          <tr><td><strong>数据报告生成</strong></td><td>Spring AI + MySQL + 结构化输出</td><td>Text2SQL、图表生成、定时推送</td></tr>
+          <tr><td><strong>本地私有部署</strong></td><td>Ollama + LangChain4j + Chroma</td><td>模型选型、GPU 配置、性能调优</td></tr>
+        </table>
+      </div>
+
+      <p class="mini-title strong">推荐项目依赖（pom.xml）</p>
+<pre><span class="cmt">&lt;!-- Spring Boot 基础 --&gt;</span>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+&lt;/dependency&gt;
+
+<span class="cmt">&lt;!-- LangChain4j OpenAI --&gt;</span>
+&lt;dependency&gt;
+    &lt;groupId&gt;dev.langchain4j&lt;/groupId&gt;
+    &lt;artifactId&gt;langchain4j-open-ai-spring-boot-starter&lt;/artifactId&gt;
+    &lt;version&gt;0.31.0&lt;/version&gt;
+&lt;/dependency&gt;
+
+<span class="cmt">&lt;!-- 向量数据库：本地用 Chroma --&gt;</span>
+&lt;dependency&gt;
+    &lt;groupId&gt;dev.langchain4j&lt;/groupId&gt;
+    &lt;artifactId&gt;langchain4j-chroma&lt;/artifactId&gt;
+    &lt;version&gt;0.31.0&lt;/version&gt;
+&lt;/dependency&gt;
+
+<span class="cmt">&lt;!-- 文档解析 --&gt;</span>
+&lt;dependency&gt;
+    &lt;groupId&gt;dev.langchain4j&lt;/groupId&gt;
+    &lt;artifactId&gt;langchain4j-document-parser-apache-pdfbox&lt;/artifactId&gt;
+    &lt;version&gt;0.31.0&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+
+      <div class="note">学习路径建议：Java 基础 -> Spring Boot -> HTTP/REST 原理 -> LangChain4j 基础对话 -> RAG 实现 -> Tool 调用 -> Agent 开发 -> 生产优化（缓存、限流、监控）</div>
+    </div>
+  </section>
+</template>
+
+<style scoped>
+.ai-note-wrap {
+  --ai-accent: #4662d9;
+  --ai-accent-soft: #e8edff;
+  max-width: 960px;
+  padding: 1.5rem 0;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.header h1 {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.header p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--vp-c-text-2);
+}
+
+.toc {
+  position: sticky;
+  top: 68px;
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 2rem;
+  padding: 10px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--vp-c-bg) 86%, #ffffff 14%);
+  backdrop-filter: blur(8px);
+}
+
+.toc-btn {
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toc-btn:hover,
+.toc-btn.active {
+  background: var(--ai-accent-soft);
+  color: #2f418f;
+  border-color: #aab8ef;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--ai-accent-soft);
+  color: var(--ai-accent);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: #b8c3f0;
+  box-shadow: 0 8px 24px rgba(20, 45, 120, 0.08);
+}
+
+.card-top-violet {
+  border-top: 3px solid #a8a1ec;
+}
+
+.card-top-green {
+  border-top: 3px solid #5dcaa5;
+}
+
+.card-title {
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3f55b8;
+}
+
+.card p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+}
+
+.card .tag {
+  display: inline-block;
+  margin-top: 8px;
+  margin-right: 4px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-3);
+}
+
+.mini-title {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--vp-c-text-2);
+}
+
+.mini-title.strong {
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+}
+
+pre {
+  overflow-x: auto;
+  margin: 0 0 1rem;
+  padding: 1rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  font-size: 12px;
+  line-height: 1.6;
+  font-family: var(--vp-font-family-mono);
+}
+
+.kw {
+  color: #534ab7;
+}
+
+.str {
+  color: #0f6e56;
+}
+
+.cmt {
+  color: var(--vp-c-text-3);
+}
+
+.fn {
+  color: #185fa5;
+}
+
+.flow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.flow-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+  font-size: 13px;
+}
+
+.step-num {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #3d4ba2;
+  background: var(--ai-accent-soft);
+}
+
+.step-body strong {
+  display: block;
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.step-body span {
+  color: var(--vp-c-text-2);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  font-weight: 600;
+}
+
+td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  color: var(--vp-c-text-1);
+  vertical-align: top;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.note,
+.warn {
+  margin-bottom: 1rem;
+  padding: 10px 14px;
+  border-radius: 0 10px 10px 0;
+  font-size: 13px;
+}
+
+.note {
+  background: #e6f1fb;
+  border-left: 3px solid #185fa5;
+  color: #0c447c;
+}
+
+.warn {
+  background: #faeeda;
+  border-left: 3px solid #ba7517;
+  color: #633806;
+}
+
+@media (max-width: 768px) {
+  .toc {
+    top: 58px;
+    padding: 8px;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

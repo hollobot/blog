@@ -197,3 +197,18 @@
   /* 向上平移 20 像素（创建上浮效果） */
   transform: translateY(-20px);
 }
+
+
+/* 副标题行高与间距 */
+.home-log .VPHero .text {
+  line-height: 1.75;
+}
+
+/* 描述文案宽度与可读性 */
+.home-log .VPHero .tagline {
+  max-width: 680px;
+  margin-top: 14px;
+  line-height: 1.9;
+  font-size: 16px;
+}
+

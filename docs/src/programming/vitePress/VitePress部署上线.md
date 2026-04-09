@@ -88,11 +88,11 @@ C:\Users\23809>
 
 VitePress 可以单独使用，也可以安装到现有项目中。在这两种情况下，都可以使用以下方式安装它：
 
-```npm
+```bash
 $ npm add -D vitepress
 ```
 
-```npm
+```bash
 $ npx vitepress init
 ```
 

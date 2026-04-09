@@ -380,7 +380,7 @@ vi /etc/systemd/system/redis.service
 
 内容如下：
 
-```conf
+```ini
 [Unit]
 Description=redis-server
 After=network.target

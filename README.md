@@ -1,8 +1,8 @@
 <div align="center">
 
-# :sparkles: Hello Log :sparkles:
+# :sparkles: Hello Blog :sparkles:
 
-一个基于 VitePress 构建的个人技术日志，记录编程学习笔记、技术总结和面试经验。
+一个基于 VitePress 构建的个人技术日志，记录编程学习笔记、技术总结和实践经验。
 
 [![VitePress](https://img.shields.io/badge/VitePress-1.6.3-blue.svg)](https://vitepress.dev/)
 [![License](https://img.shields.io/badge/License-ISC-green.svg)](LICENSE)
@@ -11,16 +11,16 @@
 
 ## ✨ 特性
 
-- 🚀 基于 **VitePress** 构建，快速响应
-- 📚 涵盖 **Java、MySQL、Redis、Vue** 等多种技术栈
+- 🚀 基于 **VitePress** 构建，启动快、构建快
+- 📚 覆盖 **Java、MySQL、Redis、Vue、AI** 等多类内容
 - 🎨 支持深色/浅色主题切换
-- 🔍 内置本地搜索功能
-- 📱 响应式设计，支持移动端访问
-- 💬 支持 Giscus 评论系统
+- 🔍 内置本地搜索
+- 📱 响应式布局，兼容移动端
+- 💬 集成 Giscus 评论系统
 - 📊 集成不蒜子访问统计
-- 🖼️ 图片懒加载和缩放预览
-- 📝 支持 Markdown 时间线和任务列表
-- 🌳 自动生成页面目录导航
+- 🖼️ 图片缩放预览（medium-zoom）
+- 📝 支持时间线、任务列表、代码组图标
+- 🤖 新增 AI 专题交互文档页（按模块筛选）
 
 ## 📖 内容分类
 
@@ -35,19 +35,23 @@
 - **Spring/Spring Cloud**：注解、AOP、快速开始
 - **设计模式**：单例、工厂、策略、观察者
 - **JVM**：虚拟机基础
-- **Vue**：快速开始、路由、组件通信、Pinia、插槽、新组件
+- **Vue**：快速开始、路由、组件通信、Pinia、插槽
 - **Electron**：IPC 通讯
 - **VitePress**：快速开始、部署上线
-- **Git**：基本命令速查
-- **npm**：基本指令
-- **Linux**：基本指令、配置虚拟机、Docker
-- **面试**：Java 基础、集合、并发、JVM、MySQL、MyBatis、Redis、Spring、Vue、简历、项目难点
-- **项目**：即时通讯系统
+- **Git / npm / Linux**：常用命令与实操
+- **面试**：Java、并发、JVM、MySQL、Redis、Spring、Vue
+
+### AI
+
+- **Java AI 开发笔记（交互版）**：
+  - 路径：`docs/src/AI/index.md`
+  - 覆盖：基础词汇、模型对比、LangChain4j、Spring AI、RAG、Agent、实战架构
+  - 支持：目录按钮筛选、卡片化阅读、代码片段速览
 
 ### 工具
 
-- **Cursor**：无限续杯 Claude 3.5
-- **IDEA**：无限重置试用 30 天
+- **Cursor**：开发辅助
+- **IDEA**：使用技巧
 - **Network**：内网穿透
 
 ### 休闲
@@ -56,28 +60,28 @@
 
 ## 🛠 技术栈
 
-- **框架**：[VitePress](https://vitepress.dev/) 1.6.3
+- **框架**：[VitePress](https://vitepress.dev/) `1.6.3`
 - **样式**：Sass
-- **插件**：
-  - vitepress-markdown-timeline（时间线）
-  - markdown-it-task-checkbox（任务列表）
-  - vitepress-plugin-group-icons（代码组图标）
-  - vitepress-plugin-comment-with-giscus（评论系统）
-  - medium-zoom（图片缩放）
-  - nprogress-v2（进度条）
-  - busuanzi.pure.js（访问统计）
+- **插件与能力**：
+  - `vitepress-markdown-timeline`（时间线）
+  - `markdown-it-task-checkbox`（任务列表）
+  - `vitepress-plugin-group-icons`（代码组图标）
+  - `vitepress-plugin-comment-with-giscus`（评论）
+  - `medium-zoom`（图片缩放）
+  - `nprogress-v2`（页面切换进度条）
+  - `busuanzi.pure.js`（访问统计）
 
 ## 🚀 快速开始
 
 ### 环境要求
 
-- [Node.js](https://nodejs.org/) >= 18
-- [npm](https://www.npmjs.com/) 或 [pnpm](https://pnpm.io/)
+- [Node.js](https://nodejs.org/) >= 18（CI 使用 Node 20）
+- npm
 
 ### 安装依赖
 
 ```bash
-npm install
+npm ci
 ```
 
 ### 本地开发
@@ -86,7 +90,7 @@ npm install
 npm run dev
 ```
 
-访问 http://localhost:5173/log/ 查看效果
+默认访问：`http://localhost:5173/blog/`
 
 ### 构建生产版本
 
@@ -100,23 +104,27 @@ npm run docs:build
 npm run docs:preview
 ```
 
+### Windows 手动部署脚本
+
+```bash
+npm run deploy:win
+```
+
 ## 📦 项目结构
 
-```
+```text
 blog/
 ├── docs/
-│   ├── .vitepress/          # VitePress 配置
-│   │   ├── components/      # 自定义组件
-│   │   ├── directives/      # 自定义指令
-│   │   ├── theme/           # 主题配置
+│   ├── .vitepress/
+│   │   ├── components/      # 全局组件（含 AI 专题组件）
+│   │   ├── theme/           # 主题扩展与样式
 │   │   └── config.mjs       # 站点配置
-│   ├── src/                 # 文档源文件
-│   │   ├── programming/     # 编程相关
-│   │   ├── software/        # 工具相关
-│   │   ├── leisureTime/     # 休闲相关
-│   │   ├── nav/             # 导航页
-│   │   └── public/          # 静态资源
-│   └── index.md             # 首页
+│   └── src/
+│       ├── AI/              # AI 专题文档
+│       ├── programming/     # 编程内容
+│       ├── software/        # 工具内容
+│       ├── leisureTime/     # 休闲内容
+│       └── index.md         # 首页
 ├── .github/workflows/       # GitHub Actions
 ├── package.json
 └── README.md
@@ -124,58 +132,35 @@ blog/
 
 ## 🚢 部署
 
-项目使用 GitHub Actions 自动部署到 GitHub Pages。
+项目通过 GitHub Actions 自动部署到 GitHub Pages。
 
-配置文件位于 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)
+- 工作流：`.github/workflows/deploy.yml`
+- 构建产物目录：`docs/.vitepress/dist`
 
-### 手动部署（Windows）
+## 🎨 主题与增强
 
-```bash
-npm run deploy:win
-```
-
-## 🎨 自定义主题
-
-项目在 `docs/.vitepress/theme` 目录下进行了主题自定义，包括：
+`docs/.vitepress/theme` 已集成：
 
 - 自定义导航链接组件
 - 布局切换组件
 - 返回顶部组件
-- 不蒜子统计组件
+- 访问统计组件
 - 通知组件
-- 自定义样式
+- 评论系统与页面切换进度条
 
-## 📝 编写文档
+## 📝 文档编写说明
 
-文档使用 Markdown 格式编写，支持以下特性：
+文档使用 Markdown 编写，支持：
 
-- **代码块**：支持语法高亮和行号显示
-- **时间线**：使用 `::: timeline` 语法
-- **任务列表**：使用 `- [ ]` 语法
-- **代码组图标**：自动为代码块添加语言图标
-- **图片**：支持懒加载和缩放预览
-
-示例：
-
-````markdown
-::: timeline
-2024-01-01: 开始学习 Vue
-2024-02-01: 完成第一个项目
-:::
-
-- [ ] 待完成任务
-- [x] 已完成任务
-
-```javascript
-console.log("Hello World");
-```
-````
-
-```
+- 代码块高亮
+- 时间线语法（`::: timeline`）
+- 任务列表（`- [ ]` / `- [x]`）
+- 代码组图标
+- 图片缩放预览
 
 ## 🤝 贡献
 
-欢迎提交 Issue 和 Pull Request！
+欢迎提交 Issue 和 Pull Request。
 
 ## 📄 许可证
 
@@ -190,13 +175,13 @@ console.log("Hello World");
 
 <div align="center">
 
-如有转载或 CV 的请标注本站原文地址
-
-版权所有 © 2025-2025 hello
+如有转载或引用，请标注本站原文地址。  
+版权所有 © 2025 hello
 
 </div>
-```
-# :sparkles: Star History :sparkles:
+
+## :sparkles: Star History :sparkles:
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=hollobot/blog&type=Date&theme=dark" />
   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=hollobot/blog&type=Date" />

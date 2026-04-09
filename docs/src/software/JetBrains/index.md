@@ -71,7 +71,7 @@ wget --no-check-certificate ckey.run/uninstall -O ckey.run && bash ckey.run
 
 - Mac好像是默认没有安装wget，所以用curl,如果你有wget，也可以直接用linux命令
 
-```undefined
+```bash
 curl -L -o ckey.run ckey.run && bash ckey.run
 ```
 

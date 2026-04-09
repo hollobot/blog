@@ -14,8 +14,8 @@ const __dirname = path.dirname(__filename);
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  base: process.env.DEPLOY_ENV === 'cf' ? '/' : '/blog/',
-  title: "hello log",
+  base: process.env.DEPLOY_ENV === "cf" ? "/" : "/blog/",
+  title: "hello blog",
   description: "code log",
   head: [
     [
@@ -48,13 +48,6 @@ export default defineConfig({
   ],
   outDir: ".vitepress/dist",
   srcDir: "src",
-  vite: {
-    resolve: {
-      alias: {
-        "@theme": path.resolve(__dirname, "./theme"),
-      },
-    },
-  },
   themeConfig: {
     search: {
       provider: "local",
@@ -94,7 +87,7 @@ export default defineConfig({
         text: "编程",
         link: "/programming/数据结构/index",
       },
-      { text: "AI", link: "/AI/ollama/ollama本地部署大模型" },
+      { text: "AI", link: "/AI/index" },
       { text: "工具", link: "/software/cursor/cursor" },
       { text: "休闲", link: "/leisureTime/minecraft/药水篇" },
     ],
@@ -650,6 +643,11 @@ export default defineConfig({
   vite: {
     // https://cn.vitejs.dev/config/shared-options.html#publicdir
     publicDir: "../src/public", // 指定 public 目录路径
+    resolve: {
+      alias: {
+        "@theme": path.resolve(__dirname, "./theme"),
+      },
+    },
     plugins: [
       groupIconVitePlugin(), //代码组图标
     ],

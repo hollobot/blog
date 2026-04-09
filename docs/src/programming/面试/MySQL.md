@@ -50,7 +50,7 @@ MySQL数据库为我们提供的四种隔离级别：
 
 同样都是字母d，unicode比ascii多使用了一个字节，如下：
 
-```mysql
+```text
 D   ASCII:           01100100
 D Unicode:  00000000 01100100
 ```

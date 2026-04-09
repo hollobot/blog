@@ -1,7 +1,5 @@
----
-title: Java AI 开发笔记
-outline: deep
----
+# 快速开始
+> 从基础概念 -> 核心框架 -> 实战开发的完整指南
 
 <script setup>
 import AIJavaGuide from "../../.vitepress/components/AIJavaGuide.vue";

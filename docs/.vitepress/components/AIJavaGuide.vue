@@ -20,11 +20,6 @@ const isVisible = (id) => activeSection.value === "all" || activeSection.value =
 
 <template>
   <section class="ai-note-wrap">
-    <div class="header">
-      <h1>Java AI 开发笔记</h1>
-      <p>从基础概念 -> 核心框架 -> 实战开发的完整指南</p>
-    </div>
-
     <div class="toc">
       <button
         v-for="item in tocItems"
@@ -320,7 +315,6 @@ ResearchAgent agent = AiServices.<span class="fn">builder</span>(ResearchAgent.c
   --ai-accent: #4662d9;
   --ai-accent-soft: #e8edff;
   max-width: 960px;
-  padding: 1.5rem 0;
 }
 
 .header {
@@ -340,6 +334,7 @@ ResearchAgent agent = AiServices.<span class="fn">builder</span>(ResearchAgent.c
 }
 
 .toc {
+  margin-top: 40px;
   position: sticky;
   top: 68px;
   z-index: 6;

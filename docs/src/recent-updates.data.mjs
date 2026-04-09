@@ -1,5 +1,9 @@
 import { promises as fs } from "node:fs";
+import { execFile } from "node:child_process";
 import path from "node:path";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
 
 const SRC_ROOT = path.resolve(process.cwd(), "docs", "src");
 const EXCLUDED_DIRS = new Set(["public", ".vitepress"]);
@@ -14,6 +18,24 @@ const CATEGORY_MAP = {
   leisureTime: "休闲",
   nav: "导航",
 };
+
+// Git 克隆/检出会重置文件 mtime，优先使用最后一次提交时间才能得到真实更新顺序。
+async function getGitUpdatedDate(absolutePath) {
+  const relativePath = path.relative(process.cwd(), absolutePath).split(path.sep).join("/");
+
+  try {
+    const { stdout } = await execFileAsync("git", ["log", "-1", "--format=%ct", "--", relativePath]);
+    const unixSeconds = Number.parseInt(stdout.trim(), 10);
+
+    if (!Number.isNaN(unixSeconds) && unixSeconds > 0) {
+      return new Date(unixSeconds * 1000);
+    }
+  } catch {
+    // 非 Git 跟踪文件或 Git 不可用时，交由调用方回退到文件系统时间。
+  }
+
+  return null;
+}
 
 // 将绝对路径转换为 VitePress 站内路由。
 function toVitePressLink(absolutePath) {
@@ -88,15 +110,18 @@ export default {
 
     const records = await Promise.all(
       mdFiles.map(async (filePath) => {
-        const [stat, content] = await Promise.all([
+        const [stat, content, gitUpdatedDate] = await Promise.all([
           fs.stat(filePath),
           fs.readFile(filePath, "utf8"),
+          getGitUpdatedDate(filePath),
         ]);
+
+        const updatedDate = gitUpdatedDate || stat.mtime;
 
         return {
           title: parseTitle(content, path.basename(filePath)),
           link: toVitePressLink(filePath),
-          updatedAt: stat.mtimeMs,
+          updatedAt: updatedDate.getTime(),
           updatedText: new Intl.DateTimeFormat("zh-CN", {
             year: "numeric",
             month: "2-digit",
@@ -104,7 +129,7 @@ export default {
             hour: "2-digit",
             minute: "2-digit",
             hour12: false,
-          }).format(stat.mtime),
+          }).format(updatedDate),
           category: toCategory(filePath),
         };
       }),

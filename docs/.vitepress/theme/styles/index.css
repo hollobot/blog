@@ -202,6 +202,11 @@
   transform: translate(0px, 0px) !important;
 }
 
+.home-log .container .main  {
+  padding: 0 30px !important;
+}
+
+
 /* 副标题行高与间距 */
 .home-log .VPHero .text {
   line-height: 1.8;

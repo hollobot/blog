@@ -32,9 +32,9 @@ function getCategoryClass(category) {
     工具: "cat-tool",
     休闲: "cat-life",
     导航: "cat-nav",
-    其他: "cat-other",
+    文章: "cat-other",
   };
-  return classMap[category] || classMap.其他;
+  return classMap[category] || classMap.文章;
 }
 
 // 站内链接统一加 base，避免部署在子路径时点击失效。

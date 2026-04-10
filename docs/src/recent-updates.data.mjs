@@ -100,7 +100,7 @@ async function walkMarkdownFiles(dir) {
 function toCategory(absolutePath) {
   const relativePath = path.relative(SRC_ROOT, absolutePath).split(path.sep);
   const rootDir = relativePath[0] || "";
-  return CATEGORY_MAP[rootDir] || "其他";
+  return CATEGORY_MAP[rootDir] || "文章";
 }
 
 export default {

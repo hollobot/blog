@@ -47,7 +47,7 @@
 .dark {
   /* 背景与文本 */
   /* 主背景色：深蓝灰色（编辑器主背景） */
-  --vp-c-bg: #23272E;
+  --vp-c-bg: #23272e;
   /* 替代背景色：稍深的背景色 */
   --vp-c-bg-alt: #252526;
   /* 柔和背景色：侧边栏背景色 */
@@ -57,11 +57,11 @@
   /* 次要文本色：中等灰色（注释等次要文字） */
   --vp-c-text-2: #858585;
   /* 反色文本：深色背景用（保持深色） */
-  --vp-c-text-inverse: #23272E;
+  --vp-c-text-inverse: #23272e;
 
   /* 侧边栏配色 */
   /* 侧边栏背景色 */
-  --vp-sidebar-bg-color: #23272E;
+  --vp-sidebar-bg-color: #23272e;
   /* 侧边栏文本颜色：浅灰白 */
   --vp-c-sidebar-text: #cccccc;
   /* 侧边栏悬停背景色：稍亮的灰色 */
@@ -71,17 +71,17 @@
 
   /* 代码块 */
   /* 代码块背景色：与主背景一致 */
-  --vp-code-block-bg: #23272E;
+  --vp-code-block-bg: #23272e;
   /* 代码块分割线颜色：深色分割线 */
   --vp-code-block-divider-color: rgba(255, 255, 255, 0.1);
 
   /* 搜索框配色 */
   /* 搜索框背景色：深灰色 */
-  --vp-c-search-bg: #1D1F23;
+  --vp-c-search-bg: #1d1f23;
   /* 搜索框文本颜色：浅灰白 */
   --vp-c-search-text: #cccccc;
   /* 搜索框边框颜色：中等灰色 */
-  --vp-c-search-border: #1D1F23;
+  --vp-c-search-border: #1d1f23;
   /* 搜索框聚焦边框颜色：品牌色 */
   --vp-c-search-border-focus: #10b981;
   /* 搜索框占位符颜色：暗灰色 */
@@ -132,23 +132,23 @@
 /* 深色模式下的滚动条滑块（可拖动部分） */
 .dark ::-webkit-scrollbar-thumb {
   /* 滑块背景色：中等灰色 */
-  background: #4E4E4E;
+  background: #4e4e4e;
   /* 滑块圆角 */
   border-radius: 10px;
   /* 滑块边框：创造内嵌效果 */
-  border: 2px solid #4E4E4E;
+  border: 2px solid #4e4e4e;
 }
 
 /* 深色模式下的滚动条滑块悬停状态 */
 .dark ::-webkit-scrollbar-thumb:hover {
   /* 悬停时滑块变亮 */
-  background: #5A5A5A;
+  background: #5a5a5a;
 }
 
 /* 深色模式下的滚动条滑块激活状态 */
 .dark ::-webkit-scrollbar-thumb:active {
   /* 点击时滑块更亮 */
-  background: #5E5E5E;
+  background: #5e5e5e;
 }
 
 /* 深色模式下的侧边栏滚动条样式（更窄） */
@@ -198,10 +198,13 @@
   transform: translateY(-20px);
 }
 
+.home-log .container .image .image-container {
+  transform: translate(0px, 0px) !important;
+}
 
 /* 副标题行高与间距 */
 .home-log .VPHero .text {
-  line-height: 1.75;
+  line-height: 1.8;
 }
 
 /* 描述文案宽度与可读性 */
@@ -211,4 +214,3 @@
   line-height: 1.9;
   font-size: 16px;
 }
-

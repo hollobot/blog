@@ -88,6 +88,7 @@ export default defineConfig({
         link: "/programming/数据结构/index",
       },
       { text: "AI", link: "/AI/index" },
+      { text: "文章", link: "/article/分布式项目打包环境切换" },
       { text: "工具", link: "/software/cursor/cursor" },
       { text: "休闲", link: "/leisureTime/minecraft/药水篇" },
     ],
@@ -540,6 +541,17 @@ export default defineConfig({
                   link: "/AI/RAG/快速开始",
                 },
               ],
+            },
+          ],
+        },
+      ],
+      "/article/": [
+        {
+          text: "文章",
+          items: [
+            {
+              text: "分布式项目打包环境切换",
+              link: "/article/分布式项目打包环境切换",
             },
           ],
         },

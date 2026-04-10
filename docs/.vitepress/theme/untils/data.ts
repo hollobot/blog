@@ -45,7 +45,7 @@ export const NAV_DATA: NavData[] = [
         link: "https://claude.ai",
       },
       {
-        icon: "https://statics.moonshot.cn/kimi-chat/favicon.ico",
+        icon: "https://img.alicdn.com/imgextra/i1/O1CN01TLEHbS1cyufo87FKI_!!6000000003670-55-tps-32-32.svg",
         title: "通义千问",
         desc: "阿里云推出的超大规模语言模型",
         link: "https://tongyi.aliyun.com",

@@ -188,6 +188,10 @@ export default defineConfig({
                   text: "事故复盘：git checkout . ",
                   link: "/programming/git/git checkout . 导致代码丢失",
                 },
+                {
+                  text: "commit type",
+                  link: "/programming/git/git commit -m 里的类型规范",
+                },
               ],
             },
             {

@@ -184,6 +184,10 @@ export default defineConfig({
                   text: "git 快速上手",
                   link: "/programming/git/Git 基本命令速查表",
                 },
+                {
+                  text: "事故复盘：git checkout . ",
+                  link: "/programming/git/git checkout . 导致代码丢失",
+                },
               ],
             },
             {

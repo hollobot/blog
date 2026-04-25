@@ -562,6 +562,10 @@ export default defineConfig({
               text: "分布式项目打包环境切换",
               link: "/article/分布式项目打包环境切换",
             },
+            {
+              text: "MinIO 数据迁移详细教程",
+              link: "/MinIO 数据迁移详细教程",
+            },
           ],
         },
       ],

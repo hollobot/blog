@@ -41,12 +41,11 @@ yum makecache
 
 MinIO 官方未提供 yum 仓库，采用 **手动下载 RPM 包 + yum 本地安装** 的方式，既能用 yum 管理依赖，又能解决网络慢的问题。
 
-#### 方法一：使用清华镜像站下载 RPM（推荐）（废弃了）
+#### 方法一：使用清华镜像站下载 RPM
 
 ```bash
-# 从清华大学镜像站下载 MinIO RPM 包
-wget https://mirrors.tuna.tsinghua.edu.cn/minio/server/minio/release/linux-amd64/archive/minio-20240116160738.0.0.x86_64.rpm \
-    -O /tmp/minio.rpm
+# 国内镜像站下载 MinIO RPM 包
+wget https://dl.minio.org.cn/server/minio/release/linux-amd64/archive/minio-20241029160148.0.0-1.x86_64.rpm -O /tmp/minio.rpm
 
 # 使用 yum 本地安装（自动处理依赖）
 yum localinstall -y /tmp/minio.rpm

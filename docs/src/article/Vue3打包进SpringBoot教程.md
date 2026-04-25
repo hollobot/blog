@@ -76,8 +76,8 @@ export default router
 **新建文件：`.env.production`**  
 
 ```js
-# 生产环境接口地址，具体根据 axios 的配置和后端的接口路径
-VITE_API_BASE_URL = 空 或 /api
+# 生产环境后端地址（部署时必须替换为真实地址，例如 https://api.example.com）。
+VITE_API_BASE_URL= http://8.136.30.123:8080
 ```
 
 > **admin 同理配置**

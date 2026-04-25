@@ -363,6 +363,54 @@ yum install -y java-17-openjdk java-17-openjdk-devel
 java -version
 ```
 
+### 6.1 多个Java版本配置管理
+
+**同时安装多个java版本**
+
+```bash
+yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
+yum install -y java-17-openjdk java-17-openjdk-devel
+```
+
+**让系统识别两个 Java 版本，后面的数字代表优先级（越大越高）**
+
+```bash
+sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-17-openjdk-17.0.18.0.8-2.el9.x86_64/bin/java 1700
+sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.482.b08-3.el9.x86_64/jre/bin/java 800
+sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-17-openjdk-17.0.18.0.8-2.el9.x86_64/bin/javac 1700
+sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.482.b08-3.el9.x86_64/bin/javac 800
+```
+
+**现在再查看版本（就能看到两个了）**
+
+```bash
+update-alternatives --list java
+```
+
+ **一键切换版本**
+
+```bash
+update-alternatives --config java
+```
+
+```markdown
+# 会出现：
+选择    命令
+-----------------------------------------------
+   1           java-17-openjdk
+   2           java-1.8.0-openjdk
+   
+# 输入数字 1 或 2 回车即可切换！
+```
+
+**验证**
+
+```bash
+java -version
+```
+
+
+
 ------
 
 ### **7. 安装 MySQL（如需）**
@@ -373,6 +421,16 @@ systemctl enable mysqld
 systemctl start mysqld
 mysql_secure_installation
 ```
+
+**安装** → `yum install -y mysql-server`
+
+**开机自启** → `systemctl enable mysqld`
+
+**启动服务** → `systemctl start mysqld`
+
+**安全初始化 + 设置密码** → `mysql_secure_installation`
+
+
 
 ------
 
@@ -413,10 +471,46 @@ systemctl status firewalld
 ### **10. 安装 Redis（如需）**
 
 ```bash
+# 安装 Redis 数据库
 yum install -y redis
+# 设置 Redis 开机自启动
 systemctl enable redis
+# 开启
 systemctl start redis
+
+# 重启 Redis 让配置生效
+systemctl restart redis
 ```
 
+#### **默认没有密码，可以手动配置**
 
+```sh
+vi /etc/redis/redis.conf
+```
+
+```bash
+# 允许远程连接
+bind 0.0.0.0
+
+# 关闭保护模式 （是 Redis 自带安全机制：1.只允许本机 127.0.0.1 连接，2.如果没设密码 + 外网 IP 访问 → 直接拒绝连接）
+protected-mode no
+
+# 设置 Redis 密码
+requirepass 123456
+```
+
+#### 覆盖官方配置
+
+```bash
+cat > /etc/redis/redis.conf <<EOF
+bind 0.0.0.0
+port 6379
+protected-mode no
+requirepass 123456
+daemonize yes
+save ""
+maxmemory 1G
+maxmemory-policy allkeys-lru
+EOF
+```
 

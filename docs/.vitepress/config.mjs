@@ -321,6 +321,7 @@ export default defineConfig({
                 { text: "索引", link: "/programming/MySQL/索引" },
                 { text: "事务", link: "/programming/MySQL/事务" },
                 { text: "锁", link: "/programming/MySQL/锁" },
+                { text: "MySQL 配置远程连接", link: "/programming/MySQL/MySQL 配置远程连接" },
               ],
             },
             {

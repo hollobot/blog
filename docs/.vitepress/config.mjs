@@ -565,6 +565,10 @@ export default defineConfig({
             {
               text: "MinIO 数据迁移详细教程",
               link: "/MinIO 数据迁移详细教程",
+            }, 
+            {
+              text: "Vue3 前端打包进 Spring Boot 单 JAR 部署教程",
+              link: "/Vue3打包进SpringBoot教程",
             },
           ],
         },

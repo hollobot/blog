@@ -82,9 +82,9 @@ vim /etc/default/minio
 
 # 复制配置数据
 MINIO_ROOT_USER="minioadmin"
-MINIO_ROOT_PASSWORD="minioadmin123"
+MINIO_ROOT_PASSWORD="1+1=2yes"
 MINIO_VOLUMES="/mnt/data"
-MINIO_OPTS="--address :9000"
+MINIO_OPTS="--address :9000 --console-address :40105"
 ```
 
 ------

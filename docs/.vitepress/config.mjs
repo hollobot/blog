@@ -570,6 +570,10 @@ export default defineConfig({
               text: "Vue3 前端打包进 Spring Boot 单 JAR 部署教程",
               link: "/Vue3打包进SpringBoot教程",
             },
+            {
+              text: "数据库勒索邮件攻击事件记录",
+              link: "/数据库勒索邮件攻击事件记录",
+            },
           ],
         },
       ],

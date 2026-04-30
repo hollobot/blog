@@ -28,6 +28,7 @@ function triggerDownload() {
 
   const iframe = document.createElement('iframe')
   iframe.style.cssText = 'position:fixed;width:0;height:0;border:none;opacity:0;pointer-events:none'
+  iframe.referrerPolicy = 'no-referrer'
 
   iframe.onload = () => {
     try {

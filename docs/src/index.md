@@ -38,6 +38,8 @@ import { withBase } from "vitepress";
 import RecentUpdates from "../.vitepress/components/RecentUpdates.vue";
 import { data as recentUpdates } from "./recent-updates.data.mjs";
 
+
+
 // 首页学习入口卡片数据，统一管理标题、描述和路由。
 const entryCards = [
   {
@@ -83,6 +85,17 @@ function toSafeLink(link) {
   return withBase(encodeURI(link));
 }
 </script>
+
+## 我的项目
+
+<HomeProjectCard
+  url="http://8.136.30.123/packages/SwiftChat%20Setup%202.1.2.exe"
+  appName="SwiftChat"
+  version="2.1.2"
+  fileName="SwiftChat Setup 2.1.2.exe"
+  description="基于 Electron + Vue3 开发的跨平台桌面即时通讯客户端，支持单聊/群聊、多媒体消息与离线同步。"
+  detailLink="/blog/programming/project/chat"
+/>
 
 ## 最近更新文章
 

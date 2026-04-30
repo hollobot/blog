@@ -1,5 +1,16 @@
 # 项目经历
 
+## 客户端下载
+
+<DownloadCard
+  url="http://8.136.30.123/packages/SwiftChat%20Setup%202.1.2.exe"
+  appName="SwiftChat"
+  version="2.1.2"
+  fileName="SwiftChat Setup 2.1.2.exe"
+  platform="Windows"
+  description="跨平台桌面即时通讯客户端"
+/>
+
 ## 仿微信即时通讯系统 | 2024.XX - 2024.XX
 
 **项目描述：** 基于前后端分离架构开发的分布式即时通讯系统，包含跨平台桌面客户端和高并发后端服务，实现了类似微信的完整聊天功能，支持文字、图片、视频消息收发，具备集群部署和高可用能力

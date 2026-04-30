@@ -28,6 +28,12 @@ import giscusTalk from "vitepress-plugin-comment-with-giscus";
 // 文章元信息组件、文字数、阅读时间等
 import ArticleMetadata from "../components/ArticleMetadata.vue";
 
+// 软件下载卡片组件（文章页用）
+import DownloadCard from "../components/DownloadCard.vue";
+
+// 首页项目展示卡片组件
+import HomeProjectCard from "../components/HomeProjectCard.vue";
+
 // 放回顶部
 import backtotop from "../components/backtotop.vue";
 
@@ -46,6 +52,8 @@ export default {
     app.component("LayoutToggle", LayoutToggle);
     app.component("ArticleMetadata", ArticleMetadata);
     app.component("MNavLinks", MNavLinks);
+    app.component("DownloadCard", DownloadCard);
+    app.component("HomeProjectCard", HomeProjectCard);
 
     // 访问量统计 + 进度条
     if (inBrowser) {

@@ -34,7 +34,10 @@ echo "https_proxy: $https_proxy"
 ```sh
 ps -ef | grep nginx
 
+# 杀死进程
 kill PID
+# 如果杀不掉，用强制杀死：
+kill -9 PID
 ```
 
 

@@ -574,6 +574,10 @@ export default defineConfig({
               text: "数据库勒索邮件攻击事件记录",
               link: "/article/数据库勒索邮件攻击事件记录",
             },
+            {
+              text: "Nginx + CentOS 搭建安装包文件下载服务教程",
+              link: "/article/Nginx + CentOS 搭建安装包文件下载服务教程",
+            },
           ],
         },
       ],

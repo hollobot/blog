@@ -89,7 +89,7 @@ function toSafeLink(link) {
 ## 我的项目
 
 <HomeProjectCard
-  url="http://8.136.30.123/packages/SwiftChat%20Setup%202.1.2.exe"
+  url="https://hollobot.online/packages/SwiftChat%20Setup%202.1.2.exe"
   appName="SwiftChat"
   version="2.1.2"
   fileName="SwiftChat Setup 2.1.2.exe"

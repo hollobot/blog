@@ -578,6 +578,10 @@ export default defineConfig({
               text: "Nginx + CentOS 搭建安装包文件下载服务教程",
               link: "/article/Nginx + CentOS 搭建安装包文件下载服务教程",
             },
+            {
+              text: "跨域问题详解",
+              link: "/article/跨域问题详解",
+            },
           ],
         },
       ],

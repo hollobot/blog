@@ -64,34 +64,15 @@ async function handleDownload() {
   const timer = setTimeout(() => controller.abort(), 6000)
 
   try {
-    // 第一步：cors 模式，服务器配置了 CORS 时可直接读取状态码。
-    const response = await fetch(props.url, { method: 'HEAD', signal: controller.signal })
-    clearTimeout(timer)
-    if (!response.ok) { showError(`服务器返回 ${response.status}，请稍后重试`); return }
+    await fetch(props.url, { method: 'HEAD', mode: 'no-cors', signal: controller.signal })
     triggerDownload()
   } catch (err: unknown) {
+    if (err instanceof Error && err.name === 'AbortError')
+      showError('连接超时，请稍后再试')
+    else
+      showError('下载服务器暂时不可用，请稍后重试')
+  } finally {
     clearTimeout(timer)
-    if (err instanceof Error && err.name === 'AbortError') {
-      showError('连接超时，服务器可能正在维护，请稍后再试')
-      return
-    }
-
-    // cors 模式抛出：可能是 CORS 错误（服务器在线）或网络错误（服务器宕机）。
-    // 第二步：用 no-cors 再探一次，区分两种情况。
-    const controller2 = new AbortController()
-    const timer2 = setTimeout(() => controller2.abort(), 4000)
-    try {
-      await fetch(props.url, { method: 'HEAD', mode: 'no-cors', signal: controller2.signal })
-      clearTimeout(timer2)
-      // no-cors 成功 = 服务器在线，仅 CORS 策略拦截了第一次请求，继续下载
-      triggerDownload()
-    } catch (err2: unknown) {
-      clearTimeout(timer2)
-      if (err2 instanceof Error && err2.name === 'AbortError')
-        showError('连接超时，服务器可能正在维护，请稍后再试')
-      else
-        showError('下载服务器暂时不可用，请稍后重试')
-    }
   }
 }
 </script>

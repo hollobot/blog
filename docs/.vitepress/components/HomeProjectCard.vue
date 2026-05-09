@@ -57,32 +57,15 @@ async function handleDownload() {
   const timer = setTimeout(() => controller.abort(), 6000)
 
   try {
-    // 第一步：cors 模式，配置了 CORS 时可读状态码。
-    const response = await fetch(props.url, { method: 'HEAD', signal: controller.signal })
-    clearTimeout(timer)
-    if (!response.ok) { showError(`服务器返回 ${response.status}，请稍后重试`); return }
+    await fetch(props.url, { method: 'HEAD', mode: 'no-cors', signal: controller.signal })
     triggerDownload()
   } catch (err: unknown) {
-    clearTimeout(timer)
-    if (err instanceof Error && err.name === 'AbortError') {
+    if (err instanceof Error && err.name === 'AbortError')
       showError('连接超时，请稍后再试')
-      return
-    }
-
-    // 第二步：no-cors 区分"CORS 拦截（服务器在线）"和"网络不可达（服务器宕机）"。
-    const controller2 = new AbortController()
-    const timer2 = setTimeout(() => controller2.abort(), 4000)
-    try {
-      await fetch(props.url, { method: 'HEAD', mode: 'no-cors', signal: controller2.signal })
-      clearTimeout(timer2)
-      triggerDownload()
-    } catch (err2: unknown) {
-      clearTimeout(timer2)
-      if (err2 instanceof Error && err2.name === 'AbortError')
-        showError('连接超时，请稍后再试')
-      else
-        showError('下载服务器暂时不可用，请稍后重试')
-    }
+    else
+      showError('下载服务器暂时不可用，请稍后重试')
+  } finally {
+    clearTimeout(timer)
   }
 }
 </script>

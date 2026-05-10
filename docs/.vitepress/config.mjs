@@ -582,6 +582,10 @@ export default defineConfig({
               text: "跨域问题详解",
               link: "/article/跨域问题详解",
             },
+            {
+              text: "Linux 开机自启动 Java 服务",
+              link: "/article/Linux 开机自启动 Java 服务",
+            },
           ],
         },
       ],

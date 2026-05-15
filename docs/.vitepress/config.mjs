@@ -192,6 +192,10 @@ export default defineConfig({
                   text: "commit type",
                   link: "/programming/git/git commit -m 里的类型规范",
                 },
+                {
+                  text: "Git Revert 场景复盘",
+                  link: "/programming/git/Git Revert 场景复盘",
+                },
               ],
             },
             {

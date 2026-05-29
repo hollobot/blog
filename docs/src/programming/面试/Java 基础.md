@@ -1198,8 +1198,6 @@ InputStream in = socket.getInputStream();
 in.read(buffer);                          // 再次阻塞
 ```
 
-------
-
 #### NIO — 同步非阻塞 I/O
 
 > 你点餐后拿到**号码牌**，自己去坐着。服务员（Selector）不停轮询所有桌子，谁的菜好了就通知谁。
@@ -1231,8 +1229,6 @@ while (true) {
 }
 ```
 
-------
-
 #### AIO — 异步非阻塞 I/O
 
 > 你点完餐直接走，餐厅好了**主动打电话通知你**，你去取就行。
@@ -1261,8 +1257,6 @@ channel.read(buffer, 0, null, new CompletionHandler<>() {
 // read() 调用后立即往下走，不等待
 ```
 
-------
-
 #### 三者对比总结
 
 |                | BIO          | NIO          | AIO          |
@@ -1274,8 +1268,6 @@ channel.read(buffer, 0, null, new CompletionHandler<>() {
 | **编程复杂度** | 低           | 中           | 高           |
 | **适用场景**   | 连接数少     | 高并发       | 超高并发     |
 | **典型框架**   | 早期 Tomcat  | Netty、Nginx | Windows IOCP |
-
-------
 
 #### 一句话记忆
 

@@ -1303,27 +1303,154 @@ channel.read(buffer, 0, null, new CompletionHandler<>() {
 
 ## 37. 如何实现对象克隆？
 
-对象克隆（复制）分为浅拷贝和深拷贝，实现方式如下：
-
-**浅拷贝**：
-
-1. 类实现 `Cloneable` 接口（标记接口，无方法）。
-2. 重写 `Object` 类的 `clone()` 方法，调用 `super.clone()`。
+#### 方式一：实现 `Cloneable` 接口（浅克隆）
 
 ```java
-class Person implements Cloneable {
-    String name;
+public class Person implements Cloneable {
+    private String name;
+    private int age;
+    private Address address; // 引用类型
+
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        return super.clone(); // 浅拷贝
+        return super.clone(); // 浅克隆：引用类型只复制地址
+    }
+}
+
+// 使用
+Person p1 = new Person("张三", 18, new Address("北京"));
+Person p2 = (Person) p1.clone();
+
+p2.getAddress().setCity("上海");
+System.out.println(p1.getAddress().getCity()); // "上海" ← p1 也被改了！
+```
+
+> ⚠️ **浅克隆的坑**：引用类型字段两个对象共享同一个，改一个另一个也变。
+
+------
+
+#### 方式二：深克隆 — 引用对象也实现 `Cloneable`
+
+```java
+public class Address implements Cloneable {
+    private String city;
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone(); // Address 也克隆一份
+    }
+}
+
+public class Person implements Cloneable {
+    private String name;
+    private int age;
+    private Address address;
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Person cloned = (Person) super.clone();
+        cloned.address = (Address) this.address.clone(); // 手动深克隆
+        return cloned;
+    }
+}
+
+// 使用
+Person p1 = new Person("张三", 18, new Address("北京"));
+Person p2 = (Person) p1.clone();
+
+p2.getAddress().setCity("上海");
+System.out.println(p1.getAddress().getCity()); // "北京" ← 互不影响 ✅
+```
+
+------
+
+#### 方式三：序列化实现深克隆（推荐）
+
+```java
+public class Person implements Serializable {
+    private String name;
+    private int age;
+    private Address address;
+
+    public Person deepClone() throws Exception {
+        // 序列化写入字节流
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(this);
+
+        // 从字节流反序列化为新对象
+        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        return (Person) ois.readObject(); // 全新的对象，完全独立
     }
 }
 ```
 
-**深拷贝**：
+> ✅ 无论嵌套多深，全部自动深克隆，**不需要每层都实现 Cloneable**。
 
-1. 方式 1：对引用类型成员递归调用 `clone()`（需所有引用类型都实现 `Cloneable`）。
-2. 方式 2：通过序列化（如 `ObjectInputStream`/`ObjectOutputStream`）将对象写入流再读出，实现完全独立的复制。
+------
+
+#### 方式四：构造方法 / 工厂方法（最简单直接）
+
+```java
+public class Person {
+    private String name;
+    private int age;
+    private Address address;
+
+    // 拷贝构造器
+    public Person(Person other) {
+        this.name = other.name;
+        this.age = other.age;
+        this.address = new Address(other.address); // 手动新建
+    }
+
+    // 或者工厂方法
+    public static Person copyOf(Person other) {
+        return new Person(other);
+    }
+}
+
+// 使用
+Person p1 = new Person("张三", 18, new Address("北京"));
+Person p2 = new Person(p1); // 或 Person.copyOf(p1)
+```
+
+------
+
+#### 方式五：使用工具库（项目中最常用）
+
+```java
+// 1. Apache Commons Lang
+Person p2 = SerializationUtils.clone(p1); // 需实现 Serializable
+
+// 2. Jackson（JSON 转换）
+ObjectMapper mapper = new ObjectMapper();
+Person p2 = mapper.readValue(mapper.writeValueAsString(p1), Person.class);
+
+// 3. MapStruct / ModelMapper（用于 DTO 转换场景）
+PersonDTO dto = modelMapper.map(person, PersonDTO.class);
+```
+
+------
+
+#### 对比总结
+
+| 方式                          | 深/浅克隆 | 复杂度 | 推荐场景         |
+| ----------------------------- | --------- | ------ | ---------------- |
+| `Cloneable` + `super.clone()` | 浅克隆    | 低     | 对象无引用类型   |
+| 逐层实现 `Cloneable`          | 深克隆    | 高     | 层级少且简单     |
+| 序列化/反序列化               | 深克隆    | 中     | 对象层级复杂     |
+| 拷贝构造器                    | 自己控制  | 中     | 代码清晰可控 ✅   |
+| 工具库                        | 深克隆    | 低     | 项目已引入依赖 ✅ |
+
+------
+
+#### 一句话总结
+
+> 简单对象用**拷贝构造器**，复杂嵌套对象用**序列化**，项目中有工具库直接用 **`SerializationUtils.clone()`** 最省事。
+
+
 
 
 

@@ -325,7 +325,10 @@ export default defineConfig({
                 { text: "索引", link: "/programming/MySQL/索引" },
                 { text: "事务", link: "/programming/MySQL/事务" },
                 { text: "锁", link: "/programming/MySQL/锁" },
-                { text: "MySQL 配置远程连接", link: "/programming/MySQL/MySQL 配置远程连接" },
+                {
+                  text: "MySQL 配置远程连接",
+                  link: "/programming/MySQL/MySQL 配置远程连接",
+                },
               ],
             },
             {
@@ -569,7 +572,7 @@ export default defineConfig({
             {
               text: "MinIO 数据迁移详细教程",
               link: "/article/MinIO 数据迁移详细教程",
-            }, 
+            },
             {
               text: "Vue3 前端打包进 Spring Boot 单 JAR 部署教程",
               link: "/article/Vue3打包进SpringBoot教程",
@@ -589,6 +592,10 @@ export default defineConfig({
             {
               text: "Linux 开机自启动 Java 服务",
               link: "/article/Linux 开机自启动 Java 服务",
+            },
+            {
+              text: "GitHub Pages 部署 静态项目",
+              link: "/article/GitHub Pages 部署 静态项目",
             },
           ],
         },

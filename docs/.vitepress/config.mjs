@@ -196,6 +196,10 @@ export default defineConfig({
                   text: "Git Revert 场景复盘",
                   link: "/programming/git/Git Revert 场景复盘",
                 },
+                {
+                  text: "Git 分支迁移",
+                  link: "/programming/git/Git 分支迁移",
+                },
               ],
             },
             {

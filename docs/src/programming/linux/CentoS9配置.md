@@ -336,6 +336,8 @@ systemctl start sshd
 # 下载并安装 nvm：
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash # github
 curl -o- https://gitee.com/mirrors/nvm/raw/v0.40.3/install.sh | bash # gitee
+# 302 跳转 加上 -L 参数
+curl -Lo- https://gitee.com/mirrors/nvm/raw/v0.40.3/install.sh | bash
 
 # 代替重启 shell
 \. "$HOME/.nvm/nvm.sh"

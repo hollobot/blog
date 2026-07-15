@@ -99,48 +99,48 @@ export default defineConfig({
           text: "基础",
           items: [
             {
-              text: "数据结构",
+              text: "数据结构与算法",
               collapsed: true,
               items: [
                 {
                   text: "简介",
-                  link: "/programming/数据结构/index",
+                  link: "/programming/数据结构与算法/index",
                 },
                 {
                   text: "数组与链表",
-                  link: "/programming/数据结构/数组与链表",
+                  link: "/programming/数据结构与算法/数组与链表",
                 },
                 {
                   text: "栈与队列",
-                  link: "/programming/数据结构/栈与队列",
+                  link: "/programming/数据结构与算法/栈与队列",
                 },
                 {
                   text: "哈希表",
-                  link: "/programming/数据结构/哈希表",
+                  link: "/programming/数据结构与算法/哈希表",
                 },
                 {
                   text: "树",
-                  link: "/programming/数据结构/树",
+                  link: "/programming/数据结构与算法/树",
                 },
                 {
                   text: "堆",
-                  link: "/programming/数据结构/堆",
+                  link: "/programming/数据结构与算法/堆",
                 },
                 {
                   text: "图",
-                  link: "/programming/数据结构/图",
+                  link: "/programming/数据结构与算法/图",
                 },
                 {
                   text: "回溯",
-                  link: "/programming/数据结构/回溯",
+                  link: "/programming/数据结构与算法/回溯",
                 },
                 {
                   text: "动态规划",
-                  link: "/programming/数据结构/动态规划",
+                  link: "/programming/数据结构与算法/动态规划",
                 },
                 {
                   text: "滑动窗口与双指针",
-                  link: "/programming/数据结构/滑动窗口与双指针",
+                  link: "/programming/数据结构与算法/滑动窗口与双指针",
                 },
               ],
             },

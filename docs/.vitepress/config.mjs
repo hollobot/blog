@@ -85,7 +85,7 @@ export default defineConfig({
       { text: "首页", link: "/" },
       {
         text: "编程",
-        link: "/programming/数据结构/index",
+        link: "/programming/数据结构与算法/index",
       },
       { text: "AI", link: "/AI/index" },
       { text: "文章", link: "/article/分布式项目打包环境切换" },

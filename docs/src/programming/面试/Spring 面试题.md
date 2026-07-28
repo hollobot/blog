@@ -763,7 +763,44 @@ Spring 启动时先解析配置（XML / 注解），把这些信息转化成`Bea
 
 
 
-## 28. Spring 的单例 Bean 是否有并发安全问题？
+## 28. Spring Bean 一定是单例的吗？
+
+不一定！默认单例，可以修改作用域为多例。
+
+#### 1. Spring Bean 作用域（核心考点）
+
+**singleton【默认】**
+
+IoC 容器中**只创建 1 个实例**，容器启动时默认实例化（饿汉）；
+
+多次 `getBean()` 获取同一个对象。
+
+**prototype【多例】**
+
+每次调用 `getBean()` / 注入时，**新建全新对象**。
+
+⚠️ 重要：prototype Bean **不会执行销毁回调（destroy-method/@PreDestroy）**，Spring 容器不负责它完整生命周期。
+
+request（web 环境）：一次 HTTP 请求一个实例
+
+session（web 环境）：一次会话一个实例
+
+application（web 环境）：ServletContext 全局单例
+
+websocket（web 环境）
+
+#### 2. 代码示例切换多例
+
+```java
+@Component
+@Scope("prototype") // 多例
+public class UserService {
+}
+```
+
+
+
+## 28-1. Spring 的单例 Bean 是否有并发安全问题？
 
 Spring 的单例 Bean **可能存在并发安全问题，具体取决于 Bean 的实现方式**。
 

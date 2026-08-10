@@ -2,13 +2,13 @@
 
 
 
-## 1. 什么是线程池，如何使用？为什么要使用线程池？
+## 1-1. 什么是线程池，如何使用？为什么要使用线程池？
 
 线程池就是事先将多个线程对象放到一个容器中，使用的时候就不用new线程而是直接去池中拿线程即可，节省了开辟子线程的时间，提高了代码执行效率。
 
 
 
-## 1-1. Java的线程池类型有哪些？
+## 1-2. Java的线程池类型有哪些？
 
 #### 一、JDK 预定义 4 种线程池（Executors 封装）
 
@@ -47,7 +47,7 @@
 
 
 
-## 4. 线程池大小怎么设置？
+## 4-1. 线程池大小怎么设置？
 
 如果线程池线程数量太小，当有大量请求需要处理，系统响应比较慢，会影响用户体验，甚至会出现任务队列大量堆积任务导致OOM。
 
@@ -56,6 +56,104 @@
 **CPU 密集型任务(N+1)**： 这种任务消耗的主要是 CPU 资源，可以将线程数设置为` N（CPU 核心数）+1`，多出来的一个线程是为了防止某些原因导致的线程阻塞（如IO操作，线程sleep，等待锁）而带来的影响。一旦某个线程被阻塞，释放了CPU资源，而在这种情况下多出来的一个线程就可以充分利用 CPU 的空闲时间。
 
 **I/O 密集型任务(2N)**： 系统的大部分时间都在处理 IO 操作，此时线程可能会被阻塞，释放CPU资源，这时就可以将 CPU 交出给其它线程使用。因此在 IO 密集型任务的应用中，可以多配置一些线程，具体的计算方法：`最佳线程数 = CPU核心数 * (1/CPU利用率) = CPU核心数 * (1 + (IO耗时/CPU耗时))`，一般可设置为2N。
+
+
+
+## 4-2. 线程池的参数有哪些对应的作用是什么
+
+#### ThreadPoolExecutor 7 个核心参数
+
+```java
+public ThreadPoolExecutor(int corePoolSize,
+                          int maximumPoolSize,
+                          long keepAliveTime,
+                          TimeUnit unit,
+                          BlockingQueue<Runnable> workQueue,
+                          ThreadFactory threadFactory,
+                          RejectedExecutionHandler handler)
+```
+
+#### 1. corePoolSize 核心线程数
+
+- 作用：**常驻存活的线程数量**，即使空闲也不会回收（除非开启`allowCoreThreadTimeOut`）
+- 业务：一般设置为 CPU 核心数，IO 密集型可以调大。
+
+> 新任务到来：当前运行线程数 < corePoolSize，直接新建核心线程执行任务。
+
+#### 2. maximumPoolSize 最大线程数
+
+- 作用：线程池允许创建的**最大总线程数**
+- 总线程 = 核心线程 + 非核心（临时）线程
+- 当队列满了，才会创建非核心线程，最多到 maximumPoolSize。
+
+#### 3. keepAliveTime 空闲存活时间
+
+- 作用：**非核心线程空闲多久会被回收**
+- 只有超过 corePoolSize 的临时线程才受这个时间控制；
+- 如果开启`allowCoreThreadTimeOut(true)`，核心线程空闲超时也会回收。
+
+#### 4. unit 时间单位
+
+- 配合 keepAliveTime：`TimeUnit.SECONDS`、MILLISECONDS、MINUTES
+
+#### 5. workQueue 阻塞任务队列
+
+存放还没来得及执行的任务。任务提交流程：核心线程满 → 放入队列 → 队列满才创建非核心线程。
+
+常用队列：
+
+1. `ArrayBlockingQueue`：有界队列，必须指定容量，生产环境推荐，防止 OOM
+2. `LinkedBlockingQueue`：无界 / 有界，不设置容量会无限放任务 → OOM 风险
+3. `SynchronousQueue`：不存储元素，插入任务必须立刻有线程执行，否则新建线程
+
+> ⚠️坑：如果用无界队列，maximumPoolSize 参数会失效，队列永远不会满，不会创建临时线程。
+
+#### 6. threadFactory 线程工厂
+
+- 作用：自定义线程创建，**设置线程名称、优先级、是否守护线程**
+- 生产环境必用，方便日志排查；默认工厂创建线程没有业务名字。
+
+示例：`Executors.defaultThreadFactory()`，生产建议自定义。
+
+#### 7. handler 拒绝策略
+
+当**核心线程满 + 队列满 + 达到最大线程数**，新任务触发拒绝策略，4 种内置策略：
+
+1. `AbortPolicy`（默认）：抛出 RejectedExecutionException 异常
+2. `DiscardPolicy`：直接丢弃任务，不抛异常（业务丢失风险）
+3. `DiscardOldestPolicy`：丢弃队列队头最老任务，尝试执行当前新任务
+4. `CallerRunsPolicy`：调用者线程自己执行任务（不抛异常，会阻塞提交任务的线程）
+
+------
+
+## 4-3. 任务执行完整流程（面试必背）
+
+1. 首先来了任务，运行线程数 < 核心线程数→ 创建核心线程执行
+2. 核心线程已满 → 任务加入 workQueue 阻塞队列
+   - 不管核心线程是否空闲，只要此时的核心线程数>=线程池设置的核心线程数，那么就直接入队。
+   - 队列有任务，空闲核心线程就会取出任务执行。
+3. 队列也满了 → 总线程数 < 最大线程数→ 创建 `非核心临时线程` 执行
+   - 新建出来的临时线程，也是从队列队头拿任务执行
+4. 总线程已经达到 `最大线程数`→ 触发拒绝策略
+   - AbortPolicy（默认）：抛`RejectedExecutionException`
+   - DiscardPolicy：静默丢弃任务，无异常，业务丢失，几乎不用
+   - DiscardOldestPolicy：丢弃队列最老未执行任务，业务丢失，很少用
+   - CallerRunsPolicy：提交任务的调用者线程自己执行任务
+
+> 空闲的非核心线程等待 keepAliveTime 时间没任务，就被回收。
+
+#### 生产简单示例代码
+
+```java
+ThreadPoolExecutor pool = new ThreadPoolExecutor(
+        4,
+        8,
+        30L,
+        TimeUnit.SECONDS,
+        new ArrayBlockingQueue<>(100),
+        new ThreadPoolExecutor.CallerRunsPolicy()
+);
+```
 
 
 

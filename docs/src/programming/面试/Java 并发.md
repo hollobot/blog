@@ -120,13 +120,16 @@ public ThreadPoolExecutor(int corePoolSize,
 当**核心线程满 + 队列满 + 达到最大线程数**，新任务触发拒绝策略，4 种内置策略：
 
 1. `AbortPolicy`（默认）：抛出 RejectedExecutionException 异常
+
 2. `DiscardPolicy`：直接丢弃任务，不抛异常（业务丢失风险）
+
 3. `DiscardOldestPolicy`：丢弃队列队头最老任务，尝试执行当前新任务
+
 4. `CallerRunsPolicy`：调用者线程自己执行任务（不抛异常，会阻塞提交任务的线程）
 
-------
+   
 
-## 4-3. 任务执行完整流程（面试必背）
+## 4-3. 线程池任务执行完整流程（面试必背）
 
 1. 首先来了任务，运行线程数 < 核心线程数→ 创建核心线程执行
 2. 核心线程已满 → 任务加入 workQueue 阻塞队列

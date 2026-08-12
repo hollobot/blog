@@ -2,7 +2,7 @@
 
 ![jvm.DBUWJQcj](./assets/jvm.DBUWJQcj.svg)
 
-## 1. JVM 到底是什么？
+## 1-1. JVM 到底是什么？
 
 JVM（Java Virtual Machine，Java 虚拟机）本质上是一个**运行在操作系统上的 “虚拟计算机”** —— 它不是真实的硬件设备，而是一段软件程序，专门负责执行 Java 字节码。
 
@@ -12,6 +12,93 @@ JVM（Java Virtual Machine，Java 虚拟机）本质上是一个**运行在操�
 - 不同操作系统上安装的 JVM，会把这份通用的字节码 “翻译” 成当前系统能识别的机器指令，让代码能在对应平台上运行。
 
 这就是 Java“一次编写，到处运行”（Write Once, Run Anywhere）的核心原理 ——**字节码跨平台，JVM 做适配**。
+
+
+
+## 1-2. JVM 常见 VM Options（启动参数）
+
+分四大类：**堆内存、GC 收集器、OOM 调试、其他常用参数**，面试高频，直接复制可用。
+
+### 1. 堆内存设置
+
+```shell
+-Xms2g            # 初始堆大小，JVM启动就分配 2G
+-Xmx2g            # 最大堆大小，堆最多可用2G，生产建议 Xms=Xmx，避免运行时扩容消耗性能
+-Xmn1g            # 新生代大小（Eden+2Survivor），G1不建议手动设置
+-XX:SurvivorRatio=8  # Eden/Survivor比例8:1，Eden占8份，两个Survivor各1份
+-XX:MetaspaceSize=256M  # 元空间初始大小(JDK8+永久代取消)
+-XX:MaxMetaspaceSize=512M # 元空间最大，防止元空间无限膨胀
+```
+
+> 生产最佳实践：`-Xms4g -Xmx4g -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=512M`
+
+### 2. GC 收集器参数
+
+#### G1（JDK8 默认，业务服务最常用）
+
+```shell
+-XX:+UseG1GC                 # 启用G1收集器
+-XX:MaxGCPauseMillis=200    # 目标最大停顿时间200ms，不是绝对保证
+-XX:G1HeapRegionSize=16M     # region大小，1M~32M 2的幂
+```
+
+#### ZGC（JDK11+，低延迟，大堆优选）
+
+```shell
+-XX:+UseZGC
+-XX:MaxGCPauseMillis=100
+```
+
+#### ParallelGC（吞吐量优先，批处理程序）
+
+```shell
+-XX:+UseParallelGC
+```
+
+### 3. OOM 排查必备参数（线上必开）
+
+```shell
+-XX:+HeapDumpOnOutOfMemoryError      # OOM发生自动dump堆快照
+-XX:HeapDumpPath=/data/logs/heap.hprof # dump文件输出路径
+-XX:+PrintGCDetails                  # 打印GC详细日志
+-XX:+PrintGCDateStamps               # GC日志带上时间戳
+-Xloggc:/data/logs/gc.log            # GC日志输出文件(JDK8)
+# JDK9+ 使用统一日志：-Xlog:gc*:file=/data/logs/gc.log
+```
+
+### 4. 其他高频参数
+
+```shell
+-XX:-OmitStackTraceInFastThrow   # 关闭快速异常优化，NPE等异常保留完整堆栈，调试必加
+-Dfile.encoding=UTF-8           # 设置文件编码（系统属性，VM options）
+-XX:+DisableExplicitGC          # 禁止System.gc()手动触发FullGC，防止业务代码乱调用
+-XX:+UseConcMarkSweepGC         # CMS收集器（JDK8，已经废弃，不推荐）
+```
+
+### 👉 一份完整生产示例（JDK8 G1）
+
+```shell
+-Xms4g
+-Xmx4g
+-XX:MetaspaceSize=256M
+-XX:MaxMetaspaceSize=512M
+-XX:+UseG1GC
+-XX:MaxGCPauseMillis=200
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:HeapDumpPath=/data/logs/heap.hprof
+-XX:+PrintGCDetails
+-XX:+PrintGCDateStamps
+-Xloggc:/data/logs/gc.log
+-XX:-OmitStackTraceInFastThrow
+```
+
+### 面试口述要点
+
+1. `-Xms`初始堆、`-Xmx`最大堆，线上设置相等，避免堆扩容 STW；
+2. JDK8 废弃永久代，改用**元空间 Metaspace**，默认不限制最大，必须配置上限；
+3. G1 核心参数`MaxGCPauseMillis`只是期望停顿，不能强制保证；
+4. 线上必须开启`HeapDumpOnOutOfMemoryError`，OOM 后拿到 hprof 文件分析；
+5. `-XX:-OmitStackTraceInFastThrow`：高频异常会被 JVM 优化丢掉栈，这个参数关闭优化方便排查问题。
 
 
 

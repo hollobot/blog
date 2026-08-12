@@ -19,7 +19,7 @@ JVM（Java Virtual Machine，Java 虚拟机）本质上是一个**运行在操�
 
 分四大类：**堆内存、GC 收集器、OOM 调试、其他常用参数**，面试高频，直接复制可用。
 
-### 1. 堆内存设置
+#### 1. 堆内存设置
 
 ```shell
 -Xms2g            # 初始堆大小，JVM启动就分配 2G
@@ -32,9 +32,9 @@ JVM（Java Virtual Machine，Java 虚拟机）本质上是一个**运行在操�
 
 > 生产最佳实践：`-Xms4g -Xmx4g -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=512M`
 
-### 2. GC 收集器参数
+#### 2. GC 收集器参数
 
-#### G1（JDK8 默认，业务服务最常用）
+G1（JDK8 默认，业务服务最常用）
 
 ```shell
 -XX:+UseG1GC                 # 启用G1收集器
@@ -42,20 +42,20 @@ JVM（Java Virtual Machine，Java 虚拟机）本质上是一个**运行在操�
 -XX:G1HeapRegionSize=16M     # region大小，1M~32M 2的幂
 ```
 
-#### ZGC（JDK11+，低延迟，大堆优选）
+ZGC（JDK11+，低延迟，大堆优选）
 
 ```shell
 -XX:+UseZGC
 -XX:MaxGCPauseMillis=100
 ```
 
-#### ParallelGC（吞吐量优先，批处理程序）
+ParallelGC（吞吐量优先，批处理程序）
 
 ```shell
 -XX:+UseParallelGC
 ```
 
-### 3. OOM 排查必备参数（线上必开）
+#### 3. OOM 排查必备参数（线上必开）
 
 ```shell
 -XX:+HeapDumpOnOutOfMemoryError      # OOM发生自动dump堆快照
@@ -66,7 +66,7 @@ JVM（Java Virtual Machine，Java 虚拟机）本质上是一个**运行在操�
 # JDK9+ 使用统一日志：-Xlog:gc*:file=/data/logs/gc.log
 ```
 
-### 4. 其他高频参数
+#### 4. 其他高频参数
 
 ```shell
 -XX:-OmitStackTraceInFastThrow   # 关闭快速异常优化，NPE等异常保留完整堆栈，调试必加
@@ -75,7 +75,7 @@ JVM（Java Virtual Machine，Java 虚拟机）本质上是一个**运行在操�
 -XX:+UseConcMarkSweepGC         # CMS收集器（JDK8，已经废弃，不推荐）
 ```
 
-### 👉 一份完整生产示例（JDK8 G1）
+#### 👉 一份完整生产示例（JDK8 G1）
 
 ```shell
 -Xms4g
@@ -92,7 +92,7 @@ JVM（Java Virtual Machine，Java 虚拟机）本质上是一个**运行在操�
 -XX:-OmitStackTraceInFastThrow
 ```
 
-### 面试口述要点
+#### 面试口述要点
 
 1. `-Xms`初始堆、`-Xmx`最大堆，线上设置相等，避免堆扩容 STW；
 2. JDK8 废弃永久代，改用**元空间 Metaspace**，默认不限制最大，必须配置上限；

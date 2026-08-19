@@ -1104,3 +1104,112 @@ public class TestService {
   ```
 
   
+
+
+
+## 33. Spring 实现自定义注解
+
+核心流程：**定义注解 → 编写注解处理器 → 注入 spring 容器 → 业务使用**，主流有三种实现方式，对应不同业务场景。
+
+#### 一、基础：定义自定义注解
+
+先通过 Java 元注解定义注解结构，**必须设置保留策略为运行期**，否则 Spring 无法在运行时读取注解。
+
+```java
+import java.lang.annotation.*;
+
+// 注解作用范围：方法上
+@Target(ElementType.METHOD)
+// 保留策略：运行期生效（必须，否则spring读取不到）
+@Retention(RetentionPolicy.RUNTIME)
+// 生成javadoc时包含
+@Documented
+// 子类可继承父类的该注解
+@Inherited
+public @interface OperateLog {
+    // 注解属性，设置默认值
+    String value() default "";
+    // 操作类型
+    String type() default "OTHER";
+}
+```
+
+元注解核心说明：
+
+- `@Target`：限定注解可标注的位置，常用：`TYPE`(类 / 接口)、`METHOD`(方法)、`PARAMETER`(参数)、`FIELD`(字段)
+- `@Retention`：保留周期，**必须设为`RUNTIME`**，`SOURCE`(编译期丢弃)、`CLASS`(类加载丢弃) 都无法被 Spring 运行时读取
+- `@Documented`、`@Inherited`：可选，分别控制文档生成和子类继承性
+
+#### 二、方式 1：spring aop 实现方法级注解（最通用）
+
+适用场景：方法级功能增强，比如操作日志、权限校验、接口限流、事务扩展，是业务开发中最常用的方式。
+
+**1. 引入依赖**
+
+Spring Boot 项目直接引入 AOP 起步依赖：
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aop</artifactId>
+</dependency>
+```
+
+**2. 编写切面处理器**
+
+用`@Aspect`声明切面，`@Component`交给 Spring 管理，通过`@annotation`匹配标注了自定义注解的方法。
+
+```java
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
+
+@Aspect
+@Component
+public class OperateLogAspect {
+
+    // 环绕通知：匹配所有标注了OperateLog注解的方法
+    @Around("@annotation(operateLog)")
+    public Object around(ProceedingJoinPoint joinPoint, OperateLog operateLog) throws Throwable {
+        // 1. 前置增强：获取注解属性、方法信息
+        String operateDesc = operateLog.value();
+        String operateType = operateLog.type();
+        String methodName = joinPoint.getSignature().getName();
+        Object[] args = joinPoint.getArgs();
+        
+        System.out.println("操作记录：" + operateDesc + "，类型：" + operateType + "，方法：" + methodName);
+
+        // 2. 执行原方法
+        Object result;
+        try {
+            result = joinPoint.proceed();
+        } catch (Throwable e) {
+            // 异常场景也可记录日志
+            System.out.println("方法执行异常：" + e.getMessage());
+            throw e;
+        }
+
+        // 3. 后置增强：可记录返回值、执行时长等
+        System.out.println("方法执行完成，返回结果：" + result);
+        return result;
+    }
+}
+```
+
+**3. 业务使用**
+
+直接在目标方法上添加注解即可：
+
+```java
+@RestController
+@RequestMapping("/user")
+public class UserController {
+
+    @OperateLog(value = "新增用户", type = "INSERT")
+    @PostMapping("/add")
+    public String addUser(String username) {
+        return "新增用户成功：" + username;
+    }
+}
+```

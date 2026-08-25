@@ -1003,3 +1003,69 @@ unmodifiableMap.put("c", 3); // 报错
 - 底层是二叉堆，每次入队出队都要调整堆结构，性能远低于普通阻塞队列，无法支撑高吞吐量的即时消息。
 - 元素必须到期才能取出，完全不适合即时消费的场景，会导致消息严重延迟。
 
+
+
+
+
+## 27. ConcurrentLinkedQueue 中 CAS 校验 + 冲突处理
+
+> ConcurrentLinkedQueue：**全程无 synchronized，全部依靠 CAS 乐观锁，基于 Unsafe 的 CAS 原子指令**。 CAS 全称：Compare‑And‑Swap，比较并交换。
+
+#### 1. CAS 底层原理（伪代码）
+
+CAS 有 3 个参数：**内存地址 V，预期旧值 A，要更新的新值 B**
+
+```java
+// 原子操作，CPU硬件指令，不可被打断
+boolean cas(V, A, B){
+    if( 内存V上 当前值 == 预期旧值A ){
+        把V位置更新为B;
+        return true; // 修改成功
+    }else{
+        return false; // 冲突，修改失败
+    }
+}
+```
+
+**校验逻辑：拿内存中此刻真实的值 和 自己读到的旧值做对比。**
+
+- 如果相等：说明期间没有别的线程修改过，我可以更新；
+- 如果不相等：代表已经被其他线程抢先修改，**发生 CAS 冲突，本次更新失败**。
+
+> ⚠️ CAS 只是**对某个引用字段做原子替换**，它不会保护一整条链表操作，所以 ConcurrentLinkedQueue 入队 / 出队是 **循环重试 CAS**。
+
+------
+
+#### 2. ConcurrentLinkedQueue 入队 offer () 流程 + CAS 冲突怎么处理
+
+底层单向链表，节点`Node`，节点内部变量 `item`(数据)、`next`(下一个节点指针)。 头尾节点 `head、tail` 用 `volatile` 修饰：保证多线程可见性，但 volatile**不保证原子修改**，所以修改 head/tail 必须用 CAS。
+
+##### offer 添加元素核心逻辑（简化）
+
+1. 新建 Node，封装要入队的数据；
+2. 死循环 for (;;) 自旋：
+   1. 获取当前队列真实的 tail 尾节点（volatile 读，拿到最新内存值）
+   2. 获取 tail 节点的 next 指针
+   3. 判断 tail 是不是真正的队尾（tail 不一定时刻指向真实尾节点，会滞后，是优化）
+   4. CAS 尝试：把 tail.next 从 null 改成新 Node
+      - ✅ CAS 成功：本线程把新节点挂上链表尾部。之后会尝试 CAS 更新 tail 指向新尾节点（允许失败，tail 可以滞后），方法返回 true，入队结束。
+      - ❌ **CAS 冲突失败：别的线程抢先把 next 设置成别的节点了。此时不阻塞，回到循环开头，重新读取最新 tail、next，重新尝试 CAS。**
+
+> 冲突处理策略：**自旋重试（不断循环，重新读最新状态，再次 CAS），没有锁，线程不会挂起。**
+
+##### 重点：tail 不一定每次都更新
+
+为了性能，ConcurrentLinkedQueue 不会每插入一个节点就 CAS 更新 tail。 tail 会滞后真实尾节点；多次插入后才一次性 CAS 把 tail 挪到真正尾部；就算更新 tail 的 CAS 失败也无所谓，下一轮循环会读到最新 tail。
+
+------
+
+#### 3. 出队 poll () 同样 CAS 自旋
+
+1. for (;;) 自旋循环
+2. volatile 读取 head 头节点
+3. 获取头节点的 item 数据
+4. CAS 尝试把 head.item 置为 null（逻辑删除，不是直接删掉节点）
+   - CAS 成功：逻辑删除该节点，完成出队；顺带尝试 cas 更新 head，返回数据
+   - CAS 冲突失败：其他线程已经抢先把 item 置 null，重新循环读取最新 head 再次尝试。
+
+> ConcurrentLinkedQueue 是**逻辑删除**：不是切断链表指针立刻移除节点，把 node.item 设为 null 代表节点作废，后续遍历中清理废弃节点。

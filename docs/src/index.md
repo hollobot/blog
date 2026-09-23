@@ -148,12 +148,12 @@ function toSafeLink(link) {
 
 ## 面试时间线
 
-::: timeline 2026-02-26
+<!-- ::: timeline 2026-02-26
 - 泛微网络科技股份有限公司
 - 岗位 后端开发
 - 技术二面记录 https://l0x09m00y4c.feishu.cn/docx/XKqvdetNboZQhJxwdLbc2ArxnAh
 - 拒了
-:::
+::: -->
 
 <style scoped>
 .home-grid {

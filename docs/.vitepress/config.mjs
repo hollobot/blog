@@ -91,6 +91,7 @@ export default defineConfig({
       { text: "文章", link: "/article/分布式项目打包环境切换" },
       { text: "工具", link: "/software/cursor/cursor" },
       { text: "休闲", link: "/leisureTime/minecraft/药水篇" },
+      { text: "贺佳亮", link: "/hejialian/index" },
     ],
 
     sidebar: {
@@ -664,6 +665,12 @@ export default defineConfig({
               ],
             },
           ],
+        },
+      ],
+      "/hejialian/": [
+        {
+          text: "开始",
+          link: "/hejialian/index",
         },
       ],
     },
